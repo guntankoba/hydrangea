@@ -1,4 +1,4 @@
-const PASSWORD = "kobachi";
+ï»¿const PASSWORD = "kobachi";
 
 type FeedbackKind = "error" | "success";
 
@@ -27,35 +27,37 @@ type AppState = {
 const puzzles: Puzzle[] = [
   {
     id: 1,
-    title: "‰¼–â 1",
-    prompt: "‰‚ß‚Ìˆê•àB‰J‚Ì‹C”z‚ğŠ´‚¶‚éŒ¾—t‚ğ“š‚¦‚Ä‚­‚¾‚³‚¢B",
-    placeholderClue: "ƒqƒ“ƒg: ƒJƒ^ƒJƒi3•¶š‚Å‚·B",
-    hint: "‹ó‚©‚ç—‚¿‚Ä‚­‚é‚à‚Ì‚Ì‰¹‚ğ‘z‘œ‚µ‚Ä‚İ‚Ü‚µ‚å‚¤B",
-    correctAnswer: "ƒAƒ",
+    title: "ä»®å• 1",
+    prompt: "åˆã‚ã®ä¸€æ­©ã€‚é›¨ã®æ°—é…ã‚’æ„Ÿã˜ã‚‹è¨€è‘‰ã‚’ç­”ãˆã¦ãã ã•ã„ã€‚",
+    placeholderClue: "ãƒ’ãƒ³ãƒˆ: ã‚«ã‚¿ã‚«ãƒŠ3æ–‡å­—ã§ã™ã€‚",
+    hint: "ç©ºã‹ã‚‰è½ã¡ã¦ãã‚‹ã‚‚ã®ã®éŸ³ã‚’æƒ³åƒã—ã¦ã¿ã¾ã—ã‚‡ã†ã€‚",
+    correctAnswer: "ã‚¢ãƒ¡",
   },
   {
     id: 2,
-    title: "‰¼–â 2",
-    prompt: "‘±‚­‚Ì‚ÍÃ‚©‚È‚Â‚È‚¬‚Ìˆê•¶šB",
-    placeholderClue: "ƒqƒ“ƒg: ‚Ğ‚ç‚ª‚È1•¶šB",
-    hint: "ˆê•¶š‚ÅŒ¾—t‚ÆŒ¾—t‚ğ‚Â‚È‚®–ğŠ„‚ğ‚¿‚Ü‚·B",
-    correctAnswer: "‚Æ",
+    title: "ä»®å• 2",
+    prompt: "ç¶šãã®ã¯é™ã‹ãªã¤ãªãã®ä¸€æ–‡å­—ã€‚",
+    placeholderClue: "ãƒ’ãƒ³ãƒˆ: ã²ã‚‰ãŒãª1æ–‡å­—ã€‚",
+    hint: "ä¸€æ–‡å­—ã§è¨€è‘‰ã¨è¨€è‘‰ã‚’ã¤ãªãå½¹å‰²ã‚’æŒã¡ã¾ã™ã€‚",
+    correctAnswer: "ã¨",
   },
   {
     id: 3,
-    title: "‰¼–â 3",
-    prompt: "ÅŒã‚Í‰‰Ä‚ğÊ‚é‰Ô‚Ì–¼‚ğB",
-    placeholderClue: "ƒqƒ“ƒg: ƒJƒ^ƒJƒi4•¶š‚Å‚·B",
-    hint: "”~‰JŠú‚Ì’è”Ô‚ÅA“yë‚Ì_«“x‚ÅF‚ª•Ï‚í‚é‰Ô‚Å‚·B",
-    correctAnswer: "ƒAƒWƒTƒC",
+    title: "ä»®å• 3",
+    prompt: "æœ€å¾Œã¯åˆå¤ã‚’å½©ã‚‹èŠ±ã®åã‚’ã€‚",
+    placeholderClue: "ãƒ’ãƒ³ãƒˆ: ã‚«ã‚¿ã‚«ãƒŠ4æ–‡å­—ã§ã™ã€‚",
+    hint: "æ¢…é›¨æ™‚æœŸã®å®šç•ªã§ã€åœŸå£Œã®é…¸æ€§åº¦ã§è‰²ãŒå¤‰ã‚ã‚‹èŠ±ã§ã™ã€‚",
+    correctAnswer: "ã‚¢ã‚¸ã‚µã‚¤",
   },
 ];
 
-const app = document.getElementById("app");
-
-if (!(app instanceof HTMLDivElement)) {
-  throw new Error("app ƒRƒ“ƒeƒi‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ");
-}
+const app: HTMLDivElement = (() => {
+  const element = document.getElementById("app");
+  if (!(element instanceof HTMLDivElement)) {
+    throw new Error("app ã‚³ãƒ³ãƒ†ãƒŠãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“");
+  }
+  return element;
+})();
 
 const state: AppState = {
   authenticated: false,
@@ -96,10 +98,10 @@ function renderLogin(): void {
     <section class="app-shell">
       <h1>Hydrangea Lab</h1>
       <div class="puzzle-card">
-        <p>‚±‚Ì“ä‰ğ‚«‚Í“Á’è‚ÌQ‰ÁÒ‚Ì‚İƒAƒNƒZƒX‚Å‚«‚Ü‚·BƒpƒXƒ[ƒh‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢B</p>
-        <label for="password-input">ƒpƒXƒ[ƒh</label>
-        <input id="password-input" type="password" autocomplete="current-password" placeholder="ƒpƒXƒ[ƒh‚ğ“ü—Í" />
-        <button id="password-submit" type="button">“üº‚·‚é</button>
+        <p>ã“ã®è¬è§£ãã¯ç‰¹å®šã®å‚åŠ è€…ã®ã¿ã‚¢ã‚¯ã‚»ã‚¹ã§ãã¾ã™ã€‚ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ã‚’å…¥åŠ›ã—ã¦ãã ã•ã„ã€‚</p>
+        <label for="password-input">ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰</label>
+        <input id="password-input" type="password" autocomplete="current-password" placeholder="ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ã‚’å…¥åŠ›" />
+        <button id="password-submit" type="button">å…¥å®¤ã™ã‚‹</button>
         <div id="feedback" class="feedback"></div>
       </div>
     </section>
@@ -124,7 +126,7 @@ function renderLogin(): void {
       resetFeedback();
       render();
     } else {
-      updateFeedback("ƒpƒXƒ[ƒh‚ªˆá‚¢‚Ü‚·B", "error");
+      updateFeedback("ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ãŒé•ã„ã¾ã™ã€‚", "error");
     }
   };
 
@@ -153,7 +155,7 @@ function renderPuzzle(): void {
     : "";
 
   const hintButtonAttrs = hintRevealed ? "id=\"hint-button\" type=\"button\" disabled" : "id=\"hint-button\" type=\"button\"";
-  const hintText = hintRevealed ? current.hint : "ƒqƒ“ƒg‚Í‚Ü‚¾”ñŒöŠJ‚Å‚·B";
+  const hintText = hintRevealed ? current.hint : "ãƒ’ãƒ³ãƒˆã¯ã¾ã éå…¬é–‹ã§ã™ã€‚";
   const hintClass = hintRevealed ? "hint hint--visible" : "hint";
 
   app.innerHTML = `
@@ -165,17 +167,17 @@ function renderPuzzle(): void {
         <p>${current.prompt}</p>
         <p><em>${current.placeholderClue}</em></p>
         <div class="hint-row">
-          <button ${hintButtonAttrs}>ƒqƒ“ƒg‚ğŒ©‚é</button>
+          <button ${hintButtonAttrs}>ãƒ’ãƒ³ãƒˆã‚’è¦‹ã‚‹</button>
           <div id="hint-area" class="${hintClass}">${hintText}</div>
         </div>
-        <label for="answer-input-${current.id}">‰ñ“š</label>
+        <label for="answer-input-${current.id}">å›ç­”</label>
         <input
           id="answer-input-${current.id}"
           type="text"
-          placeholder="‚±‚±‚É‰ñ“š‚ğ“ü—Í"
+          placeholder="ã“ã“ã«å›ç­”ã‚’å…¥åŠ›"
           autocomplete="off"
         />
-        <button id="answer-submit" type="button">‰ñ“š‚ğ‘—M</button>
+        <button id="answer-submit" type="button">å›ç­”ã‚’é€ä¿¡</button>
         ${feedbackHtml}
       </div>
     </section>
@@ -191,7 +193,7 @@ function renderPuzzle(): void {
     if (!candidate) {
       state.feedback = {
         kind: "error",
-        message: "‰ñ“š‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢B",
+        message: "å›ç­”ã‚’å…¥åŠ›ã—ã¦ãã ã•ã„ã€‚",
       };
       render();
       return;
@@ -202,13 +204,13 @@ function renderPuzzle(): void {
       state.currentPuzzleIndex += 1;
       state.feedback = {
         kind: "success",
-        message: "³‰ğ‚Å‚·IŸ‚Ì–â‘è‚ÖB",
+        message: "æ­£è§£ã§ã™ï¼æ¬¡ã®å•é¡Œã¸ã€‚",
       };
       render();
     } else {
       state.feedback = {
         kind: "error",
-        message: "‚Ü‚¾³‰ğ‚Å‚Í‚ ‚è‚Ü‚¹‚ñB‚à‚¤ˆê“x‚µ‚Ä‚­‚¾‚³‚¢B",
+        message: "ã¾ã æ­£è§£ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚ã‚‚ã†ä¸€åº¦è©¦ã—ã¦ãã ã•ã„ã€‚",
       };
       render();
     }
@@ -242,14 +244,14 @@ function renderFinal(): void {
 
   app.innerHTML = `
     <section class="app-shell">
-      <h1>ÅI‰ñ“š</h1>
+      <h1>æœ€çµ‚å›ç­”</h1>
       <div class="puzzle-card">
-        <p>‚¨‚ß‚Å‚Æ‚¤‚²‚´‚¢‚Ü‚·I‚·‚×‚Ä‚Ì‰¼–â‚É³‰ğ‚µ‚Ü‚µ‚½B</p>
-        <p>3‚Â‚Ì‰ñ“š‚ğ‚Â‚È‚°‚é‚ÆŸ‚ÌŒ¾—t‚É‚È‚è‚Ü‚·B</p>
+        <p>ãŠã‚ã§ã¨ã†ã”ã–ã„ã¾ã™ï¼ã™ã¹ã¦ã®ä»®å•ã«æ­£è§£ã—ã¾ã—ãŸã€‚</p>
+        <p>3ã¤ã®å›ç­”ã‚’ã¤ãªã’ã‚‹ã¨æ¬¡ã®è¨€è‘‰ã«ãªã‚Šã¾ã™ã€‚</p>
         <div class="final-answer">${combinedAnswer}</div>
-        <footer>¦ Œ»İ‚Í‰¼–â‚Å‚·B–{”Ô—p‚Ì–â‘è‚É·‚µ‘Ö‚¦‚Ä‚à‚±‚Ì‡¬ƒƒWƒbƒN‚ğÄ—˜—p‚Å‚«‚Ü‚·B</footer>
+        <footer>â€» ç¾åœ¨ã¯ä»®å•ã§ã™ã€‚æœ¬ç•ªç”¨ã®å•é¡Œã«å·®ã—æ›¿ãˆã¦ã‚‚ã“ã®åˆæˆãƒ­ã‚¸ãƒƒã‚¯ã‚’å†åˆ©ç”¨ã§ãã¾ã™ã€‚</footer>
       </div>
-      <button id="reset" type="button">Å‰‚©‚ç‚â‚è’¼‚·</button>
+      <button id="reset" type="button">æœ€åˆã‹ã‚‰ã‚„ã‚Šç›´ã™</button>
     </section>
   `;
 

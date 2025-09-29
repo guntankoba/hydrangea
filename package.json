@@ -1,13 +1,15 @@
-{
-  "name": "hydrangea-puzzle",
-  "version": "1.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch"
-  },
-  "devDependencies": {
-    "typescript": "^5.4.0"
-  }
+﻿{
+    "name":  "hydrangea-puzzle",
+    "version":  "1.0.0",
+    "private":  true,
+    "type":  "module",
+    "scripts":  {
+                    "build":  "tsc",
+                    "dev":  "tsc --watch",
+                    "serve":  "http-server docs -p 8080 -c-1"
+                },
+    "devDependencies":  {
+                            "http-server":  "^14.1.1",
+                            "typescript":  "^5.4.0"
+                        }
 }

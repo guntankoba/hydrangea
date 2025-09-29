@@ -1,18 +1,21 @@
-# hydrangea
+ï»¿# hydrangea
 
-TypeScript ‚Å“®ì‚·‚éƒpƒXƒ[ƒh•ÛŒì•t‚«‚ÌŽO’iŠK“ä‰ð‚«ƒAƒvƒŠ‚Å‚·BÅI‰ñ“š‚ÍuƒAƒ‚ÆƒAƒWƒTƒCv‚É‚È‚è‚Ü‚·B
+TypeScript ã§å‹•ä½œã™ã‚‹ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ä¿è­·ä»˜ãã®ä¸‰æ®µéšŽè¬Žè§£ãã‚¢ãƒ—ãƒªã§ã™ã€‚æœ€çµ‚å›žç­”ã¯ã€Œã‚¢ãƒ¡ã¨ã‚¢ã‚¸ã‚µã‚¤ã€ã«ãªã‚Šã¾ã™ã€‚
 
-## ŠJ”­ƒtƒ[
-- `npm install`
-- `npm run dev` ‚Å TypeScript ‚ðƒEƒHƒbƒ`ƒrƒ‹ƒhio—Íæ‚Í `docs/assets`j
-- ”CˆÓ‚ÌÃ“Iƒtƒ@ƒCƒ‹ƒT[ƒo[‚Å `docs/` ‚ðƒzƒXƒg‚µ‚Äƒuƒ‰ƒEƒU‚©‚ç `docs/index.html` ‚ðŠm”F
+## é–‹ç™ºãƒ•ãƒ­ãƒ¼
+- 
+pm install
+- 
+pm run dev ã§ TypeScript ã‚’ã‚¦ã‚©ãƒƒãƒãƒ“ãƒ«ãƒ‰ï¼ˆå‡ºåŠ›å…ˆã¯ docs/assetsï¼‰
+- 
+pm run serve ã§ http://localhost:8080/ ã‚’ãƒ›ã‚¹ãƒˆã—ã€ãƒ–ãƒ©ã‚¦ã‚¶ã§ docs/index.html ã‚’ç¢ºèª
 
-## GitHub Pages ‚Ö‚ÌŒöŠJ
-1. ƒŠƒ|ƒWƒgƒŠ‚Ì Settings > Pages ‚Å Source ‚ð `main` ƒuƒ‰ƒ“ƒ`AƒtƒHƒ‹ƒ_[‚ð `docs/` ‚ÉÝ’è
-2. ”½‰fŒãA`https://<ƒ†[ƒU[–¼>.github.io/<ƒŠƒ|ƒWƒgƒŠ–¼>/` ‚ÅƒAƒNƒZƒX‰Â”\
-3. –â‘è•¶‚â‰ñ“š‚Í `src/main.ts` ‚Ì `puzzles` ”z—ñ‚ð•ÒW‚µ‚Ä·‚µ‘Ö‚¦‰Â”\
+## GitHub Pages ã¸ã®å…¬é–‹
+1. ãƒªãƒã‚¸ãƒˆãƒªã® Settings > Pages ã§ Source ã‚’ main ãƒ–ãƒ©ãƒ³ãƒã€ãƒ•ã‚©ãƒ«ãƒ€ãƒ¼ã‚’ docs/ ã«è¨­å®š
+2. åæ˜ å¾Œã€https://<ãƒ¦ãƒ¼ã‚¶ãƒ¼å>.github.io/<ãƒªãƒã‚¸ãƒˆãƒªå>/ ã§ã‚¢ã‚¯ã‚»ã‚¹å¯èƒ½
+3. å•é¡Œæ–‡ã‚„å›žç­”ã¯ src/main.ts ã® puzzles é…åˆ—ã‚’ç·¨é›†ã—ã¦å·®ã—æ›¿ãˆå¯èƒ½
 
-## ƒpƒXƒ[ƒh‚Æ‘ÌŒ±—v‘f
-- —˜—pŽÒ—pƒpƒXƒ[ƒh‚Í `kobachi`
-- ‰¼–â‚²‚Æ‚Éƒqƒ“ƒgƒ{ƒ^ƒ“‚ð—pˆÓB•\Ž¦Œã‚Íƒ{ƒ^ƒ“‚ª–³Œø‰»‚³‚êAƒqƒ“ƒg—“‚É“à—e‚ª“WŠJ‚³‚ê‚Ü‚·
-- Œë“šŽž‚ÌƒtƒB[ƒhƒoƒbƒN‚âi’»ƒCƒ“ƒWƒP[ƒ^[‚ðŽÀ‘•Ï‚Ý
+## ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ã¨ä½“é¨“è¦ç´ 
+- åˆ©ç”¨è€…ç”¨ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ã¯ kobachi
+- ä»®å•ã”ã¨ã«ãƒ’ãƒ³ãƒˆãƒœã‚¿ãƒ³ã‚’ç”¨æ„ã€‚è¡¨ç¤ºå¾Œã¯ãƒœã‚¿ãƒ³ãŒç„¡åŠ¹åŒ–ã•ã‚Œã€ãƒ’ãƒ³ãƒˆæ¬„ã«å†…å®¹ãŒå±•é–‹ã•ã‚Œã¾ã™
+- èª¤ç­”æ™‚ã®ãƒ•ã‚£ãƒ¼ãƒ‰ãƒãƒƒã‚¯ã‚„é€²æ—ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ãƒ¼ã‚’å®Ÿè£…æ¸ˆã¿
