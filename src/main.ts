@@ -234,7 +234,7 @@ function renderLogin(): void {
       <h1>Hydrangea Lab</h1>
       <div class="puzzle-card">
         <p>この謎解きは特定の参加者のみアクセスできます。パスワードを入力してください。</p>
-        <form id="login-form">
+        <form id="login-form" class="form-stack">
           <label for="password-input">パスワード</label>
           <input
             id="password-input"
@@ -389,14 +389,16 @@ function renderTextPuzzle(puzzle: TextPuzzle): void {
           <button ${hintButtonAttrs}>ヒントを見る</button>
           <div id="hint-area" class="${hintClass}">${hintText}</div>
         </div>
-        <label for="answer-input-${puzzle.id}">回答</label>
-        <input
-          id="answer-input-${puzzle.id}"
-          type="text"
-          placeholder="ここに回答を入力"
-          autocomplete="off"
-        />
-        <button id="answer-submit" type="button">回答を送信</button>
+        <div class="answer-stack">
+          <label for="answer-input-${puzzle.id}">回答</label>
+          <input
+            id="answer-input-${puzzle.id}"
+            type="text"
+            placeholder="ここに回答を入力"
+            autocomplete="off"
+          />
+          <button id="answer-submit" type="button">回答を送信</button>
+        </div>
         ${feedbackHtml}
         ${paginationControls}
       </div>
