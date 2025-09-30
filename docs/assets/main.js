@@ -397,6 +397,7 @@ function ensureCrosswordProgress(puzzle) {
                 number: initialClue.number,
             }
             : null,
+        requiresConfirmation: false,
     };
     state.crosswordProgress.set(puzzle.id, progress);
     return progress;
@@ -722,10 +723,16 @@ function renderCrosswordPuzzle(puzzle) {
         hintButton === null || hintButton === void 0 ? void 0 : hintButton.setAttribute("disabled", "true");
     };
     hintButton === null || hintButton === void 0 ? void 0 : hintButton.addEventListener("click", revealHint);
-    const handleCompletion = () => {
+    const handleCompletion = (options) => {
+        var _a;
+        const force = (_a = options === null || options === void 0 ? void 0 : options.force) !== null && _a !== void 0 ? _a : false;
         if (!isCrosswordSolved(puzzle, progress)) {
             return;
         }
+        if (progress.requiresConfirmation && !force) {
+            return;
+        }
+        progress.requiresConfirmation = false;
         const currentIndex = state.currentPuzzleIndex;
         const nextIndex = Math.min(currentIndex + 1, puzzles.length);
         const alreadyFinalized = state.submittedAnswers[currentIndex] === puzzle.finalAnswer &&
@@ -758,6 +765,7 @@ function renderCrosswordPuzzle(puzzle) {
                 progress.entries[row][col] = solution.toUpperCase();
             }
         }
+        progress.requiresConfirmation = true;
         const firstEditable = findFirstEditableCell(puzzle);
         progress.activeCell = firstEditable;
         if (firstEditable) {
@@ -771,7 +779,7 @@ function renderCrosswordPuzzle(puzzle) {
     });
     confirmButton === null || confirmButton === void 0 ? void 0 : confirmButton.addEventListener("click", () => {
         if (isCrosswordSolved(puzzle, progress)) {
-            handleCompletion();
+            handleCompletion({ force: true });
             return;
         }
         state.feedback = {
@@ -792,6 +800,7 @@ function renderCrosswordPuzzle(puzzle) {
         if (!rawValue) {
             const { row, col } = progress.activeCell;
             progress.entries[row][col] = "";
+            progress.requiresConfirmation = false;
             resetFeedback();
             render();
             return;
@@ -800,6 +809,7 @@ function renderCrosswordPuzzle(puzzle) {
         const { row, col } = progress.activeCell;
         progress.entries[row][col] = letter;
         event.target.value = letter;
+        progress.requiresConfirmation = false;
         moveWithinClue(progress, puzzle, 1);
         resetFeedback();
         render();
@@ -824,6 +834,7 @@ function renderCrosswordPuzzle(puzzle) {
                     progress.entries[previous.row][previous.col] = "";
                 }
             }
+            progress.requiresConfirmation = false;
             resetFeedback();
             render();
             return;
