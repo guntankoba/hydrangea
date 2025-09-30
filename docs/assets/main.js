@@ -636,7 +636,12 @@ function renderCrosswordPuzzle(puzzle) {
     const hintText = hintRevealed ? puzzle.hint : "ヒントはまだ非公開です。";
     const hintClass = hintRevealed ? "hint hint--visible" : "hint";
     const testFillButtonHtml = puzzle.id === 1
-        ? `<button id="crossword-fill-all" type="button" class="crossword-fill">(テスト) 全マス入力</button>`
+        ? `
+          <div class="crossword-test-controls">
+            <button id="crossword-fill-all" type="button" class="crossword-fill">全マス入力</button>
+            <button id="crossword-confirm" type="button" class="crossword-confirm">答えを確定する</button>
+          </div>
+        `
         : "";
     app.innerHTML = `
     <section class="app-shell">
@@ -692,6 +697,7 @@ function renderCrosswordPuzzle(puzzle) {
     const hintButton = document.getElementById("hint-button");
     const hintArea = document.getElementById("hint-area");
     const fillAllButton = document.getElementById("crossword-fill-all");
+    const confirmButton = document.getElementById("crossword-confirm");
     if (entryInput) {
         if (progress.activeCell) {
             const { row, col } = progress.activeCell;
@@ -752,11 +758,22 @@ function renderCrosswordPuzzle(puzzle) {
         if (firstEditable) {
             syncActiveClue(progress, puzzle, firstEditable);
         }
-        resetFeedback();
-        handleCompletion();
-        if (!isCrosswordSolved(puzzle, progress)) {
-            render();
+        state.feedback = {
+            kind: "success",
+            message: "全マスを仮入力しました。「答えを確定する」を押してください。",
+        };
+        render();
+    });
+    confirmButton === null || confirmButton === void 0 ? void 0 : confirmButton.addEventListener("click", () => {
+        if (isCrosswordSolved(puzzle, progress)) {
+            handleCompletion();
+            return;
         }
+        state.feedback = {
+            kind: "error",
+            message: "まだ未完成です。入力内容を見直してから『答えを確定する』を押してください。",
+        };
+        render();
     });
     const handleInput = (event) => {
         if (!(event.target instanceof HTMLInputElement)) {
