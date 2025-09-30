@@ -888,8 +888,14 @@ function renderCrosswordPuzzle(puzzle: CrosswordPuzzle): void {
       return;
     }
     const currentIndex = state.currentPuzzleIndex;
-    const previousMax = state.maxUnlockedPuzzleIndex;
     const nextIndex = Math.min(currentIndex + 1, puzzles.length);
+    const alreadyFinalized =
+      state.submittedAnswers[currentIndex] === puzzle.finalAnswer &&
+      state.maxUnlockedPuzzleIndex >= nextIndex;
+    if (alreadyFinalized) {
+      return;
+    }
+    const previousMax = state.maxUnlockedPuzzleIndex;
     state.submittedAnswers[currentIndex] = puzzle.finalAnswer;
     state.maxUnlockedPuzzleIndex = Math.max(previousMax, nextIndex);
     const unlockedNewPuzzle = nextIndex > previousMax;
