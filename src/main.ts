@@ -790,6 +790,10 @@ function renderCrosswordPuzzle(puzzle: CrosswordPuzzle): void {
     : "id=\"hint-button\" type=\"button\"";
   const hintText = hintRevealed ? puzzle.hint : "ヒントはまだ非公開です。";
   const hintClass = hintRevealed ? "hint hint--visible" : "hint";
+  const testFillButtonHtml =
+    puzzle.id === 1
+      ? `<button id="crossword-fill-all" type="button" class="crossword-fill">(テスト) 全マス入力</button>`
+      : "";
 
   app.innerHTML = `
     <section class="app-shell">
@@ -833,6 +837,7 @@ function renderCrosswordPuzzle(puzzle: CrosswordPuzzle): void {
                 </ol>
               </div>
             </div>
+            ${testFillButtonHtml}
           </div>
         </div>
         ${feedbackHtml}
@@ -844,6 +849,7 @@ function renderCrosswordPuzzle(puzzle: CrosswordPuzzle): void {
   const entryInput = document.getElementById(`crossword-entry-${puzzle.id}`) as HTMLInputElement | null;
   const hintButton = document.getElementById("hint-button");
   const hintArea = document.getElementById("hint-area");
+  const fillAllButton = document.getElementById("crossword-fill-all");
 
   if (entryInput) {
     if (progress.activeCell) {
@@ -892,6 +898,28 @@ function renderCrosswordPuzzle(puzzle: CrosswordPuzzle): void {
     }
     render();
   };
+
+  fillAllButton?.addEventListener("click", () => {
+    for (let row = 0; row < puzzle.grid.length; row += 1) {
+      for (let col = 0; col < puzzle.grid[row].length; col += 1) {
+        const solution = puzzle.grid[row][col];
+        if (!solution) {
+          continue;
+        }
+        progress.entries[row][col] = solution.toUpperCase();
+      }
+    }
+    const firstEditable = findFirstEditableCell(puzzle);
+    progress.activeCell = firstEditable;
+    if (firstEditable) {
+      syncActiveClue(progress, puzzle, firstEditable);
+    }
+    resetFeedback();
+    handleCompletion();
+    if (!isCrosswordSolved(puzzle, progress)) {
+      render();
+    }
+  });
 
   const handleInput = (event: Event): void => {
     if (!(event.target instanceof HTMLInputElement)) {
