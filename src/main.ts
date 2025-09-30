@@ -233,16 +233,24 @@ function renderLogin(): void {
       <h1>Hydrangea Lab</h1>
       <div class="puzzle-card">
         <p>この謎解きは特定の参加者のみアクセスできます。パスワードを入力してください。</p>
-        <label for="password-input">パスワード</label>
-        <input id="password-input" type="password" autocomplete="current-password" placeholder="パスワードを入力" />
-        <button id="password-submit" type="button">入室する</button>
+        <form id="login-form">
+          <label for="password-input">パスワード</label>
+          <input
+            id="password-input"
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            placeholder="パスワードを入力"
+          />
+          <button id="password-submit" type="submit">入室する</button>
+        </form>
         <div id="feedback" class="feedback"></div>
       </div>
     </section>
   `;
 
+  const form = document.getElementById("login-form") as HTMLFormElement | null;
   const passwordInput = document.getElementById("password-input") as HTMLInputElement | null;
-  const submitButton = document.getElementById("password-submit");
   const feedbackArea = document.getElementById("feedback");
 
   const updateFeedback = (message: string, kind: FeedbackKind): void => {
@@ -264,11 +272,9 @@ function renderLogin(): void {
     }
   };
 
-  submitButton?.addEventListener("click", attemptLogin);
-  passwordInput?.addEventListener("keydown", (event: KeyboardEvent) => {
-    if (event.key === "Enter") {
-      attemptLogin();
-    }
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    attemptLogin();
   });
 }
 
