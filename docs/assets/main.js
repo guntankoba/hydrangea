@@ -161,15 +161,23 @@ function renderLogin() {
       <h1>Hydrangea Lab</h1>
       <div class="puzzle-card">
         <p>この謎解きは特定の参加者のみアクセスできます。パスワードを入力してください。</p>
-        <label for="password-input">パスワード</label>
-        <input id="password-input" type="password" autocomplete="current-password" placeholder="パスワードを入力" />
-        <button id="password-submit" type="button">入室する</button>
+        <form id="login-form">
+          <label for="password-input">パスワード</label>
+          <input
+            id="password-input"
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            placeholder="パスワードを入力"
+          />
+          <button id="password-submit" type="submit">入室する</button>
+        </form>
         <div id="feedback" class="feedback"></div>
       </div>
     </section>
   `;
+    const form = document.getElementById("login-form");
     const passwordInput = document.getElementById("password-input");
-    const submitButton = document.getElementById("password-submit");
     const feedbackArea = document.getElementById("feedback");
     const updateFeedback = (message, kind) => {
         if (!(feedbackArea instanceof HTMLDivElement)) {
@@ -189,11 +197,9 @@ function renderLogin() {
             updateFeedback("パスワードが違います。", "error");
         }
     };
-    submitButton === null || submitButton === void 0 ? void 0 : submitButton.addEventListener("click", attemptLogin);
-    passwordInput === null || passwordInput === void 0 ? void 0 : passwordInput.addEventListener("keydown", (event) => {
-        if (event.key === "Enter") {
-            attemptLogin();
-        }
+    form === null || form === void 0 ? void 0 : form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        attemptLogin();
     });
 }
 function buildProgressIndicators() {
