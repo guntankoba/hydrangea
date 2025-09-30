@@ -120,6 +120,7 @@ const app = (() => {
 const state = {
     authenticated: false,
     currentPuzzleIndex: 0,
+    maxUnlockedPuzzleIndex: 0,
     submittedAnswers: [],
     feedback: null,
     revealedHints: new Set(),
@@ -131,6 +132,7 @@ function resetFeedback() {
 function resetSession() {
     state.authenticated = false;
     state.currentPuzzleIndex = 0;
+    state.maxUnlockedPuzzleIndex = 0;
     state.submittedAnswers = [];
     state.revealedHints = new Set();
     state.crosswordProgress = new Map();
@@ -197,15 +199,83 @@ function renderLogin() {
 function buildProgressIndicators() {
     return puzzles
         .map((puzzle, index) => {
-        const isActive = index <= state.currentPuzzleIndex;
-        const activeClass = isActive ? "active" : "";
-        return `<div class="progress-step ${activeClass}" data-step="${puzzle.id}"></div>`;
+        let status;
+        const hasAnswer = state.submittedAnswers[index] !== undefined;
+        if (index > state.maxUnlockedPuzzleIndex) {
+            status = "locked";
+        }
+        else if (index === state.currentPuzzleIndex) {
+            status = "current";
+        }
+        else if (hasAnswer) {
+            status = "completed";
+        }
+        else {
+            status = "available";
+        }
+        const className = `progress-step progress-step--${status}`;
+        return `<div class="${className}" data-index="${index}" data-status="${status}" data-step="${puzzle.id}"></div>`;
     })
         .join("");
 }
+function attachProgressIndicatorHandlers() {
+    const steps = Array.from(document.querySelectorAll(".progress-step[data-index]"));
+    steps.forEach((step) => {
+        const index = Number(step.dataset.index);
+        if (Number.isNaN(index)) {
+            return;
+        }
+        step.addEventListener("click", () => {
+            if (index > state.maxUnlockedPuzzleIndex) {
+                return;
+            }
+            if (index === state.currentPuzzleIndex) {
+                return;
+            }
+            state.currentPuzzleIndex = index;
+            resetFeedback();
+            render();
+        });
+    });
+}
+function buildPaginationControls() {
+    const canGoPrevious = state.currentPuzzleIndex > 0;
+    const furthestIndex = Math.min(state.maxUnlockedPuzzleIndex, puzzles.length);
+    const canGoNext = state.currentPuzzleIndex < furthestIndex;
+    const prevAttrs = canGoPrevious ? "" : "disabled";
+    const nextAttrs = canGoNext ? "" : "disabled";
+    return `
+    <div class="pagination">
+      <button id="nav-prev" type="button" ${prevAttrs}>前へ</button>
+      <button id="nav-next" type="button" ${nextAttrs}>次へ</button>
+    </div>
+  `;
+}
+function attachPaginationHandlers() {
+    const prevButton = document.getElementById("nav-prev");
+    const nextButton = document.getElementById("nav-next");
+    const moveToIndex = (index) => {
+        const furthestIndex = Math.min(state.maxUnlockedPuzzleIndex, puzzles.length);
+        if (index < 0 || index > furthestIndex || index === state.currentPuzzleIndex) {
+            return;
+        }
+        state.currentPuzzleIndex = index;
+        resetFeedback();
+        render();
+    };
+    prevButton === null || prevButton === void 0 ? void 0 : prevButton.addEventListener("click", () => {
+        moveToIndex(Math.max(state.currentPuzzleIndex - 1, 0));
+    });
+    nextButton === null || nextButton === void 0 ? void 0 : nextButton.addEventListener("click", () => {
+        const furthestIndex = Math.min(state.maxUnlockedPuzzleIndex, puzzles.length);
+        moveToIndex(Math.min(state.currentPuzzleIndex + 1, furthestIndex));
+    });
+}
 function renderTextPuzzle(puzzle) {
+    var _a;
     const hintRevealed = state.revealedHints.has(puzzle.id);
     const progressIndicators = buildProgressIndicators();
+    const paginationControls = buildPaginationControls();
     const feedbackHtml = state.feedback
         ? `<div class="feedback feedback--${state.feedback.kind}">${state.feedback.message}</div>`
         : "";
@@ -235,6 +305,7 @@ function renderTextPuzzle(puzzle) {
         />
         <button id="answer-submit" type="button">回答を送信</button>
         ${feedbackHtml}
+        ${paginationControls}
       </div>
     </section>
   `;
@@ -252,13 +323,20 @@ function renderTextPuzzle(puzzle) {
             render();
             return;
         }
+        const currentIndex = state.currentPuzzleIndex;
+        const previousMax = state.maxUnlockedPuzzleIndex;
+        const nextIndex = Math.min(currentIndex + 1, puzzles.length);
         if (candidate === puzzle.correctAnswer) {
-            state.submittedAnswers[state.currentPuzzleIndex] = candidate;
-            state.currentPuzzleIndex += 1;
+            state.submittedAnswers[currentIndex] = candidate;
+            state.maxUnlockedPuzzleIndex = Math.max(previousMax, nextIndex);
+            const unlockedNewPuzzle = nextIndex > previousMax;
             state.feedback = {
                 kind: "success",
-                message: "正解です！次の問題へ。",
+                message: unlockedNewPuzzle ? "正解です！次の問題へ。" : "正解です！",
             };
+            if (unlockedNewPuzzle) {
+                state.currentPuzzleIndex = nextIndex;
+            }
             render();
         }
         else {
@@ -287,6 +365,12 @@ function renderTextPuzzle(puzzle) {
             submitAnswer();
         }
     });
+    if (answerInput) {
+        const existingAnswer = (_a = state.submittedAnswers[state.currentPuzzleIndex]) !== null && _a !== void 0 ? _a : "";
+        answerInput.value = existingAnswer;
+    }
+    attachProgressIndicatorHandlers();
+    attachPaginationHandlers();
     answerInput === null || answerInput === void 0 ? void 0 : answerInput.focus();
 }
 function ensureCrosswordProgress(puzzle) {
@@ -463,6 +547,7 @@ function moveActiveCell(progress, puzzle, deltaRow, deltaCol) {
 function renderCrosswordPuzzle(puzzle) {
     var _a;
     const progressIndicators = buildProgressIndicators();
+    const paginationControls = buildPaginationControls();
     const progress = ensureCrosswordProgress(puzzle);
     const hintRevealed = state.revealedHints.has(puzzle.id);
     const numbersMap = computeNumberMap(puzzle);
@@ -589,6 +674,7 @@ function renderCrosswordPuzzle(puzzle) {
           </div>
         </div>
         ${feedbackHtml}
+        ${paginationControls}
       </div>
     </section>
   `;
@@ -623,12 +709,21 @@ function renderCrosswordPuzzle(puzzle) {
         if (!isCrosswordSolved(puzzle, progress)) {
             return;
         }
-        state.submittedAnswers[state.currentPuzzleIndex] = puzzle.finalAnswer;
-        state.currentPuzzleIndex += 1;
+        const currentIndex = state.currentPuzzleIndex;
+        const previousMax = state.maxUnlockedPuzzleIndex;
+        const nextIndex = Math.min(currentIndex + 1, puzzles.length);
+        state.submittedAnswers[currentIndex] = puzzle.finalAnswer;
+        state.maxUnlockedPuzzleIndex = Math.max(previousMax, nextIndex);
+        const unlockedNewPuzzle = nextIndex > previousMax;
         state.feedback = {
             kind: "success",
-            message: "全マス正解です！次の問題へ進みましょう。",
+            message: unlockedNewPuzzle
+                ? "全マス正解です！次の問題へ進みましょう。"
+                : "全マス正解です！",
         };
+        if (unlockedNewPuzzle) {
+            state.currentPuzzleIndex = nextIndex;
+        }
         render();
     };
     const handleInput = (event) => {
@@ -763,18 +858,24 @@ function renderCrosswordPuzzle(puzzle) {
         });
     });
     handleCompletion();
+    attachProgressIndicatorHandlers();
+    attachPaginationHandlers();
 }
 function renderFinal() {
     const combinedAnswer = state.submittedAnswers.join("");
+    const progressIndicators = buildProgressIndicators();
+    const paginationControls = buildPaginationControls();
     app.innerHTML = `
     <section class="app-shell">
       <h1>最終回答</h1>
+      <div class="progress">${progressIndicators}</div>
       <div class="puzzle-card">
         <p>おめでとうございます！すべての仮問に正解しました。</p>
         <p>各回答をつなげると次の言葉になります。</p>
         <div class="final-answer">${combinedAnswer}</div>
         <footer>※ 現在は仮問です。本番用の問題に差し替えてもこの合成ロジックを再利用できます。</footer>
       </div>
+      ${paginationControls}
       <button id="reset" type="button">最初からやり直す</button>
     </section>
   `;
@@ -783,5 +884,7 @@ function renderFinal() {
         resetSession();
         render();
     });
+    attachProgressIndicatorHandlers();
+    attachPaginationHandlers();
 }
 render();
