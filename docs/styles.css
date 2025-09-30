@@ -99,7 +99,11 @@ label {
 }
 
 .answer-stack {
-  margin-top: var(--space-5);
+  gap: var(--space-5);
+}
+
+.answer-stack button {
+  align-self: flex-start;
 }
 
 input[type="password"],
@@ -182,6 +186,31 @@ button:disabled {
   color: #bef264;
 }
 
+
+.crossword-test-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+.pagination {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+
+.pagination button {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.puzzle-card > .pagination:first-child {
+  margin-top: var(--space-5);
+}
 
 .progress {
   display: flex;
@@ -381,6 +410,20 @@ button:disabled {
 
   .hint-row button {
     width: auto;
+  }
+
+  .crossword-test-controls {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .pagination {
+    justify-content: center;
+  }
+
+  .pagination button {
+    flex: 0 1 auto;
+    min-width: 7.5rem;
   }
 
   .crossword-input input {
