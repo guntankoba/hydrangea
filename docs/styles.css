@@ -1,4 +1,8 @@
 /* Hydrangea puzzle app styles */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 :root {
   color-scheme: light dark;
   --bg: #0c0c0f;
@@ -31,6 +35,7 @@ body {
   align-items: flex-start;
   justify-content: center;
   padding: var(--space-6) var(--space-4);
+  overflow-x: hidden;
 }
 
 .app-shell {
@@ -79,6 +84,22 @@ label {
   margin-bottom: var(--space-3);
   font-weight: 600;
   letter-spacing: 0.04em;
+}
+
+.form-stack,
+.answer-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.form-stack label,
+.answer-stack label {
+  margin-bottom: 0;
+}
+
+.answer-stack {
+  margin-top: var(--space-5);
 }
 
 input[type="password"],
