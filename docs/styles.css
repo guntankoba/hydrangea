@@ -99,7 +99,6 @@ label {
 }
 
 .answer-stack {
-  margin-top: var(--space-5);
   gap: var(--space-5);
 }
 
