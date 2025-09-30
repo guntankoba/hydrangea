@@ -9,6 +9,16 @@
   --accent: #6b9bd3;
   --accent-dark: #94c5cc;
   --border: rgba(255, 255, 255, 0.12);
+  --space-0: 0;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-7: 1.75rem;
+  --space-8: 2rem;
+  --space-9: 2.5rem;
 }
 
 body {
@@ -18,19 +28,18 @@ body {
   color: var(--fg);
   min-height: 100vh;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 2rem 1rem;
+  padding: var(--space-6) var(--space-4);
 }
 
 .app-shell {
   background: var(--card);
   backdrop-filter: blur(18px);
-  border-radius: 24px;
+  border-radius: 1.25rem;
   border: 1px solid var(--border);
-  max-width: 720px;
-  width: 100%;
-  padding: 2.5rem;
+  width: min(100%, 45rem);
+  padding: var(--space-7) var(--space-5);
   box-shadow: 0 25px 45px rgba(15, 26, 45, 0.35);
 }
 
@@ -40,34 +49,34 @@ body {
 }
 
 h1 {
-  margin: 0 0 1rem;
-  font-size: 2rem;
+  margin: 0 0 var(--space-4);
+  font-size: 1.5rem;
   letter-spacing: 0.08em;
   text-align: center;
 }
 
 p {
-  margin: 0 0 1.5rem;
+  margin: 0 0 var(--space-6);
   line-height: 1.6;
 }
 
 .puzzle-card {
   background: rgba(255, 255, 255, 0.08);
-  padding: 1.75rem;
-  border-radius: 18px;
+  padding: var(--space-6);
+  border-radius: 1.125rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-6);
 }
 
 .puzzle-card footer {
   font-size: 0.85rem;
   opacity: 0.75;
-  margin-top: 1.25rem;
+  margin-top: var(--space-5);
 }
 
 label {
   display: block;
-  margin-bottom: 0.75rem;
+  margin-bottom: var(--space-3);
   font-weight: 600;
   letter-spacing: 0.04em;
 }
@@ -113,20 +122,21 @@ button:disabled {
   cursor: not-allowed;
 }
 
+
 .hint-row {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1.25rem;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
 }
 
 .hint-row button {
-  flex-shrink: 0;
+  width: 100%;
 }
 
 .hint {
-  flex: 1 1 220px;
+  flex: 1 1 14rem;
   min-height: 1.5rem;
   font-size: 0.95rem;
   line-height: 1.4;
@@ -139,7 +149,7 @@ button:disabled {
 }
 
 .feedback {
-  margin-top: 0.75rem;
+  margin-top: var(--space-3);
   font-size: 0.95rem;
 }
 
@@ -151,10 +161,11 @@ button:disabled {
   color: #bef264;
 }
 
+
 .progress {
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
 }
 
 .progress-step {
@@ -178,17 +189,19 @@ button:disabled {
   width: 100%;
 }
 
+
 .final-answer {
-  margin-top: 2rem;
+  margin-top: var(--space-8);
   text-align: center;
   font-size: 1.75rem;
   letter-spacing: 0.12em;
 }
 
+
 .crossword-layout {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: var(--space-5);
 }
 
 .crossword-grid {
@@ -207,8 +220,8 @@ button:disabled {
 }
 
 .crossword-cell {
-  width: 48px;
-  height: 48px;
+  width: 2.75rem;
+  height: 2.75rem;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(15, 23, 42, 0.65);
@@ -256,20 +269,21 @@ button:disabled {
   transform: translateY(1px);
 }
 
+
 .crossword-side {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: var(--space-4);
 }
 
 .crossword-input {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 
 .crossword-input input {
-  max-width: 120px;
+  max-width: 100%;
   text-align: center;
   font-size: 1.25rem;
   font-weight: 600;
@@ -279,7 +293,7 @@ button:disabled {
 .crossword-clues {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
 .crossword-clues__group h3 {
@@ -295,14 +309,15 @@ button:disabled {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
+
 
 .crossword-clue {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 0.75rem;
-  padding: 0.6rem 0.75rem;
+  gap: var(--space-3);
+  padding: 0.5rem var(--space-3);
   border-radius: 10px;
   background: rgba(15, 23, 42, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -321,6 +336,7 @@ button:disabled {
   opacity: 0.75;
 }
 
+
 .crossword-clue__text {
   font-size: 0.95rem;
   line-height: 1.45;
@@ -336,17 +352,59 @@ button:disabled {
   border-color: rgba(34, 197, 94, 0.45);
 }
 
-@media (max-width: 640px) {
+@media (min-width: 480px) {
+  .hint-row {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .hint-row button {
+    width: auto;
+  }
+
+  .crossword-input input {
+    max-width: 8.75rem;
+  }
+}
+
+@media (min-width: 640px) {
+  body {
+    align-items: center;
+    padding: var(--space-8) var(--space-6);
+  }
+
   .app-shell {
-    padding: 1.75rem;
+    max-width: 720px;
+    padding: var(--space-8) var(--space-9);
+    border-radius: 1.5rem;
+    box-shadow: 0 25px 45px rgba(15, 26, 45, 0.35);
   }
 
   h1 {
-    font-size: 1.65rem;
+    font-size: 2rem;
+    margin-bottom: var(--space-4);
+  }
+
+  .puzzle-card {
+    padding: var(--space-7);
+    margin-bottom: var(--space-6);
   }
 
   .hint-row {
-    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .hint-row button {
+    flex-shrink: 0;
+  }
+
+  .crossword-cell {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .crossword-side {
+    gap: var(--space-5);
   }
 }
 
