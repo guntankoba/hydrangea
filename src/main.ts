@@ -471,8 +471,40 @@ function buildMapLink(mapQuery: string): string {
   return `<div class="map-link"><a href="https://www.google.com/maps/search/?api=1&query=${encodedQuery}" target="_blank" rel="noopener">Google Mapsで開く</a></div>`;
 }
 
+function resolvedMapQueryForIndex(index: number): string | undefined {
+  const storedQuery = state.mapLinksByPuzzleIndex[index];
+  if (storedQuery) {
+    return storedQuery;
+  }
+
+  const puzzleAtIndex = puzzles[index];
+  if (puzzleAtIndex?.kind === "text" && puzzleAtIndex.mapQuery) {
+    const answer = state.submittedAnswers[index];
+    if (typeof answer === "string" && answer.trim().length > 0) {
+      return puzzleAtIndex.mapQuery;
+    }
+  }
+
+  for (let previous = index - 1; previous >= 0; previous -= 1) {
+    const candidate = puzzles[previous];
+    if (candidate?.kind !== "text") {
+      continue;
+    }
+    if (!candidate.mapQuery) {
+      return undefined;
+    }
+    const answer = state.submittedAnswers[previous];
+    if (typeof answer === "string" && answer.trim().length > 0) {
+      return candidate.mapQuery;
+    }
+    return undefined;
+  }
+
+  return undefined;
+}
+
 function mapLinkHtmlForIndex(index: number): string {
-  const mapQuery = state.mapLinksByPuzzleIndex[index];
+  const mapQuery = resolvedMapQueryForIndex(index);
   if (!mapQuery) {
     return "";
   }
