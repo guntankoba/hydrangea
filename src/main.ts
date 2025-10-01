@@ -35,7 +35,26 @@ type TextPuzzle = {
   correctAnswer: string;
 };
 
-type Puzzle = CrosswordPuzzle | TextPuzzle;
+type InfoPageAction =
+  | {
+      kind: "continue";
+      label?: string;
+    }
+  | {
+      kind: "reset";
+      label?: string;
+    };
+
+type InfoPage = {
+  kind: "info";
+  id: number;
+  title: string;
+  lead?: string;
+  content: string[];
+  actions?: InfoPageAction[];
+};
+
+type Puzzle = CrosswordPuzzle | TextPuzzle | InfoPage;
 
 type Feedback = {
   kind: FeedbackKind;
@@ -67,113 +86,122 @@ type AppState = {
 const puzzles: Puzzle[] = [
   {
     id: 1,
-    kind: "crossword",
-    title: "クロスワード仮問",
-    prompt:
-      "SATOR スクエアをテーマにしたクロスワードです。各マスに英字1文字を入力し、Across/Down の設問に沿って埋めてみましょう。",
-    placeholderClue: "ヒント: ラテン語由来の単語で構成されています。",
-    hint:
-      "中央の単語 TENET が水平・垂直ともに同じ文字列になるのがスクエア完成の鍵です。",
-    finalAnswer: "TENET",
-    grid: [
-      ["S", "A", "T", "O", "R"],
-      ["A", "R", "E", "P", "O"],
-      ["T", "E", "N", "E", "T"],
-      ["O", "P", "E", "R", "A"],
-      ["R", "O", "T", "A", "S"],
+    kind: "info",
+    title: "謎解きの概要",
+    lead: "東京の下町から都心まで、駅を巡りながら手がかりを集める全5問のストーリーです。",
+    content: [
+      "各エリアでは現地でしか得られない手掛かりを撮影・観察して回答を導きます。",
+      "答えがわかったら、次に向かう駅名を入力して次のページを解放してください。",
+      "このページの文章はサンプルです。本番ではローカル情報に合わせて差し替えてください。",
     ],
-    acrossClues: [
-      {
-        number: 1,
-        clue: "ラテン語で『種をまく人』を意味する語。",
-        answer: "SATOR",
-        row: 0,
-        col: 0,
-      },
-      {
-        number: 2,
-        clue: "謎めいた固有名。古い解釈では鋤を操る人物名とされます。",
-        answer: "AREPO",
-        row: 1,
-        col: 0,
-      },
-      {
-        number: 3,
-        clue: "『保持する』の意を持つラテン語の動詞。",
-        answer: "TENET",
-        row: 2,
-        col: 0,
-      },
-      {
-        number: 4,
-        clue: "ラテン語で『仕事・作品』を表す語。",
-        answer: "OPERA",
-        row: 3,
-        col: 0,
-      },
-      {
-        number: 5,
-        clue: "『車輪』を意味する語。語順を逆転すると最初の語に戻ります。",
-        answer: "ROTAS",
-        row: 4,
-        col: 0,
-      },
-    ],
-    downClues: [
-      {
-        number: 1,
-        clue: "縦読みでも『種まく人』となる語。",
-        answer: "SATOR",
-        row: 0,
-        col: 0,
-      },
-      {
-        number: 2,
-        clue: "スクエアを縦に読むと現れる謎の固有名。",
-        answer: "AREPO",
-        row: 0,
-        col: 1,
-      },
-      {
-        number: 3,
-        clue: "中央列に現れるパリンドローム。",
-        answer: "TENET",
-        row: 0,
-        col: 2,
-      },
-      {
-        number: 4,
-        clue: "縦読みでも『作品』を示す語。",
-        answer: "OPERA",
-        row: 0,
-        col: 3,
-      },
-      {
-        number: 5,
-        clue: "最下段まで伸びる『車輪』の語。",
-        answer: "ROTAS",
-        row: 0,
-        col: 4,
-      },
-    ],
+    actions: [{ kind: "continue", label: "例題へ進む" }],
   },
   {
     id: 2,
-    kind: "text",
-    title: "仮問 2",
-    prompt: "続くのは静かなつなぎの一文字。",
-    placeholderClue: "ヒント: ひらがな1文字。",
-    hint: "一文字で言葉と言葉をつなぐ役割を持ちます。",
-    correctAnswer: "と",
+    kind: "info",
+    title: "例題",
+    lead: "現地に行かずに解けるミニ例題で、回答入力の流れを確認しましょう。",
+    content: [
+      "例題: 金町駅のホームで見つかる色と同じ花を選ぶとしたら何色でしょう?",
+      "仮の答え: 『アジサイ』。実際の問題では現地で集めた情報を頼りにしてください。",
+      "回答ボックスの使い方やヒントの表示方法を、ここで試しておくとスムーズです。",
+    ],
+    actions: [{ kind: "continue", label: "集合地点へ向かう" }],
   },
   {
     id: 3,
+    kind: "info",
+    title: "★金町",
+    lead: "スタート地点は常磐線の金町駅。下町の商店街から散策を始めます。",
+    content: [
+      "駅前ロータリーの案内図や期間限定ポスターを確認し、初回の手掛かりをメモしましょう。",
+      "歩き出す前に、このページに掲載されている注意事項をチームで共有してください。",
+    ],
+    actions: [{ kind: "continue", label: "問1に挑戦" }],
+  },
+  {
+    id: 4,
     kind: "text",
-    title: "仮問 3",
-    prompt: "最後は初夏を彩る花の名を。",
-    placeholderClue: "ヒント: カタカナ4文字です。",
-    hint: "梅雨時期の定番で、土壌の酸性度で色が変わる花です。",
-    correctAnswer: "アジサイ",
+    title: "問1",
+    prompt:
+      "金町駅周辺で見つけたサインの指示に従い、次に向かう駅名を入力してください。",
+    placeholderClue: "ヒント: 次の目的地となる駅名（漢字）を入力します。",
+    hint: "商店街のアーチに掲げられた広告内に、次の駅名が隠されています。",
+    correctAnswer: "秋葉原",
+  },
+  {
+    id: 5,
+    kind: "info",
+    title: "★秋葉原",
+    lead: "電気街の雑踏へ移動しました。電子パーツ店が立ち並ぶエリアを調べます。",
+    content: [
+      "駅の外観や中央通りに掲示された限定イベント告知に注目してください。",
+      "次の謎を解くために必要なキーワードが、実地で確認できる小さな看板に記載されています。",
+    ],
+    actions: [{ kind: "continue", label: "問2に進む" }],
+  },
+  {
+    id: 6,
+    kind: "text",
+    title: "問2",
+    prompt:
+      "秋葉原で集めた手掛かりを並べ替えると、次に向かう駅名が浮かび上がります。",
+    placeholderClue: "ヒント: 都内の主要ターミナル駅が答えです。",
+    hint: "万世橋近くに掲示された歴史パネルの頭文字がヒントになります。",
+    correctAnswer: "新宿",
+  },
+  {
+    id: 7,
+    kind: "info",
+    title: "★新宿",
+    lead: "高層ビルの展望デッキから次のルートを確認し、最後の下町エリアへ向かいます。",
+    content: [
+      "新宿駅西口のデジタルサイネージに流れる映像から特定のキーワードを抜き出してください。",
+      "そのキーワードと一致する案内表示が、次の街へのヒントになります。",
+    ],
+    actions: [{ kind: "continue", label: "問3を開く" }],
+  },
+  {
+    id: 8,
+    kind: "text",
+    title: "問3",
+    prompt:
+      "新宿で得たキーワードを手がかりに、私鉄沿線へ向かう駅名を導いてください。",
+    placeholderClue: "ヒント: 漢字3文字の駅名です。",
+    hint: "南口バスターミナルで配布されている路線図を確認すると答えが見えてきます。",
+    correctAnswer: "下高井戸",
+  },
+  {
+    id: 9,
+    kind: "info",
+    title: "★下高井戸",
+    lead: "商店街と路面電車が交差する下高井戸で、フィナーレに向けた手掛かりを探します。",
+    content: [
+      "駅前市場の掲示板に掲載された曜日ごとのイベントをチェックしてください。",
+      "次のページでは、ここで得たすべての情報を使って最後の答えを導きます。",
+    ],
+    actions: [{ kind: "continue", label: "最後の問へ" }],
+  },
+  {
+    id: 10,
+    kind: "text",
+    title: "最後の問",
+    prompt:
+      "下高井戸で集めたキーワードを組み合わせ、最終確認用の合言葉を入力してください。",
+    placeholderClue: "ヒント: テスト用に「クリア」と入力して進めます。",
+    hint: "本番では現地で得た複数のキーワードを順番に並べます。",
+    correctAnswer: "クリア",
+  },
+  {
+    id: 11,
+    kind: "info",
+    title: "クリア",
+    lead: "お疲れさまでした！街歩きのルートを最後まで辿ることができました。",
+    content: [
+      "ここで紹介した文章はダミーです。現地調査が完了したら、体験の締めくくりとなるメッセージに差し替えてください。",
+      "参加者からのフィードバックを記入してもらうフォームや、次回イベントの告知を配置することもできます。",
+    ],
+    actions: [{ kind: "reset", label: "最初からやり直す" }],
   },
 ];
 
@@ -223,15 +251,17 @@ function render(): void {
   const current = puzzles[state.currentPuzzleIndex];
   if (current.kind === "crossword") {
     renderCrosswordPuzzle(current);
-  } else {
+  } else if (current.kind === "text") {
     renderTextPuzzle(current);
+  } else {
+    renderInfoPage(current);
   }
 }
 
 function renderLogin(): void {
   app.innerHTML = `
     <section class="app-shell">
-      <h1>Hydrangea Lab</h1>
+      <h1>Hydrangea Walk</h1>
       <div class="puzzle-card">
         <p>この謎解きは特定の参加者のみアクセスできます。パスワードを入力してください。</p>
         <form id="login-form" class="form-stack">
@@ -362,6 +392,73 @@ function attachPaginationHandlers(): void {
   });
 }
 
+function renderInfoPage(puzzle: InfoPage): void {
+  const currentIndex = state.currentPuzzleIndex;
+  if (state.submittedAnswers[currentIndex] === undefined) {
+    state.submittedAnswers[currentIndex] = "";
+  }
+  state.maxUnlockedPuzzleIndex = Math.max(state.maxUnlockedPuzzleIndex, currentIndex);
+
+  const progressIndicators = buildProgressIndicators();
+  const paginationControls = buildPaginationControls();
+  const leadHtml = puzzle.lead ? `<p class="info-lead">${puzzle.lead}</p>` : "";
+  const bodyHtml = puzzle.content.map((paragraph) => `<p>${paragraph}</p>`).join("");
+
+  const actions = puzzle.actions && puzzle.actions.length > 0
+    ? puzzle.actions
+    : [{ kind: "continue" as const }];
+  const actionsHtml = actions
+    .map((action, index) => {
+      const label = action.label ?? (action.kind === "continue" ? "次へ進む" : "最初に戻る");
+      return `<button class="info-action" data-kind="${action.kind}" data-index="${index}">${label}</button>`;
+    })
+    .join("");
+  const actionsSection = actionsHtml ? `<div class="info-actions">${actionsHtml}</div>` : "";
+
+  app.innerHTML = `
+    <section class="app-shell">
+      <h1>Hydrangea Walk</h1>
+      <div class="progress">${progressIndicators}</div>
+      <div class="puzzle-card">
+        <h2>${puzzle.title}</h2>
+        ${leadHtml}
+        ${bodyHtml}
+        ${actionsSection}
+        ${paginationControls}
+      </div>
+    </section>
+  `;
+
+  const actionButtons = Array.from(
+    document.querySelectorAll<HTMLButtonElement>(".info-action[data-kind]"),
+  );
+  actionButtons.forEach((button) => {
+    const kind = button.dataset.kind as InfoPageAction["kind"] | undefined;
+    if (kind === "continue") {
+      button.addEventListener("click", () => {
+        const index = state.currentPuzzleIndex;
+        const targetIndex = Math.min(index + 1, puzzles.length - 1);
+        if (targetIndex === index) {
+          return;
+        }
+        const previousMax = state.maxUnlockedPuzzleIndex;
+        state.maxUnlockedPuzzleIndex = Math.max(previousMax, targetIndex);
+        state.currentPuzzleIndex = targetIndex;
+        resetFeedback();
+        render();
+      });
+    } else if (kind === "reset") {
+      button.addEventListener("click", () => {
+        resetSession();
+        render();
+      });
+    }
+  });
+
+  attachProgressIndicatorHandlers();
+  attachPaginationHandlers();
+}
+
 function renderTextPuzzle(puzzle: TextPuzzle): void {
   const hintRevealed = state.revealedHints.has(puzzle.id);
   const progressIndicators = buildProgressIndicators();
@@ -379,7 +476,7 @@ function renderTextPuzzle(puzzle: TextPuzzle): void {
 
   app.innerHTML = `
     <section class="app-shell">
-      <h1>Hydrangea Riddles</h1>
+      <h1>Hydrangea Walk</h1>
       <div class="progress">${progressIndicators}</div>
       <div class="puzzle-card">
         <h2>${puzzle.title}</h2>
@@ -806,7 +903,7 @@ function renderCrosswordPuzzle(puzzle: CrosswordPuzzle): void {
 
   app.innerHTML = `
     <section class="app-shell">
-      <h1>Hydrangea Riddles</h1>
+      <h1>Hydrangea Walk</h1>
       <div class="progress">${progressIndicators}</div>
       <div class="puzzle-card">
         <h2>${puzzle.title}</h2>
@@ -1105,6 +1202,17 @@ function renderCrosswordPuzzle(puzzle: CrosswordPuzzle): void {
 }
 
 function renderFinal(): void {
+  const finalPuzzle = puzzles[puzzles.length - 1];
+  if (finalPuzzle && finalPuzzle.kind === "info") {
+    state.currentPuzzleIndex = puzzles.length - 1;
+    state.maxUnlockedPuzzleIndex = Math.max(
+      state.maxUnlockedPuzzleIndex,
+      puzzles.length - 1,
+    );
+    renderInfoPage(finalPuzzle);
+    return;
+  }
+
   const combinedAnswer = state.submittedAnswers.join("");
   const progressIndicators = buildProgressIndicators();
   const paginationControls = buildPaginationControls();
@@ -1114,10 +1222,9 @@ function renderFinal(): void {
       <h1>最終回答</h1>
       <div class="progress">${progressIndicators}</div>
       <div class="puzzle-card">
-        <p>おめでとうございます！すべての仮問に正解しました。</p>
-        <p>各回答をつなげると次の言葉になります。</p>
+        <p>おめでとうございます！すべての問題に正解しました。</p>
+        <p>各回答をつなげたキーワードをメモして、運営チームに報告してください。</p>
         <div class="final-answer">${combinedAnswer}</div>
-        <footer>※ 現在は仮問です。本番用の問題に差し替えてもこの合成ロジックを再利用できます。</footer>
       </div>
       ${paginationControls}
       <button id="reset" type="button">最初からやり直す</button>
