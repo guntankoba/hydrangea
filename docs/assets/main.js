@@ -41,6 +41,7 @@ const puzzles = [
         placeholderClue: "ヒント: 次の目的地となる駅名（漢字）を入力します。",
         hint: "商店街のアーチに掲げられた広告内に、次の駅名が隠されています。",
         correctAnswer: "秋葉原",
+        mapQuery: "秋葉原駅",
     },
     {
         id: 5,
@@ -61,6 +62,7 @@ const puzzles = [
         placeholderClue: "ヒント: 都内の主要ターミナル駅が答えです。",
         hint: "万世橋近くに掲示された歴史パネルの頭文字がヒントになります。",
         correctAnswer: "新宿",
+        mapQuery: "新宿駅",
     },
     {
         id: 7,
@@ -81,6 +83,7 @@ const puzzles = [
         placeholderClue: "ヒント: 漢字3文字の駅名です。",
         hint: "南口バスターミナルで配布されている路線図を確認すると答えが見えてきます。",
         correctAnswer: "下高井戸",
+        mapQuery: "下高井戸駅",
     },
     {
         id: 9,
@@ -129,6 +132,7 @@ const state = {
     feedback: null,
     revealedHints: new Set(),
     crosswordProgress: new Map(),
+    mapLinksByPuzzleIndex: [],
 };
 function resetFeedback() {
     state.feedback = null;
@@ -140,6 +144,7 @@ function resetSession() {
     state.submittedAnswers = [];
     state.revealedHints = new Set();
     state.crosswordProgress = new Map();
+    state.mapLinksByPuzzleIndex = [];
     resetFeedback();
 }
 function render() {
@@ -293,6 +298,7 @@ function renderInfoPage(puzzle) {
     const progressIndicators = buildProgressIndicators();
     const paginationControls = buildPaginationControls();
     const leadHtml = puzzle.lead ? `<p class="info-lead">${puzzle.lead}</p>` : "";
+    const mapLinkHtml = mapLinkHtmlForIndex(currentIndex);
     const bodyHtml = puzzle.content.map((paragraph) => `<p>${paragraph}</p>`).join("");
     const actions = puzzle.actions && puzzle.actions.length > 0
         ? puzzle.actions
@@ -312,6 +318,7 @@ function renderInfoPage(puzzle) {
       <div class="puzzle-card">
         <h2>${puzzle.title}</h2>
         ${leadHtml}
+        ${mapLinkHtml}
         ${bodyHtml}
         ${actionsSection}
         ${paginationControls}
@@ -345,11 +352,26 @@ function renderInfoPage(puzzle) {
     attachProgressIndicatorHandlers();
     attachPaginationHandlers();
 }
+function buildMapLink(mapQuery) {
+    const encodedQuery = encodeURIComponent(mapQuery);
+    return `<div class="map-link"><a href="https://www.google.com/maps/search/?api=1&query=${encodedQuery}" target="_blank" rel="noopener">Google Mapsで開く</a></div>`;
+}
+function mapLinkHtmlForIndex(index) {
+    const mapQuery = state.mapLinksByPuzzleIndex[index];
+    if (!mapQuery) {
+        return "";
+    }
+    return buildMapLink(mapQuery);
+}
 function renderTextPuzzle(puzzle) {
     var _a;
     const hintRevealed = state.revealedHints.has(puzzle.id);
     const progressIndicators = buildProgressIndicators();
     const paginationControls = buildPaginationControls();
+    const puzzleIndex = puzzles.findIndex((entry) => entry.id === puzzle.id);
+    const storedAnswer = puzzleIndex >= 0 ? (_a = state.submittedAnswers[puzzleIndex]) !== null && _a !== void 0 ? _a : "" : "";
+    const pageIndex = puzzleIndex >= 0 ? puzzleIndex : state.currentPuzzleIndex;
+    const mapLinkHtml = mapLinkHtmlForIndex(pageIndex);
     const feedbackHtml = state.feedback
         ? `<div class="feedback feedback--${state.feedback.kind}">${state.feedback.message}</div>`
         : "";
@@ -381,6 +403,7 @@ function renderTextPuzzle(puzzle) {
           <button id="answer-submit" type="button">回答を送信</button>
         </div>
         ${feedbackHtml}
+        ${mapLinkHtml}
         ${paginationControls}
       </div>
     </section>
@@ -406,10 +429,16 @@ function renderTextPuzzle(puzzle) {
             state.submittedAnswers[currentIndex] = candidate;
             state.maxUnlockedPuzzleIndex = Math.max(previousMax, nextIndex);
             const unlockedNewPuzzle = nextIndex > previousMax;
+            const successMessage = unlockedNewPuzzle
+                ? "正解です！次の問題へ。"
+                : "正解です！";
             state.feedback = {
                 kind: "success",
-                message: unlockedNewPuzzle ? "正解です！次の問題へ。" : "正解です！",
+                message: successMessage,
             };
+            if (puzzle.mapQuery && nextIndex < puzzles.length) {
+                state.mapLinksByPuzzleIndex[nextIndex] = puzzle.mapQuery;
+            }
             if (unlockedNewPuzzle) {
                 state.currentPuzzleIndex = nextIndex;
             }
@@ -442,8 +471,7 @@ function renderTextPuzzle(puzzle) {
         }
     });
     if (answerInput) {
-        const existingAnswer = (_a = state.submittedAnswers[state.currentPuzzleIndex]) !== null && _a !== void 0 ? _a : "";
-        answerInput.value = existingAnswer;
+        answerInput.value = storedAnswer;
     }
     attachProgressIndicatorHandlers();
     attachPaginationHandlers();
@@ -629,6 +657,7 @@ function renderCrosswordPuzzle(puzzle) {
     const hintRevealed = state.revealedHints.has(puzzle.id);
     const numbersMap = computeNumberMap(puzzle);
     const active = getActiveClue(puzzle, progress);
+    const mapLinkHtml = mapLinkHtmlForIndex(state.currentPuzzleIndex);
     const highlightedCells = new Set();
     if (active) {
         const cells = getCellsForClue(puzzle, active.clue, active.direction);
@@ -760,6 +789,7 @@ function renderCrosswordPuzzle(puzzle) {
           </div>
         </div>
         ${feedbackHtml}
+        ${mapLinkHtml}
         ${paginationControls}
       </div>
     </section>
