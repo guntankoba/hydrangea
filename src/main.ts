@@ -1,212 +1,20 @@
 const PASSWORD = "kobachi";
 
-type FeedbackKind = "error" | "success";
-
-type CrosswordDirection = "across" | "down";
-
-type CrosswordClue = {
-  number: number;
-  clue: string;
-  answer: string;
-  row: number;
-  col: number;
-};
-
-type CrosswordPuzzle = {
-  kind: "crossword";
-  id: number;
-  title: string;
-  prompt: string;
-  placeholderClue: string;
-  hint: string;
-  finalAnswer: string;
-  grid: (string | null)[][];
-  acrossClues: CrosswordClue[];
-  downClues: CrosswordClue[];
-};
-
-type TextPuzzle = {
-  kind: "text";
-  id: number;
-  title: string;
-  prompt: string;
-  placeholderClue: string;
-  hint: string;
-  correctAnswer: string;
-  mapQuery?: string;
-};
-
-type InfoPageAction =
-  | {
-      kind: "continue";
-      label?: string;
-    }
-  | {
-      kind: "reset";
-      label?: string;
-    };
-
-type InfoPage = {
-  kind: "info";
-  id: number;
-  title: string;
-  lead?: string;
-  content: string[];
-  actions?: InfoPageAction[];
-};
-
-type Puzzle = CrosswordPuzzle | TextPuzzle | InfoPage;
-
-type Feedback = {
-  kind: FeedbackKind;
-  message: string;
-};
-
-type GridPosition = {
-  row: number;
-  col: number;
-};
-
-type CrosswordProgress = {
-  entries: (string | null)[][];
-  activeCell: GridPosition | null;
-  activeClue: { direction: CrosswordDirection; number: number } | null;
-  requiresConfirmation: boolean;
-};
-
-type AppState = {
-  authenticated: boolean;
-  currentPuzzleIndex: number;
-  maxUnlockedPuzzleIndex: number;
-  submittedAnswers: string[];
-  feedback: Feedback | null;
-  revealedHints: Set<number>;
-  crosswordProgress: Map<number, CrosswordProgress>;
-  mapLinksByPuzzleIndex: (string | undefined)[];
-};
-
-const puzzles: Puzzle[] = [
-  {
-    id: 1,
-    kind: "info",
-    title: "謎解きの概要",
-    lead: "東京の下町から都心まで、駅を巡りながら手がかりを集める全5問のストーリーです。",
-    content: [
-      "各エリアでは現地でしか得られない手掛かりを撮影・観察して回答を導きます。",
-      "答えがわかったら、次に向かう駅名を入力して次のページを解放してください。",
-      "このページの文章はサンプルです。本番ではローカル情報に合わせて差し替えてください。",
-    ],
-    actions: [{ kind: "continue", label: "例題へ進む" }],
-  },
-  {
-    id: 2,
-    kind: "text",
-    title: "例題",
-    prompt:
-      "例題: 金町駅のホームで見つかる色と同じ花を選ぶとしたら何色でしょう? 入力欄と回答ボタンの使い方を確認するため、答えとして駅名『金町』を入力してください。",
-    placeholderClue: "ヒント: 練習用の正解は駅名『金町』です。",
-    hint: "例題では仮の答えとして『金町』を入力すると次に進めます。",
-    correctAnswer: "金町",
-  },
-  {
-    id: 3,
-    kind: "info",
-    title: "★金町",
-    lead: "スタート地点は常磐線の金町駅。下町の商店街から散策を始めます。",
-    content: [
-      "駅前ロータリーの案内図や期間限定ポスターを確認し、初回の手掛かりをメモしましょう。",
-      "歩き出す前に、このページに掲載されている注意事項をチームで共有してください。",
-    ],
-    actions: [{ kind: "continue", label: "問1に挑戦" }],
-  },
-  {
-    id: 4,
-    kind: "text",
-    title: "問1",
-    prompt:
-      "金町駅周辺で見つけたサインの指示に従い、次に向かう駅名を入力してください。",
-    placeholderClue: "ヒント: 次の目的地となる駅名（漢字）を入力します。",
-    hint: "商店街のアーチに掲げられた広告内に、次の駅名が隠されています。",
-    correctAnswer: "秋葉原",
-    mapQuery: "秋葉原駅",
-  },
-  {
-    id: 5,
-    kind: "info",
-    title: "★秋葉原",
-    lead: "電気街の雑踏へ移動しました。電子パーツ店が立ち並ぶエリアを調べます。",
-    content: [
-      "駅の外観や中央通りに掲示された限定イベント告知に注目してください。",
-      "次の謎を解くために必要なキーワードが、実地で確認できる小さな看板に記載されています。",
-    ],
-    actions: [{ kind: "continue", label: "問2に進む" }],
-  },
-  {
-    id: 6,
-    kind: "text",
-    title: "問2",
-    prompt:
-      "秋葉原で集めた手掛かりを並べ替えると、次に向かう駅名が浮かび上がります。",
-    placeholderClue: "ヒント: 都内の主要ターミナル駅が答えです。",
-    hint: "万世橋近くに掲示された歴史パネルの頭文字がヒントになります。",
-    correctAnswer: "新宿",
-    mapQuery: "新宿駅",
-  },
-  {
-    id: 7,
-    kind: "info",
-    title: "★新宿",
-    lead: "高層ビルの展望デッキから次のルートを確認し、最後の下町エリアへ向かいます。",
-    content: [
-      "新宿駅西口のデジタルサイネージに流れる映像から特定のキーワードを抜き出してください。",
-      "そのキーワードと一致する案内表示が、次の街へのヒントになります。",
-    ],
-    actions: [{ kind: "continue", label: "問3を開く" }],
-  },
-  {
-    id: 8,
-    kind: "text",
-    title: "問3",
-    prompt:
-      "新宿で得たキーワードを手がかりに、私鉄沿線へ向かう駅名を導いてください。",
-    placeholderClue: "ヒント: 漢字3文字の駅名です。",
-    hint: "南口バスターミナルで配布されている路線図を確認すると答えが見えてきます。",
-    correctAnswer: "下高井戸",
-    mapQuery: "下高井戸駅",
-  },
-  {
-    id: 9,
-    kind: "info",
-    title: "★下高井戸",
-    lead: "商店街と路面電車が交差する下高井戸で、フィナーレに向けた手掛かりを探します。",
-    content: [
-      "駅前市場の掲示板に掲載された曜日ごとのイベントをチェックしてください。",
-      "次のページでは、ここで得たすべての情報を使って最後の答えを導きます。",
-    ],
-    actions: [{ kind: "continue", label: "最後の問へ" }],
-  },
-  {
-    id: 10,
-    kind: "text",
-    title: "最後の問",
-    prompt:
-      "下高井戸で集めたキーワードを組み合わせ、最終確認用の合言葉を入力してください。",
-    placeholderClue: "ヒント: テスト用に「クリア」と入力して進めます。",
-    hint: "本番では現地で得た複数のキーワードを順番に並べます。",
-    correctAnswer: "クリア",
-  },
-  {
-    id: 11,
-    kind: "info",
-    title: "クリア",
-    lead: "お疲れさまでした！街歩きのルートを最後まで辿ることができました。",
-    content: [
-      "ここで紹介した文章はダミーです。現地調査が完了したら、体験の締めくくりとなるメッセージに差し替えてください。",
-      "参加者からのフィードバックを記入してもらうフォームや、次回イベントの告知を配置することもできます。",
-    ],
-    actions: [{ kind: "reset", label: "最初からやり直す" }],
-  },
-];
+import { puzzles } from "./data/puzzles.js";
+import {
+  AppState,
+  CrosswordClue,
+  CrosswordDirection,
+  CrosswordProgress,
+  CrosswordPuzzle,
+  Feedback,
+  FeedbackKind,
+  GridPosition,
+  InfoPage,
+  InfoPageAction,
+  Puzzle,
+  TextPuzzle,
+} from "./types.js";
 
 const app: HTMLDivElement = (() => {
   const element = document.getElementById("app");
@@ -654,9 +462,9 @@ function ensureCrosswordProgress(puzzle: CrosswordPuzzle): CrosswordProgress {
     activeCell: firstEditable,
     activeClue: initialClue
       ? {
-          direction: puzzle.acrossClues.length > 0 ? "across" : "down",
-          number: initialClue.number,
-        }
+        direction: puzzle.acrossClues.length > 0 ? "across" : "down",
+        number: initialClue.number,
+      }
       : null,
     requiresConfirmation: false,
   };
