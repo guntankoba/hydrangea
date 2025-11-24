@@ -61,6 +61,8 @@ export type SlotPuzzle = {
   targetSlot: number; // 0-indexed
   prefilled?: { index: number; char: string }[];
   correctAnswer: string;
+  targetColor?: string;
+  targetTextColor?: string;
   prompt?: string;
   hint?: string;
   placeholderClue?: string;
