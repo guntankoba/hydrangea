@@ -1,5 +1,7 @@
 /* Hydrangea puzzle app styles */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -208,7 +210,19 @@ button:disabled {
   min-width: 0;
 }
 
-.puzzle-card > .pagination:first-child {
+.pagination .nav-btn {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-width: auto;
+}
+
+.puzzle-card>.pagination:first-child {
   margin-top: var(--space-5);
 }
 
@@ -485,4 +499,45 @@ button:disabled {
   .crossword-side {
     min-width: 260px;
   }
+}
+
+/* Slot Puzzle Styles */
+:root {
+  --color-accent-akiba: #0d221e;
+  --color-accent-shinjuku: #ffc0cb;
+  --slot-target-bg: #0d221e;
+  --slot-fg-dark: #FFFFFF;
+  --slot-fg-light: #000000;
+}
+
+.slot-puzzle .slots-container {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.slot {
+  width: 48px;
+  height: 48px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  border-radius: 8px;
+  color: var(--fg);
+}
+
+.slot.target {
+  background-color: var(--slot-target-bg);
+  color: var(--slot-fg-dark);
+  border-color: var(--slot-target-bg);
+  box-shadow: 0 0 10px rgba(13, 34, 30, 0.5);
+}
+
+.slot.prefilled {
+  /* Style for prefilled if needed, currently same as normal or target */
 }

@@ -8,52 +8,72 @@ export type CrosswordClue = {
   answer: string;
   row: number;
   col: number;
+  direction: CrosswordDirection;
 };
 
 export type CrosswordPuzzle = {
-  kind: "crossword";
   id: number;
+  kind: "crossword";
   title: string;
-  prompt: string;
-  placeholderClue: string;
-  hint: string;
-  finalAnswer: string;
-  grid: (string | null)[][];
-  acrossClues: CrosswordClue[];
-  downClues: CrosswordClue[];
+  size: { rows: number; cols: number };
+  clues: CrosswordClue[];
 };
 
 export type TextPuzzle = {
-  kind: "text";
   id: number;
+  kind: "text";
   title: string;
   prompt: string;
   placeholderClue: string;
   hint: string;
   correctAnswer: string;
   mapQuery?: string;
+  content?: string[];
 };
 
-export type InfoPageAction =
-  | {
-      kind: "continue";
-      label?: string;
-    }
-  | {
-      kind: "reset";
-      label?: string;
-    };
+export type InfoPageAction = {
+  kind: "continue" | "link" | "reset";
+  label: string;
+  url?: string;
+};
 
 export type InfoPage = {
-  kind: "info";
   id: number;
+  kind: "info";
   title: string;
-  lead?: string;
+  lead: string;
   content: string[];
   actions?: InfoPageAction[];
 };
 
-export type Puzzle = CrosswordPuzzle | TextPuzzle | InfoPage;
+export type LetterCard = {
+  id: string;
+  letter: string;
+  memoryTitle: string;
+  dateISO: string;
+};
+
+export type SlotPuzzle = {
+  id: number;
+  kind: "slot";
+  title: string;
+  slots: number;
+  targetSlot: number; // 0-indexed
+  prefilled?: { index: number; char: string }[];
+  correctAnswer: string;
+  prompt?: string;
+  hint?: string;
+  placeholderClue?: string;
+  mapQuery?: string;
+  letterCard?: {
+    id: string;
+    letter: string;
+    memoryTitle: string;
+    dateISO: string;
+  };
+};
+
+export type Puzzle = CrosswordPuzzle | TextPuzzle | InfoPage | SlotPuzzle;
 
 export type Feedback = {
   kind: FeedbackKind;
@@ -66,19 +86,18 @@ export type GridPosition = {
 };
 
 export type CrosswordProgress = {
-  entries: (string | null)[][];
+  grid: string[][];
   activeCell: GridPosition | null;
-  activeClue: { direction: CrosswordDirection; number: number } | null;
-  requiresConfirmation: boolean;
+  direction: CrosswordDirection;
 };
 
 export type AppState = {
-  authenticated: boolean;
+  isLoggedIn: boolean;
   currentPuzzleIndex: number;
-  maxUnlockedPuzzleIndex: number;
-  submittedAnswers: string[];
   feedback: Feedback | null;
-  revealedHints: Set<number>;
-  crosswordProgress: Map<number, CrosswordProgress>;
-  mapLinksByPuzzleIndex: (string | undefined)[];
+  isCleared: boolean;
+  crossword: { [key: number]: CrosswordProgress };
+  isTransitioning?: boolean;
+  maxReachedIndex: number;
+  letters: LetterCard[];
 };
