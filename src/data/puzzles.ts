@@ -83,10 +83,30 @@ export const puzzles: Puzzle[] = [
             "新宿駅西口のデジタルサイネージに流れる映像から特定のキーワードを抜き出してください。",
             "そのキーワードと一致する案内表示が、次の街へのヒントになります。",
         ],
-        actions: [{ kind: "continue", label: "問3を開く" }],
+        actions: [{ kind: "continue", label: "問1を開く" }],
     },
     {
         id: 8,
+        kind: "slot",
+        title: "問1: 置き換えろ（に → ◯）",
+        slots: 2,
+        targetSlot: 1,
+        prefilled: [{ index: 0, char: "に" }],
+        correctAnswer: "し",
+        targetColor: "var(--color-accent-shinjuku)",
+        targetTextColor: "#000000",
+        prompt: "に → ◯",
+        hint: "右側のピンクの枠に入るひらがな1文字を考えてください。",
+        placeholderClue: "ひらがな1文字で入力",
+        letterCard: {
+            id: "ST3_Q1_NI2?",
+            letter: "し",
+            memoryTitle: "に→し",
+            dateISO: "2023-11-01",
+        },
+    },
+    {
+        id: 9,
         kind: "text",
         title: "問3",
         prompt:
@@ -97,7 +117,7 @@ export const puzzles: Puzzle[] = [
         mapQuery: "下高井戸駅",
     },
     {
-        id: 9,
+        id: 10,
         kind: "info",
         title: "★下高井戸",
         lead: "商店街と路面電車が交差する下高井戸で、フィナーレに向けた手掛かりを探します。",
@@ -108,7 +128,7 @@ export const puzzles: Puzzle[] = [
         actions: [{ kind: "continue", label: "最後の問へ" }],
     },
     {
-        id: 10,
+        id: 11,
         kind: "text",
         title: "最後の問",
         prompt:
@@ -118,7 +138,7 @@ export const puzzles: Puzzle[] = [
         correctAnswer: "クリア",
     },
     {
-        id: 11,
+        id: 12,
         kind: "info",
         title: "クリア",
         lead: "お疲れさまでした！街歩きのルートを最後まで辿ることができました。",

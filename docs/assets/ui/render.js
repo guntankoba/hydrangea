@@ -172,6 +172,12 @@ function renderSlotPuzzle(container, state, puzzle, onAction) {
     }
     const slotsContainer = document.createElement("div");
     slotsContainer.className = "slots-container";
+    if (puzzle.targetColor) {
+        slotsContainer.style.setProperty("--slot-target-bg", puzzle.targetColor);
+    }
+    if (puzzle.targetTextColor) {
+        slotsContainer.style.setProperty("--slot-fg-dark", puzzle.targetTextColor);
+    }
     for (let i = 0; i < puzzle.slots; i++) {
         const slot = document.createElement("div");
         slot.className = "slot";
