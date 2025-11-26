@@ -1,4 +1,4 @@
-import { AppState, CrosswordPuzzle, Feedback, InfoPage, LetterCard, Puzzle, SlotPuzzle, TextPuzzle } from "../types.js";
+import { AppState, CrosswordPuzzle, Feedback, InfoPage, LetterCard, Puzzle, SlotPuzzle, StageId, TextPuzzle } from "../types.js";
 import { ensureCrosswordProgress, getClueAt, isBlock } from "../logic/crossword.js";
 
 // Helper to escape HTML
@@ -19,7 +19,8 @@ export function render(
     app: HTMLElement,
     state: AppState,
     puzzles: Puzzle[],
-    onAction: (action: string, payload?: any) => void
+    onAction: (action: string, payload?: any) => void,
+    stage?: StageId
 ) {
     if (!state.isLoggedIn) {
         renderLogin(app, state, onAction);
@@ -29,6 +30,12 @@ export function render(
     if (state.isCleared) {
         renderClear(app, state);
         return;
+    }
+
+    if (stage === "ST1") {
+        document.body.classList.add("stage-shinjuku");
+    } else {
+        document.body.classList.remove("stage-shinjuku");
     }
 
     const intro = puzzles.find((p) => p.kind === "info") as InfoPage | undefined;
@@ -188,11 +195,38 @@ function renderTextPuzzle(
     puzzleState: { solved: boolean; feedback: Feedback | null },
     onAction: (action: string, payload?: any) => void
 ) {
+    if (puzzle.accentColor) {
+        container.style.setProperty("--accent", puzzle.accentColor);
+    }
+
+    if (puzzle.accentShadow) {
+        container.style.setProperty("--accent-shadow", puzzle.accentShadow);
+    }
+
     const question = document.createElement("div");
     question.className = "question";
     question.innerHTML = `<p>${escapeHtml(puzzle.prompt)}</p>`;
     if (puzzle.content) {
         question.innerHTML += puzzle.content.map((p) => `<p>${escapeHtml(p)}</p>`).join("");
+    }
+    if (puzzle.imageUrl) {
+        const image = document.createElement("div");
+        image.className = "puzzle-image";
+        const img = document.createElement("img");
+        img.src = puzzle.imageUrl;
+        img.alt = `${puzzle.title}の手がかり`;
+        image.appendChild(img);
+        question.appendChild(image);
+    }
+    if (puzzle.choices?.length) {
+        const list = document.createElement("ol");
+        list.className = "choice-list";
+        puzzle.choices.forEach((choice) => {
+            const item = document.createElement("li");
+            item.textContent = choice;
+            list.appendChild(item);
+        });
+        question.appendChild(list);
     }
     container.appendChild(question);
 

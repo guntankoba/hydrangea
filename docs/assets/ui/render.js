@@ -11,7 +11,7 @@ function escapeHtml(str) {
 function feedbackClass(kind) {
     return `feedback feedback--${kind}`;
 }
-export function render(app, state, puzzles, onAction) {
+export function render(app, state, puzzles, onAction, stage) {
     var _a;
     if (!state.isLoggedIn) {
         renderLogin(app, state, onAction);
@@ -20,6 +20,12 @@ export function render(app, state, puzzles, onAction) {
     if (state.isCleared) {
         renderClear(app, state);
         return;
+    }
+    if (stage === "ST1") {
+        document.body.classList.add("stage-shinjuku");
+    }
+    else {
+        document.body.classList.remove("stage-shinjuku");
     }
     const intro = puzzles.find((p) => p.kind === "info");
     const challenges = puzzles.filter((p) => p.kind !== "info");
@@ -146,12 +152,37 @@ function renderInfoPage(container, puzzle) {
     }
 }
 function renderTextPuzzle(container, puzzle, puzzleState, onAction) {
-    var _a;
+    var _a, _b;
+    if (puzzle.accentColor) {
+        container.style.setProperty("--accent", puzzle.accentColor);
+    }
+    if (puzzle.accentShadow) {
+        container.style.setProperty("--accent-shadow", puzzle.accentShadow);
+    }
     const question = document.createElement("div");
     question.className = "question";
     question.innerHTML = `<p>${escapeHtml(puzzle.prompt)}</p>`;
     if (puzzle.content) {
         question.innerHTML += puzzle.content.map((p) => `<p>${escapeHtml(p)}</p>`).join("");
+    }
+    if (puzzle.imageUrl) {
+        const image = document.createElement("div");
+        image.className = "puzzle-image";
+        const img = document.createElement("img");
+        img.src = puzzle.imageUrl;
+        img.alt = `${puzzle.title}の手がかり`;
+        image.appendChild(img);
+        question.appendChild(image);
+    }
+    if ((_a = puzzle.choices) === null || _a === void 0 ? void 0 : _a.length) {
+        const list = document.createElement("ol");
+        list.className = "choice-list";
+        puzzle.choices.forEach((choice) => {
+            const item = document.createElement("li");
+            item.textContent = choice;
+            list.appendChild(item);
+        });
+        question.appendChild(list);
     }
     container.appendChild(question);
     const form = document.createElement("div");
@@ -179,7 +210,7 @@ function renderTextPuzzle(container, puzzle, puzzleState, onAction) {
         });
         container.appendChild(mapBtn);
     }
-    (_a = form.querySelector(`#submit-btn-${puzzle.id}`)) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => {
+    (_b = form.querySelector(`#submit-btn-${puzzle.id}`)) === null || _b === void 0 ? void 0 : _b.addEventListener("click", () => {
         const input = form.querySelector(`#${inputId}`);
         onAction("answer", { puzzleId: puzzle.id, value: input.value.trim() });
     });

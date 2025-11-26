@@ -1,5 +1,7 @@
 export type FeedbackKind = "error" | "success";
 
+export type StageId = "ST1" | "ST2";
+
 export type CrosswordDirection = "across" | "down";
 
 export type CrosswordClue = {
@@ -30,6 +32,10 @@ export type TextPuzzle = {
   acceptedAnswers?: string[];
   mapQuery?: string;
   content?: string[];
+  imageUrl?: string;
+  choices?: string[];
+  accentColor?: string;
+  accentShadow?: string;
 };
 
 export type InfoPageAction = {
@@ -98,6 +104,7 @@ export type CrosswordProgress = {
 export type AppState = {
   isLoggedIn: boolean;
   isCleared: boolean;
+  currentStage: StageId;
   crossword: { [key: number]: CrosswordProgress };
   letters: LetterCard[];
   feedback: Feedback | null;
