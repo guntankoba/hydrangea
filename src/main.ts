@@ -23,7 +23,6 @@ const state: AppState = {
   currentStage: "ST1",
   tos: { agreed: false, openedOnce: false },
   crossword: {},
-  letters: [],
   feedback: null,
   puzzleState: {},
 };
@@ -111,13 +110,6 @@ function handleAction(action: string, payload?: any) {
       if (isAnswerCorrect(answerValue, puzzle)) {
         puzzleState.solved = true;
         puzzleState.feedback = { kind: "success", message: "正解！次のカードに進もう。" };
-
-        if (puzzle.kind === "slot" && puzzle.letterCard) {
-          const exists = state.letters.some((l) => l.id === puzzle.letterCard!.id);
-          if (!exists) {
-            state.letters.push(puzzle.letterCard);
-          }
-        }
 
         const lastPuzzleId = finalPuzzleId(state.currentStage);
         if (puzzle.id === lastPuzzleId) {

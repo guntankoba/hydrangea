@@ -75,20 +75,6 @@ export function render(app, state, puzzles, onAction, stage) {
         }
         content.appendChild(section);
     });
-    if (state.letters.length) {
-        const letters = document.createElement("section");
-        letters.className = "puzzle-card letter-collection";
-        const heading = document.createElement("h3");
-        heading.textContent = "集めたカード";
-        letters.appendChild(heading);
-        const list = document.createElement("div");
-        list.className = "letter-grid";
-        state.letters.forEach((letter) => {
-            list.appendChild(renderLetterCard(letter));
-        });
-        letters.appendChild(list);
-        content.appendChild(letters);
-    }
     container.appendChild(content);
     app.appendChild(container);
 }
@@ -184,16 +170,6 @@ function renderClear(app, state) {
       </div>
     </div>
   `;
-    if (state.letters.length) {
-        const wrap = document.createElement("div");
-        wrap.className = "app-shell";
-        wrap.innerHTML = `<h2>獲得した文字</h2>`;
-        const list = document.createElement("div");
-        list.className = "letter-grid";
-        state.letters.forEach((letter) => list.appendChild(renderLetterCard(letter)));
-        wrap.appendChild(list);
-        app.appendChild(wrap);
-    }
 }
 function renderInfoPage(container, puzzle) {
     const lead = document.createElement("p");
@@ -402,16 +378,4 @@ function renderCrosswordPuzzle(container, state, puzzle, onAction, solved) {
         }
     }
     container.appendChild(cluesContainer);
-}
-function renderLetterCard(card) {
-    const cardEl = document.createElement("div");
-    cardEl.className = "letter-card";
-    cardEl.innerHTML = `
-      <div class="letter-char">${escapeHtml(card.letter)}</div>
-      <div class="letter-meta">
-        <div class="letter-title">${escapeHtml(card.memoryTitle)}</div>
-        <div class="letter-date">${escapeHtml(card.dateISO)}</div>
-      </div>
-    `;
-    return cardEl;
 }
