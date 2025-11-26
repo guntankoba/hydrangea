@@ -183,7 +183,7 @@ function renderTos(
 
     const updateButtonState = () => {
         if (!startButton || !agreeCheckbox) return;
-        startButton.disabled = !(agreeCheckbox.checked && state.tos.openedOnce);
+        startButton.disabled = !agreeCheckbox.checked;
     };
 
     accordionTrigger?.addEventListener("click", () => {
