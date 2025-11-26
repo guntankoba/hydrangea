@@ -17,6 +17,10 @@ export function render(app, state, puzzles, onAction, stage) {
         renderLogin(app, state, onAction);
         return;
     }
+    if (!state.tos.agreed) {
+        renderTos(app, state, onAction);
+        return;
+    }
     if (state.isCleared) {
         renderClear(app, state);
         return;
@@ -105,6 +109,67 @@ function renderLogin(app, state, onAction) {
         const input = app.querySelector("#password");
         onAction("login", input.value.trim());
     });
+    const passwordInput = app.querySelector("#password");
+    passwordInput === null || passwordInput === void 0 ? void 0 : passwordInput.focus();
+}
+function renderTos(app, state, onAction) {
+    app.innerHTML = `
+    <div class="app-shell tos-shell">
+      <header><h1>利用規約</h1></header>
+      <div class="content tos-content">
+        <p>Hydrangea Walk の利用を開始する前に、以下の規約に目を通し同意してください。</p>
+        <div class="tos-accordion">
+          <button type="button" class="tos-accordion__trigger" aria-expanded="false" aria-controls="tos-panel" id="tos-trigger">
+            規約本文を表示
+            <span class="tos-accordion__icon" aria-hidden="true">▾</span>
+          </button>
+          <div id="tos-panel" class="tos-accordion__panel" role="region" aria-labelledby="tos-trigger" hidden tabindex="-1">
+            <p>・本アプリは謎解きイベントの補助ツールです。歩行中のスマートフォン操作は避け、安全な場所でプレイしてください。</p>
+            <p>・コンテンツの内容を無断で転載・配布することを禁じます。</p>
+            <p>・位置情報やカメラ等の端末機能を利用する場合は、周囲の環境や第三者のプライバシーに配慮してください。</p>
+            <p>・体調がすぐれない場合や天候・周辺状況が危険な場合は、無理をせずプレイを中断してください。</p>
+          </div>
+        </div>
+        <label class="tos-consent">
+          <input type="checkbox" id="tos-agree" />
+          <span>同意する</span>
+        </label>
+        <button id="tos-start" class="tos-start" disabled>利用開始する</button>
+      </div>
+    </div>
+  `;
+    const accordionTrigger = app.querySelector("#tos-trigger");
+    const accordionPanel = app.querySelector("#tos-panel");
+    const agreeCheckbox = app.querySelector("#tos-agree");
+    const startButton = app.querySelector("#tos-start");
+    const updateButtonState = () => {
+        if (!startButton || !agreeCheckbox)
+            return;
+        startButton.disabled = !(agreeCheckbox.checked && state.tos.openedOnce);
+    };
+    accordionTrigger === null || accordionTrigger === void 0 ? void 0 : accordionTrigger.addEventListener("click", () => {
+        if (!accordionTrigger || !accordionPanel)
+            return;
+        const expanded = accordionTrigger.getAttribute("aria-expanded") === "true";
+        const nextExpanded = !expanded;
+        accordionTrigger.setAttribute("aria-expanded", String(nextExpanded));
+        accordionPanel.hidden = !nextExpanded;
+        if (nextExpanded) {
+            accordionPanel.focus();
+            if (!state.tos.openedOnce) {
+                onAction("tos_opened");
+            }
+        }
+        updateButtonState();
+    });
+    agreeCheckbox === null || agreeCheckbox === void 0 ? void 0 : agreeCheckbox.addEventListener("change", () => {
+        updateButtonState();
+    });
+    startButton === null || startButton === void 0 ? void 0 : startButton.addEventListener("click", () => {
+        onAction("tos_accept");
+    });
+    accordionTrigger === null || accordionTrigger === void 0 ? void 0 : accordionTrigger.focus();
+    updateButtonState();
 }
 function renderClear(app, state) {
     app.innerHTML = `

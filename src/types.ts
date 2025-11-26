@@ -105,6 +105,7 @@ export type AppState = {
   isLoggedIn: boolean;
   isCleared: boolean;
   currentStage: StageId;
+  tos: { agreed: boolean; openedOnce: boolean };
   crossword: { [key: number]: CrosswordProgress };
   letters: LetterCard[];
   feedback: Feedback | null;

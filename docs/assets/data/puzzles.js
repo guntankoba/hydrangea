@@ -107,7 +107,6 @@ export const puzzles = [
         hint: "",
         correctAnswer: "あきはばら",
         acceptedAnswers: ["秋葉原"],
-        content: [
-        ],
+        content: [],
     },
 ];

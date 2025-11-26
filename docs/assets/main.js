@@ -15,6 +15,7 @@ const state = {
     isLoggedIn: false,
     isCleared: false,
     currentStage: "ST1",
+    tos: { agreed: false, openedOnce: false },
     crossword: {},
     letters: [],
     feedback: null,
@@ -64,6 +65,18 @@ function handleAction(action, payload) {
     }
     if (!state.isLoggedIn || state.isCleared)
         return;
+    if (action === "tos_opened") {
+        state.tos.openedOnce = true;
+        return;
+    }
+    if (!state.tos.agreed) {
+        if (action === "tos_accept") {
+            state.tos.agreed = true;
+            state.feedback = null;
+            render(app, state, getActivePuzzles(), handleAction, state.currentStage);
+        }
+        return;
+    }
     if (action === "answer") {
         const puzzle = getActivePuzzles().find((p) => p.id === (payload === null || payload === void 0 ? void 0 : payload.puzzleId));
         if (!puzzle)
