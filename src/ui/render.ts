@@ -338,9 +338,18 @@ function renderTextPuzzle(
         container.appendChild(mapBtn);
     }
 
-    form.querySelector(`#submit-btn-${puzzle.id}`)?.addEventListener("click", () => {
+    const submit = () => {
         const input = form.querySelector(`#${inputId}`) as HTMLInputElement;
         onAction("answer", { puzzleId: puzzle.id, value: input.value.trim() });
+    };
+
+    form.querySelector(`#submit-btn-${puzzle.id}`)?.addEventListener("click", submit);
+
+    form.querySelector<HTMLInputElement>(`#${inputId}`)?.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" && !event.isComposing) {
+            event.preventDefault();
+            submit();
+        }
     });
 }
 
@@ -424,9 +433,18 @@ function renderSlotPuzzle(
         container.appendChild(mapBtn);
     }
 
-    form.querySelector(`#submit-btn-${puzzle.id}`)?.addEventListener("click", () => {
+    const submit = () => {
         const input = form.querySelector(`#${inputId}`) as HTMLInputElement;
         onAction("answer", { puzzleId: puzzle.id, value: input.value.trim() });
+    };
+
+    form.querySelector(`#submit-btn-${puzzle.id}`)?.addEventListener("click", submit);
+
+    form.querySelector<HTMLInputElement>(`#${inputId}`)?.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" && !event.isComposing) {
+            event.preventDefault();
+            submit();
+        }
     });
 }
 
