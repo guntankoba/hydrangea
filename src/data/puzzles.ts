@@ -21,12 +21,6 @@ export const puzzles: Puzzle[] = [
     targetColor: "#0d221e",
     targetTextColor: "#FFFFFF",
     prompt: "初めてのデートで最後にした遊びは？",
-    letterCard: {
-      id: "ST2_Q1_KI",
-      letter: "き",
-      memoryTitle: "ことばの終わり",
-      dateISO: "{DATE_K}",
-    },
   },
   {
     id: 3,
@@ -39,12 +33,6 @@ export const puzzles: Puzzle[] = [
     targetColor: "#0d221e",
     targetTextColor: "#FFFFFF",
     prompt: "初めての旅行で行った観光地は？",
-    letterCard: {
-      id: "ST2_Q2_HA",
-      letter: "は",
-      memoryTitle: "箱根のはじまり",
-      dateISO: "{DATE_HA}",
-    },
   },
   {
     id: 4,
@@ -57,12 +45,6 @@ export const puzzles: Puzzle[] = [
     targetColor: "#0d221e",
     targetTextColor: "#FFFFFF",
     prompt: "初めて化粧品をもらった宿がある最寄り駅は？",
-    letterCard: {
-      id: "ST2_Q3_BA",
-      letter: "ば",
-      memoryTitle: "馬喰町の最初",
-      dateISO: "{DATE_BA}",
-    },
   },
   {
     id: 5,
@@ -75,12 +57,6 @@ export const puzzles: Puzzle[] = [
     targetColor: "#0d221e",
     targetTextColor: "#FFFFFF",
     prompt: "初めて今いる駅近くで食べた家系ラーメン屋は？",
-    letterCard: {
-      id: "ST2_Q4_RA",
-      letter: "ら",
-      memoryTitle: "みうらやの3文字目",
-      dateISO: "{DATE_RA}",
-    },
   },
   {
     id: 6,
@@ -93,12 +69,6 @@ export const puzzles: Puzzle[] = [
     targetColor: "#0d221e",
     targetTextColor: "#FFFFFF",
     prompt: "初めて知り合ったアプリは？",
-    letterCard: {
-      id: "ST2_Q5_A",
-      letter: "あ",
-      memoryTitle: "おみあいの三文字目",
-      dateISO: "{DATE_A}",
-    },
   },
   {
     id: 7,

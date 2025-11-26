@@ -53,13 +53,6 @@ export type InfoPage = {
   actions?: InfoPageAction[];
 };
 
-export type LetterCard = {
-  id: string;
-  letter: string;
-  memoryTitle: string;
-  dateISO: string;
-};
-
 export type SlotPuzzle = {
   id: number;
   kind: "slot";
@@ -75,12 +68,6 @@ export type SlotPuzzle = {
   hint?: string;
   placeholderClue?: string;
   mapQuery?: string;
-  letterCard?: {
-    id: string;
-    letter: string;
-    memoryTitle: string;
-    dateISO: string;
-  };
 };
 
 export type Puzzle = CrosswordPuzzle | TextPuzzle | InfoPage | SlotPuzzle;
@@ -107,7 +94,6 @@ export type AppState = {
   currentStage: StageId;
   tos: { agreed: boolean; openedOnce: boolean };
   crossword: { [key: number]: CrosswordProgress };
-  letters: LetterCard[];
   feedback: Feedback | null;
   puzzleState: {
     [id: number]: {

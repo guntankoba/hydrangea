@@ -146,51 +146,6 @@ p {
   align-self: flex-start;
 }
 
-.letter-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: var(--space-4);
-}
-
-.letter-card {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 0.75rem;
-  padding: var(--space-4);
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: var(--space-3);
-  align-items: center;
-}
-
-.letter-char {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #fff;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 0.5rem;
-  width: 3rem;
-  height: 3rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.letter-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.letter-title {
-  font-weight: 600;
-}
-
-.letter-date {
-  font-size: 0.9rem;
-  opacity: 0.8;
-}
-
 .puzzle-card footer {
   font-size: 0.85rem;
   opacity: 0.75;
