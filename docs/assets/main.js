@@ -15,6 +15,14 @@ const state = {
 };
 // Initial Render
 render(app, state, puzzles, handleAction);
+function normalizeAnswer(input) {
+    return input.trim();
+}
+function isAnswerCorrect(input, puzzle) {
+    const normalized = normalizeAnswer(input);
+    const candidates = [puzzle.correctAnswer, ...(puzzle.acceptedAnswers || [])];
+    return candidates.some((answer) => normalized === answer);
+}
 function handleAction(action, payload) {
     // Prevent actions during transition
     if (state.isTransitioning)
@@ -54,7 +62,7 @@ function handleAction(action, payload) {
         case "answer":
             const currentPuzzle = puzzles[state.currentPuzzleIndex];
             if (currentPuzzle.kind === "text" || currentPuzzle.kind === "slot") {
-                if (payload === currentPuzzle.correctAnswer) {
+                if (isAnswerCorrect(payload, currentPuzzle)) {
                     state.feedback = { kind: "success", message: "正解です！次の問題へ。" };
                     if (currentPuzzle.kind === "slot" && currentPuzzle.letterCard) {
                         if (!state.letters)

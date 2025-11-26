@@ -1,5 +1,5 @@
 import { puzzles } from "./data/puzzles.js";
-import { AppState } from "./types.js";
+import { AppState, SlotPuzzle, TextPuzzle } from "./types.js";
 import { render } from "./ui/render.js";
 import { isCrosswordSolved, moveActiveCell, updateCell } from "./logic/crossword.js";
 
@@ -20,6 +20,16 @@ const state: AppState = {
 
 // Initial Render
 render(app, state, puzzles, handleAction);
+
+function normalizeAnswer(input: string): string {
+  return input.trim();
+}
+
+function isAnswerCorrect(input: string, puzzle: TextPuzzle | SlotPuzzle): boolean {
+  const normalized = normalizeAnswer(input);
+  const candidates = [puzzle.correctAnswer, ...(puzzle.acceptedAnswers || [])];
+  return candidates.some((answer) => normalized === answer);
+}
 
 function handleAction(action: string, payload?: any) {
   // Prevent actions during transition
@@ -61,7 +71,7 @@ function handleAction(action: string, payload?: any) {
     case "answer":
       const currentPuzzle = puzzles[state.currentPuzzleIndex];
       if (currentPuzzle.kind === "text" || currentPuzzle.kind === "slot") {
-        if (payload === currentPuzzle.correctAnswer) {
+        if (isAnswerCorrect(payload, currentPuzzle)) {
           state.feedback = { kind: "success", message: "正解です！次の問題へ。" };
 
           if (currentPuzzle.kind === "slot" && currentPuzzle.letterCard) {

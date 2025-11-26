@@ -27,6 +27,7 @@ export type TextPuzzle = {
   placeholderClue: string;
   hint: string;
   correctAnswer: string;
+  acceptedAnswers?: string[];
   mapQuery?: string;
   content?: string[];
 };
@@ -61,6 +62,7 @@ export type SlotPuzzle = {
   targetSlot: number; // 0-indexed
   prefilled?: { index: number; char: string }[];
   correctAnswer: string;
+  acceptedAnswers?: string[];
   targetColor?: string;
   targetTextColor?: string;
   prompt?: string;
