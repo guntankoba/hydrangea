@@ -39,8 +39,13 @@ export function render(
 
     if (stage === "ST1") {
         document.body.classList.add("stage-shinjuku");
+        document.body.classList.remove("stage-akiba");
+    } else if (stage === "ST2") {
+        document.body.classList.add("stage-akiba");
+        document.body.classList.remove("stage-shinjuku");
     } else {
         document.body.classList.remove("stage-shinjuku");
+        document.body.classList.remove("stage-akiba");
     }
 
     const intro = puzzles.find((p) => p.kind === "info") as InfoPage | undefined;
