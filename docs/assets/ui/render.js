@@ -220,7 +220,7 @@ function renderInfoPage(container, puzzle) {
     }
 }
 function renderTextPuzzle(container, puzzle, puzzleState, onAction) {
-    var _a, _b;
+    var _a, _b, _c;
     if (puzzle.accentColor) {
         container.style.setProperty("--accent", puzzle.accentColor);
     }
@@ -278,13 +278,20 @@ function renderTextPuzzle(container, puzzle, puzzleState, onAction) {
         });
         container.appendChild(mapBtn);
     }
-    (_b = form.querySelector(`#submit-btn-${puzzle.id}`)) === null || _b === void 0 ? void 0 : _b.addEventListener("click", () => {
+    const submit = () => {
         const input = form.querySelector(`#${inputId}`);
         onAction("answer", { puzzleId: puzzle.id, value: input.value.trim() });
+    };
+    (_b = form.querySelector(`#submit-btn-${puzzle.id}`)) === null || _b === void 0 ? void 0 : _b.addEventListener("click", submit);
+    (_c = form.querySelector(`#${inputId}`)) === null || _c === void 0 ? void 0 : _c.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" && !event.isComposing) {
+            event.preventDefault();
+            submit();
+        }
     });
 }
 function renderSlotPuzzle(container, puzzle, puzzleState, onAction) {
-    var _a, _b, _c;
+    var _a, _b, _c, _d;
     const question = document.createElement("div");
     question.className = "question slot-puzzle";
     question.innerHTML = `<p>${escapeHtml(puzzle.prompt || puzzle.title)}</p>`;
@@ -346,9 +353,16 @@ function renderSlotPuzzle(container, puzzle, puzzleState, onAction) {
         });
         container.appendChild(mapBtn);
     }
-    (_c = form.querySelector(`#submit-btn-${puzzle.id}`)) === null || _c === void 0 ? void 0 : _c.addEventListener("click", () => {
+    const submit = () => {
         const input = form.querySelector(`#${inputId}`);
         onAction("answer", { puzzleId: puzzle.id, value: input.value.trim() });
+    };
+    (_c = form.querySelector(`#submit-btn-${puzzle.id}`)) === null || _c === void 0 ? void 0 : _c.addEventListener("click", submit);
+    (_d = form.querySelector(`#${inputId}`)) === null || _d === void 0 ? void 0 : _d.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" && !event.isComposing) {
+            event.preventDefault();
+            submit();
+        }
     });
 }
 function renderCrosswordPuzzle(container, state, puzzle, onAction, solved) {
