@@ -234,7 +234,7 @@ input[type="text"] {
   transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
-.stage-akiba .answer-form input[type="text"] {
+.stage-akiba #puzzle-7 .answer-form input[type="text"] {
   background: #0d221e;
   color: #ffffff;
 }
