@@ -83,10 +83,6 @@ export function render(
             renderCrosswordPuzzle(section, state, puzzle as CrosswordPuzzle, onAction, puzzleState.solved);
         } else if (puzzle.kind === "slot") {
             renderSlotPuzzle(section, puzzle as SlotPuzzle, puzzleState, onAction);
-
-            if (puzzleState.solved && (puzzle as SlotPuzzle).letterCard) {
-                section.appendChild(renderLetterCard((puzzle as SlotPuzzle).letterCard!));
-            }
         }
 
         content.appendChild(section);
@@ -366,6 +362,8 @@ function renderSlotPuzzle(
         slotsContainer.style.setProperty("--slot-fg-dark", puzzle.targetTextColor);
     }
 
+    const solvedChars = puzzleState.solved ? Array.from(puzzle.correctAnswer) : null;
+
     for (let i = 0; i < puzzle.slots; i++) {
         const slot = document.createElement("div");
         slot.className = "slot";
@@ -374,12 +372,21 @@ function renderSlotPuzzle(
         }
 
         const prefilled = puzzle.prefilled?.find(p => p.index === i);
-        if (prefilled) {
-            slot.textContent = prefilled.char;
+        const charToShow = solvedChars?.[i] ?? prefilled?.char;
+
+        if (charToShow) {
+            slot.textContent = charToShow;
+        }
+
+        if (prefilled && !solvedChars) {
             slot.classList.add("prefilled");
         }
 
         slotsContainer.appendChild(slot);
+    }
+
+    if (puzzleState.solved) {
+        slotsContainer.classList.add("slots-container--solved");
     }
     question.appendChild(slotsContainer);
     container.appendChild(question);
