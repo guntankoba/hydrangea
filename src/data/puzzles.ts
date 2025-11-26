@@ -104,7 +104,7 @@ export const puzzles: Puzzle[] = [
     id: 7,
     kind: "text",
     title: "FINAL｜時系列で ならべて こたえを作れ",
-    prompt: "5枚のカードを実体験の日付が古い順に並べ、■色の枠の文字だけを抜き出して連結しよう。",
+    prompt: "",
     placeholderClue: "",
     hint: "",
     correctAnswer: "あきはばら",
