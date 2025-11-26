@@ -148,7 +148,7 @@ function renderTos(app, state, onAction) {
     const updateButtonState = () => {
         if (!startButton || !agreeCheckbox)
             return;
-        startButton.disabled = !(agreeCheckbox.checked && state.tos.openedOnce);
+        startButton.disabled = !agreeCheckbox.checked;
     };
     accordionTrigger === null || accordionTrigger === void 0 ? void 0 : accordionTrigger.addEventListener("click", () => {
         if (!accordionTrigger || !accordionPanel)
