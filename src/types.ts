@@ -97,11 +97,14 @@ export type CrosswordProgress = {
 
 export type AppState = {
   isLoggedIn: boolean;
-  currentPuzzleIndex: number;
-  feedback: Feedback | null;
   isCleared: boolean;
   crossword: { [key: number]: CrosswordProgress };
-  isTransitioning?: boolean;
-  maxReachedIndex: number;
   letters: LetterCard[];
+  feedback: Feedback | null;
+  puzzleState: {
+    [id: number]: {
+      solved: boolean;
+      feedback: Feedback | null;
+    };
+  };
 };

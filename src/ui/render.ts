@@ -1,4 +1,4 @@
-import { AppState, CrosswordClue, CrosswordPuzzle, InfoPage, Puzzle, SlotPuzzle, TextPuzzle } from "../types.js";
+import { AppState, CrosswordPuzzle, Feedback, InfoPage, LetterCard, Puzzle, SlotPuzzle, TextPuzzle } from "../types.js";
 import { ensureCrosswordProgress, getClueAt, isBlock } from "../logic/crossword.js";
 
 // Helper to escape HTML
@@ -9,6 +9,10 @@ function escapeHtml(str: string): string {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+}
+
+function feedbackClass(kind: "error" | "success") {
+    return `feedback feedback--${kind}`;
 }
 
 export function render(
@@ -23,60 +27,76 @@ export function render(
     }
 
     if (state.isCleared) {
-        renderClear(app);
+        renderClear(app, state);
         return;
     }
 
-    const currentPuzzle = puzzles[state.currentPuzzleIndex];
-    if (!currentPuzzle) {
-        app.innerHTML = "<p>エラー: パズルが見つかりません</p>";
-        return;
-    }
+    const intro = puzzles.find((p) => p.kind === "info") as InfoPage | undefined;
+    const challenges = puzzles.filter((p) => p.kind !== "info");
 
     app.innerHTML = "";
     const container = document.createElement("div");
     container.className = "app-shell";
 
-    // Header
     const header = document.createElement("header");
-    header.innerHTML = `<h1>${escapeHtml(currentPuzzle.title)}</h1>`;
+    const stageTitle = intro?.title ?? "Hydrangea Walk";
+    header.innerHTML = `<h1>${escapeHtml(stageTitle)}</h1>`;
     container.appendChild(header);
 
-    // Content based on puzzle type
     const content = document.createElement("div");
     content.className = "content";
 
-    if (currentPuzzle.kind === "info") {
-        renderInfoPage(content, currentPuzzle as InfoPage, onAction);
-    } else if (currentPuzzle.kind === "text") {
-        renderTextPuzzle(content, state, currentPuzzle as TextPuzzle, onAction);
-    } else if (currentPuzzle.kind === "crossword") {
-        renderCrosswordPuzzle(content, state, currentPuzzle as CrosswordPuzzle, onAction);
-    } else if (currentPuzzle.kind === "slot") {
-        renderSlotPuzzle(content, state, currentPuzzle as SlotPuzzle, onAction);
+    if (intro) {
+        const introCard = document.createElement("section");
+        introCard.className = "puzzle-card info-card";
+        renderInfoPage(introCard, intro);
+        content.appendChild(introCard);
     }
 
-    // Navigation Controls
-    const nav = document.createElement("div");
-    nav.className = "pagination"; // Using existing CSS class
+    challenges.forEach((puzzle, index) => {
+        const section = document.createElement("section");
+        section.className = "puzzle-card";
+        section.id = `puzzle-${puzzle.id}`;
 
-    const prevBtn = document.createElement("button");
-    prevBtn.className = "nav-btn";
-    prevBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>`;
-    prevBtn.disabled = state.currentPuzzleIndex === 0;
-    prevBtn.addEventListener("click", () => onAction("prev"));
-    nav.appendChild(prevBtn);
+        const title = document.createElement("h2");
+        const puzzleLabel = puzzle.title.startsWith("問") ? puzzle.title : `問${index + 1}｜${puzzle.title}`;
+        title.textContent = puzzleLabel;
+        section.appendChild(title);
 
-    const nextBtn = document.createElement("button");
-    nextBtn.className = "nav-btn";
-    nextBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>`;
-    // Enable next if we have reached further than current index
-    nextBtn.disabled = state.currentPuzzleIndex >= state.maxReachedIndex;
-    nextBtn.addEventListener("click", () => onAction("next"));
-    nav.appendChild(nextBtn);
+        const puzzleState: { solved: boolean; feedback: Feedback | null } = state.puzzleState[puzzle.id] ?? { solved: false, feedback: null };
+
+        if (puzzle.kind === "text") {
+            renderTextPuzzle(section, puzzle as TextPuzzle, puzzleState, onAction);
+        } else if (puzzle.kind === "crossword") {
+            renderCrosswordPuzzle(section, state, puzzle as CrosswordPuzzle, onAction, puzzleState.solved);
+        } else if (puzzle.kind === "slot") {
+            renderSlotPuzzle(section, puzzle as SlotPuzzle, puzzleState, onAction);
+
+            if (puzzleState.solved && (puzzle as SlotPuzzle).letterCard) {
+                section.appendChild(renderLetterCard((puzzle as SlotPuzzle).letterCard!));
+            }
+        }
+
+        content.appendChild(section);
+    });
+
+    if (state.letters.length) {
+        const letters = document.createElement("section");
+        letters.className = "puzzle-card letter-collection";
+        const heading = document.createElement("h3");
+        heading.textContent = "集めたカード";
+        letters.appendChild(heading);
+
+        const list = document.createElement("div");
+        list.className = "letter-grid";
+        state.letters.forEach((letter) => {
+            list.appendChild(renderLetterCard(letter));
+        });
+        letters.appendChild(list);
+        content.appendChild(letters);
+    }
 
     container.appendChild(content);
-    container.appendChild(nav);
     app.appendChild(container);
 }
 
@@ -95,7 +115,7 @@ function renderLogin(
       </div>
       <button id="login-btn">入室する</button>
       ${state.feedback
-            ? `<p class="feedback ${state.feedback.kind}">${escapeHtml(
+            ? `<p class="${feedbackClass(state.feedback.kind)}">${escapeHtml(
                 state.feedback.message
             )}</p>`
             : ""
@@ -109,7 +129,7 @@ function renderLogin(
     });
 }
 
-function renderClear(app: HTMLElement) {
+function renderClear(app: HTMLElement, state: AppState) {
     app.innerHTML = `
     <div class="app-shell">
       <header><h1>クリア</h1></header>
@@ -119,12 +139,22 @@ function renderClear(app: HTMLElement) {
       </div>
     </div>
   `;
+
+    if (state.letters.length) {
+        const wrap = document.createElement("div");
+        wrap.className = "app-shell";
+        wrap.innerHTML = `<h2>獲得した文字</h2>`;
+        const list = document.createElement("div");
+        list.className = "letter-grid";
+        state.letters.forEach((letter) => list.appendChild(renderLetterCard(letter)));
+        wrap.appendChild(list);
+        app.appendChild(wrap);
+    }
 }
 
 function renderInfoPage(
     container: HTMLElement,
-    puzzle: InfoPage,
-    onAction: (action: string, payload?: any) => void
+    puzzle: InfoPage
 ) {
     const lead = document.createElement("p");
     lead.className = "lead";
@@ -142,9 +172,7 @@ function renderInfoPage(
             const btn = document.createElement("button");
             btn.textContent = action.label;
             btn.addEventListener("click", () => {
-                if (action.kind === "continue") {
-                    onAction("next");
-                } else if (action.kind === "link") {
+                if (action.kind === "link") {
                     window.open(action.url, "_blank");
                 }
             });
@@ -156,13 +184,12 @@ function renderInfoPage(
 
 function renderTextPuzzle(
     container: HTMLElement,
-    state: AppState,
     puzzle: TextPuzzle,
+    puzzleState: { solved: boolean; feedback: Feedback | null },
     onAction: (action: string, payload?: any) => void
 ) {
     const question = document.createElement("div");
     question.className = "question";
-    // Use prompt for TextPuzzle
     question.innerHTML = `<p>${escapeHtml(puzzle.prompt)}</p>`;
     if (puzzle.content) {
         question.innerHTML += puzzle.content.map((p) => `<p>${escapeHtml(p)}</p>`).join("");
@@ -171,19 +198,20 @@ function renderTextPuzzle(
 
     const form = document.createElement("div");
     form.className = "answer-form";
+    const inputId = `answer-${puzzle.id}`;
     form.innerHTML = `
     <div class="form-group">
-      <label for="answer">回答</label>
-      <input type="text" id="answer" autocomplete="off" />
+      <label for="${inputId}">回答</label>
+      <input type="text" id="${inputId}" autocomplete="off" ${puzzleState.solved ? "disabled" : ""} placeholder="${escapeHtml(puzzle.placeholderClue || '')}" />
     </div>
-    <button id="submit-btn">回答を送信</button>
+    <button id="submit-btn-${puzzle.id}" ${puzzleState.solved ? "disabled" : ""}>回答を送信</button>
   `;
     container.appendChild(form);
 
-    if (state.feedback) {
+    if (puzzleState.feedback) {
         const feedback = document.createElement("p");
-        feedback.className = `feedback ${state.feedback.kind}`;
-        feedback.textContent = state.feedback.message;
+        feedback.className = feedbackClass(puzzleState.feedback.kind);
+        feedback.textContent = puzzleState.feedback.message;
         container.appendChild(feedback);
     }
 
@@ -196,16 +224,16 @@ function renderTextPuzzle(
         container.appendChild(mapBtn);
     }
 
-    form.querySelector("#submit-btn")?.addEventListener("click", () => {
-        const input = form.querySelector("#answer") as HTMLInputElement;
-        onAction("answer", input.value.trim());
+    form.querySelector(`#submit-btn-${puzzle.id}`)?.addEventListener("click", () => {
+        const input = form.querySelector(`#${inputId}`) as HTMLInputElement;
+        onAction("answer", { puzzleId: puzzle.id, value: input.value.trim() });
     });
 }
 
 function renderSlotPuzzle(
     container: HTMLElement,
-    state: AppState,
     puzzle: SlotPuzzle,
+    puzzleState: { solved: boolean; feedback: Feedback | null },
     onAction: (action: string, payload?: any) => void
 ) {
     const question = document.createElement("div");
@@ -245,19 +273,20 @@ function renderSlotPuzzle(
 
     const form = document.createElement("div");
     form.className = "answer-form";
+    const inputId = `answer-${puzzle.id}`;
     form.innerHTML = `
     <div class="form-group">
-      <label for="answer">回答</label>
-      <input type="text" id="answer" autocomplete="off" placeholder="${escapeHtml(puzzle.placeholderClue || '')}" />
+      <label for="${inputId}">回答</label>
+      <input type="text" id="${inputId}" autocomplete="off" ${puzzleState.solved ? "disabled" : ""} placeholder="${escapeHtml(puzzle.placeholderClue || '')}" />
     </div>
-    <button id="submit-btn">回答を送信</button>
+    <button id="submit-btn-${puzzle.id}" ${puzzleState.solved ? "disabled" : ""}>回答を送信</button>
   `;
     container.appendChild(form);
 
-    if (state.feedback) {
+    if (puzzleState.feedback) {
         const feedback = document.createElement("p");
-        feedback.className = `feedback ${state.feedback.kind}`;
-        feedback.textContent = state.feedback.message;
+        feedback.className = feedbackClass(puzzleState.feedback.kind);
+        feedback.textContent = puzzleState.feedback.message;
         container.appendChild(feedback);
     }
 
@@ -270,9 +299,9 @@ function renderSlotPuzzle(
         container.appendChild(mapBtn);
     }
 
-    form.querySelector("#submit-btn")?.addEventListener("click", () => {
-        const input = form.querySelector("#answer") as HTMLInputElement;
-        onAction("answer", input.value.trim());
+    form.querySelector(`#submit-btn-${puzzle.id}`)?.addEventListener("click", () => {
+        const input = form.querySelector(`#${inputId}`) as HTMLInputElement;
+        onAction("answer", { puzzleId: puzzle.id, value: input.value.trim() });
     });
 }
 
@@ -280,7 +309,8 @@ function renderCrosswordPuzzle(
     container: HTMLElement,
     state: AppState,
     puzzle: CrosswordPuzzle,
-    onAction: (action: string, payload?: any) => void
+    onAction: (action: string, payload?: any) => void,
+    solved: boolean
 ) {
     const progress = ensureCrosswordProgress(puzzle, state);
 
@@ -294,7 +324,6 @@ function renderCrosswordPuzzle(
             const cell = document.createElement("div");
             cell.className = "cell";
 
-            // Check if this cell is part of any clue
             const isBlockCell = isBlock(puzzle, r, c);
 
             if (isBlockCell) {
@@ -308,7 +337,6 @@ function renderCrosswordPuzzle(
                     cell.classList.add("active");
                 }
 
-                // Clue number
                 const clueStart = puzzle.clues.find(
                     (clue) => clue.row === r && clue.col === c
                 );
@@ -319,20 +347,20 @@ function renderCrosswordPuzzle(
                     cell.appendChild(num);
                 }
 
-                cell.addEventListener("click", () => {
-                    onAction("crossword_click", { row: r, col: c });
-                });
+                if (!solved) {
+                    cell.addEventListener("click", () => {
+                        onAction("crossword_click", { row: r, col: c, puzzleId: puzzle.id });
+                    });
+                }
             }
             grid.appendChild(cell);
         }
     }
     container.appendChild(grid);
 
-    // Clues
     const cluesContainer = document.createElement("div");
     cluesContainer.className = "clues-container";
 
-    // Current Clue Highlight
     if (progress.activeCell) {
         const currentClue = getClueAt(puzzle, progress.activeCell.row, progress.activeCell.col, progress.direction);
         if (currentClue) {
@@ -344,6 +372,17 @@ function renderCrosswordPuzzle(
     }
 
     container.appendChild(cluesContainer);
+}
 
-    // Keyboard controls (handled globally in main, but UI hints could go here)
+function renderLetterCard(card: LetterCard) {
+    const cardEl = document.createElement("div");
+    cardEl.className = "letter-card";
+    cardEl.innerHTML = `
+      <div class="letter-char">${escapeHtml(card.letter)}</div>
+      <div class="letter-meta">
+        <div class="letter-title">${escapeHtml(card.memoryTitle)}</div>
+        <div class="letter-date">${escapeHtml(card.dateISO)}</div>
+      </div>
+    `;
+    return cardEl;
 }
