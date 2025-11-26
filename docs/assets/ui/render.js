@@ -8,60 +8,75 @@ function escapeHtml(str) {
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
 }
+function feedbackClass(kind) {
+    return `feedback feedback--${kind}`;
+}
 export function render(app, state, puzzles, onAction) {
+    var _a;
     if (!state.isLoggedIn) {
         renderLogin(app, state, onAction);
         return;
     }
     if (state.isCleared) {
-        renderClear(app);
+        renderClear(app, state);
         return;
     }
-    const currentPuzzle = puzzles[state.currentPuzzleIndex];
-    if (!currentPuzzle) {
-        app.innerHTML = "<p>エラー: パズルが見つかりません</p>";
-        return;
-    }
+    const intro = puzzles.find((p) => p.kind === "info");
+    const challenges = puzzles.filter((p) => p.kind !== "info");
     app.innerHTML = "";
     const container = document.createElement("div");
     container.className = "app-shell";
-    // Header
     const header = document.createElement("header");
-    header.innerHTML = `<h1>${escapeHtml(currentPuzzle.title)}</h1>`;
+    const stageTitle = (_a = intro === null || intro === void 0 ? void 0 : intro.title) !== null && _a !== void 0 ? _a : "Hydrangea Walk";
+    header.innerHTML = `<h1>${escapeHtml(stageTitle)}</h1>`;
     container.appendChild(header);
-    // Content based on puzzle type
     const content = document.createElement("div");
     content.className = "content";
-    if (currentPuzzle.kind === "info") {
-        renderInfoPage(content, currentPuzzle, onAction);
+    if (intro) {
+        const introCard = document.createElement("section");
+        introCard.className = "puzzle-card info-card";
+        renderInfoPage(introCard, intro);
+        content.appendChild(introCard);
     }
-    else if (currentPuzzle.kind === "text") {
-        renderTextPuzzle(content, state, currentPuzzle, onAction);
+    challenges.forEach((puzzle, index) => {
+        var _a;
+        const section = document.createElement("section");
+        section.className = "puzzle-card";
+        section.id = `puzzle-${puzzle.id}`;
+        const title = document.createElement("h2");
+        const puzzleLabel = puzzle.title.startsWith("問") ? puzzle.title : `問${index + 1}｜${puzzle.title}`;
+        title.textContent = puzzleLabel;
+        section.appendChild(title);
+        const puzzleState = (_a = state.puzzleState[puzzle.id]) !== null && _a !== void 0 ? _a : { solved: false, feedback: null };
+        if (puzzle.kind === "text") {
+            renderTextPuzzle(section, puzzle, puzzleState, onAction);
+        }
+        else if (puzzle.kind === "crossword") {
+            renderCrosswordPuzzle(section, state, puzzle, onAction, puzzleState.solved);
+        }
+        else if (puzzle.kind === "slot") {
+            renderSlotPuzzle(section, puzzle, puzzleState, onAction);
+            if (puzzleState.solved && puzzle.letterCard) {
+                section.appendChild(renderLetterCard(puzzle.letterCard));
+            }
+        }
+        content.appendChild(section);
+    });
+    if (state.letters.length) {
+        const letters = document.createElement("section");
+        letters.className = "puzzle-card letter-collection";
+        const heading = document.createElement("h3");
+        heading.textContent = "集めたカード";
+        letters.appendChild(heading);
+        const list = document.createElement("div");
+        list.className = "letter-grid";
+        state.letters.forEach((letter) => {
+            list.appendChild(renderLetterCard(letter));
+        });
+        letters.appendChild(list);
+        content.appendChild(letters);
     }
-    else if (currentPuzzle.kind === "crossword") {
-        renderCrosswordPuzzle(content, state, currentPuzzle, onAction);
-    }
-    else if (currentPuzzle.kind === "slot") {
-        renderSlotPuzzle(content, state, currentPuzzle, onAction);
-    }
-    // Navigation Controls
-    const nav = document.createElement("div");
-    nav.className = "pagination"; // Using existing CSS class
-    const prevBtn = document.createElement("button");
-    prevBtn.className = "nav-btn";
-    prevBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>`;
-    prevBtn.disabled = state.currentPuzzleIndex === 0;
-    prevBtn.addEventListener("click", () => onAction("prev"));
-    nav.appendChild(prevBtn);
-    const nextBtn = document.createElement("button");
-    nextBtn.className = "nav-btn";
-    nextBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>`;
-    // Enable next if we have reached further than current index
-    nextBtn.disabled = state.currentPuzzleIndex >= state.maxReachedIndex;
-    nextBtn.addEventListener("click", () => onAction("next"));
-    nav.appendChild(nextBtn);
     container.appendChild(content);
-    container.appendChild(nav);
     app.appendChild(container);
 }
 function renderLogin(app, state, onAction) {
@@ -76,7 +91,7 @@ function renderLogin(app, state, onAction) {
       </div>
       <button id="login-btn">入室する</button>
       ${state.feedback
-        ? `<p class="feedback ${state.feedback.kind}">${escapeHtml(state.feedback.message)}</p>`
+        ? `<p class="${feedbackClass(state.feedback.kind)}">${escapeHtml(state.feedback.message)}</p>`
         : ""}
     </div>
   `;
@@ -85,7 +100,7 @@ function renderLogin(app, state, onAction) {
         onAction("login", input.value.trim());
     });
 }
-function renderClear(app) {
+function renderClear(app, state) {
     app.innerHTML = `
     <div class="app-shell">
       <header><h1>クリア</h1></header>
@@ -95,8 +110,18 @@ function renderClear(app) {
       </div>
     </div>
   `;
+    if (state.letters.length) {
+        const wrap = document.createElement("div");
+        wrap.className = "app-shell";
+        wrap.innerHTML = `<h2>獲得した文字</h2>`;
+        const list = document.createElement("div");
+        list.className = "letter-grid";
+        state.letters.forEach((letter) => list.appendChild(renderLetterCard(letter)));
+        wrap.appendChild(list);
+        app.appendChild(wrap);
+    }
 }
-function renderInfoPage(container, puzzle, onAction) {
+function renderInfoPage(container, puzzle) {
     const lead = document.createElement("p");
     lead.className = "lead";
     lead.textContent = puzzle.lead;
@@ -111,10 +136,7 @@ function renderInfoPage(container, puzzle, onAction) {
             const btn = document.createElement("button");
             btn.textContent = action.label;
             btn.addEventListener("click", () => {
-                if (action.kind === "continue") {
-                    onAction("next");
-                }
-                else if (action.kind === "link") {
+                if (action.kind === "link") {
                     window.open(action.url, "_blank");
                 }
             });
@@ -123,11 +145,10 @@ function renderInfoPage(container, puzzle, onAction) {
         container.appendChild(actions);
     }
 }
-function renderTextPuzzle(container, state, puzzle, onAction) {
+function renderTextPuzzle(container, puzzle, puzzleState, onAction) {
     var _a;
     const question = document.createElement("div");
     question.className = "question";
-    // Use prompt for TextPuzzle
     question.innerHTML = `<p>${escapeHtml(puzzle.prompt)}</p>`;
     if (puzzle.content) {
         question.innerHTML += puzzle.content.map((p) => `<p>${escapeHtml(p)}</p>`).join("");
@@ -135,18 +156,19 @@ function renderTextPuzzle(container, state, puzzle, onAction) {
     container.appendChild(question);
     const form = document.createElement("div");
     form.className = "answer-form";
+    const inputId = `answer-${puzzle.id}`;
     form.innerHTML = `
     <div class="form-group">
-      <label for="answer">回答</label>
-      <input type="text" id="answer" autocomplete="off" />
+      <label for="${inputId}">回答</label>
+      <input type="text" id="${inputId}" autocomplete="off" ${puzzleState.solved ? "disabled" : ""} placeholder="${escapeHtml(puzzle.placeholderClue || '')}" />
     </div>
-    <button id="submit-btn">回答を送信</button>
+    <button id="submit-btn-${puzzle.id}" ${puzzleState.solved ? "disabled" : ""}>回答を送信</button>
   `;
     container.appendChild(form);
-    if (state.feedback) {
+    if (puzzleState.feedback) {
         const feedback = document.createElement("p");
-        feedback.className = `feedback ${state.feedback.kind}`;
-        feedback.textContent = state.feedback.message;
+        feedback.className = feedbackClass(puzzleState.feedback.kind);
+        feedback.textContent = puzzleState.feedback.message;
         container.appendChild(feedback);
     }
     if (puzzle.mapQuery) {
@@ -157,12 +179,12 @@ function renderTextPuzzle(container, state, puzzle, onAction) {
         });
         container.appendChild(mapBtn);
     }
-    (_a = form.querySelector("#submit-btn")) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => {
-        const input = form.querySelector("#answer");
-        onAction("answer", input.value.trim());
+    (_a = form.querySelector(`#submit-btn-${puzzle.id}`)) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => {
+        const input = form.querySelector(`#${inputId}`);
+        onAction("answer", { puzzleId: puzzle.id, value: input.value.trim() });
     });
 }
-function renderSlotPuzzle(container, state, puzzle, onAction) {
+function renderSlotPuzzle(container, puzzle, puzzleState, onAction) {
     var _a, _b;
     const question = document.createElement("div");
     question.className = "question slot-puzzle";
@@ -195,18 +217,19 @@ function renderSlotPuzzle(container, state, puzzle, onAction) {
     container.appendChild(question);
     const form = document.createElement("div");
     form.className = "answer-form";
+    const inputId = `answer-${puzzle.id}`;
     form.innerHTML = `
     <div class="form-group">
-      <label for="answer">回答</label>
-      <input type="text" id="answer" autocomplete="off" placeholder="${escapeHtml(puzzle.placeholderClue || '')}" />
+      <label for="${inputId}">回答</label>
+      <input type="text" id="${inputId}" autocomplete="off" ${puzzleState.solved ? "disabled" : ""} placeholder="${escapeHtml(puzzle.placeholderClue || '')}" />
     </div>
-    <button id="submit-btn">回答を送信</button>
+    <button id="submit-btn-${puzzle.id}" ${puzzleState.solved ? "disabled" : ""}>回答を送信</button>
   `;
     container.appendChild(form);
-    if (state.feedback) {
+    if (puzzleState.feedback) {
         const feedback = document.createElement("p");
-        feedback.className = `feedback ${state.feedback.kind}`;
-        feedback.textContent = state.feedback.message;
+        feedback.className = feedbackClass(puzzleState.feedback.kind);
+        feedback.textContent = puzzleState.feedback.message;
         container.appendChild(feedback);
     }
     if (puzzle.mapQuery) {
@@ -217,12 +240,12 @@ function renderSlotPuzzle(container, state, puzzle, onAction) {
         });
         container.appendChild(mapBtn);
     }
-    (_b = form.querySelector("#submit-btn")) === null || _b === void 0 ? void 0 : _b.addEventListener("click", () => {
-        const input = form.querySelector("#answer");
-        onAction("answer", input.value.trim());
+    (_b = form.querySelector(`#submit-btn-${puzzle.id}`)) === null || _b === void 0 ? void 0 : _b.addEventListener("click", () => {
+        const input = form.querySelector(`#${inputId}`);
+        onAction("answer", { puzzleId: puzzle.id, value: input.value.trim() });
     });
 }
-function renderCrosswordPuzzle(container, state, puzzle, onAction) {
+function renderCrosswordPuzzle(container, state, puzzle, onAction, solved) {
     var _a, _b;
     const progress = ensureCrosswordProgress(puzzle, state);
     // Grid
@@ -233,7 +256,6 @@ function renderCrosswordPuzzle(container, state, puzzle, onAction) {
         for (let c = 0; c < puzzle.size.cols; c++) {
             const cell = document.createElement("div");
             cell.className = "cell";
-            // Check if this cell is part of any clue
             const isBlockCell = isBlock(puzzle, r, c);
             if (isBlockCell) {
                 cell.classList.add("block");
@@ -245,7 +267,6 @@ function renderCrosswordPuzzle(container, state, puzzle, onAction) {
                 if (((_a = progress.activeCell) === null || _a === void 0 ? void 0 : _a.row) === r && ((_b = progress.activeCell) === null || _b === void 0 ? void 0 : _b.col) === c) {
                     cell.classList.add("active");
                 }
-                // Clue number
                 const clueStart = puzzle.clues.find((clue) => clue.row === r && clue.col === c);
                 if (clueStart) {
                     const num = document.createElement("span");
@@ -253,18 +274,18 @@ function renderCrosswordPuzzle(container, state, puzzle, onAction) {
                     num.textContent = clueStart.number.toString();
                     cell.appendChild(num);
                 }
-                cell.addEventListener("click", () => {
-                    onAction("crossword_click", { row: r, col: c });
-                });
+                if (!solved) {
+                    cell.addEventListener("click", () => {
+                        onAction("crossword_click", { row: r, col: c, puzzleId: puzzle.id });
+                    });
+                }
             }
             grid.appendChild(cell);
         }
     }
     container.appendChild(grid);
-    // Clues
     const cluesContainer = document.createElement("div");
     cluesContainer.className = "clues-container";
-    // Current Clue Highlight
     if (progress.activeCell) {
         const currentClue = getClueAt(puzzle, progress.activeCell.row, progress.activeCell.col, progress.direction);
         if (currentClue) {
@@ -275,5 +296,16 @@ function renderCrosswordPuzzle(container, state, puzzle, onAction) {
         }
     }
     container.appendChild(cluesContainer);
-    // Keyboard controls (handled globally in main, but UI hints could go here)
+}
+function renderLetterCard(card) {
+    const cardEl = document.createElement("div");
+    cardEl.className = "letter-card";
+    cardEl.innerHTML = `
+      <div class="letter-char">${escapeHtml(card.letter)}</div>
+      <div class="letter-meta">
+        <div class="letter-title">${escapeHtml(card.memoryTitle)}</div>
+        <div class="letter-date">${escapeHtml(card.dateISO)}</div>
+      </div>
+    `;
+    return cardEl;
 }
