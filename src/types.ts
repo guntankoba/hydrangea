@@ -33,6 +33,7 @@ export type TextPuzzle = {
   mapQuery?: string;
   content?: string[];
   imageUrl?: string;
+  imageAlt?: string;
   choices?: string[];
   accentColor?: string;
   accentShadow?: string;

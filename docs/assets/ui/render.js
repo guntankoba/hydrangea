@@ -214,7 +214,7 @@ function renderTextPuzzle(container, puzzle, puzzleState, onAction) {
         image.className = "puzzle-image";
         const img = document.createElement("img");
         img.src = puzzle.imageUrl;
-        img.alt = `${puzzle.title}の手がかり`;
+        img.alt = puzzle.imageAlt || "駅周辺の手がかり写真";
         image.appendChild(img);
         question.appendChild(image);
     }
