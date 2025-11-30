@@ -648,3 +648,87 @@ button:disabled {
 .slot.prefilled {
   /* Style for prefilled if needed, currently same as normal or target */
 }
+
+/* Station Card */
+.station-card-layer {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  z-index: 50;
+}
+
+.station-card {
+  width: min(90vw, 520px);
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.85), rgba(30, 41, 59, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+  padding: 1.5rem;
+}
+
+.station-card__header {
+  margin-bottom: 1rem;
+}
+
+.station-card__eyebrow {
+  margin: 0 0 0.25rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+}
+
+.station-card__header h3 {
+  margin: 0;
+  font-size: 1.6rem;
+  letter-spacing: 0.08em;
+}
+
+.station-card__body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.station-card__line {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 1rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--line-color, #00a0de) 85%, #ffffff 15%);
+  color: #0b1120;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.station-card__line-id {
+  font-size: 0.95rem;
+}
+
+.station-card__line-name {
+  font-size: 0.95rem;
+}
+
+.station-card__value {
+  font-size: 2.75rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #e5e7eb;
+  text-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.station-card__footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.25rem;
+}

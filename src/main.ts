@@ -1,7 +1,8 @@
 import { puzzles as stage2Puzzles } from "./data/puzzles.js";
 import { stage1Puzzles } from "./data/stage1.js";
 import { stage4Puzzles } from "./data/stage4.js";
-import { AppState, Feedback, Puzzle, SlotPuzzle, StageId, TextPuzzle } from "./types.js";
+import { getStationCardById } from "./data/stations.js";
+import { AppState, Feedback, Puzzle, SlotPuzzle, StageId, StationCard, TextPuzzle } from "./types.js";
 import { render } from "./ui/render.js";
 
 const PASSWORD = "kobachi";
@@ -24,6 +25,8 @@ const state: AppState = {
   isLoggedIn: false,
   isCleared: false,
   currentStage: "ST1",
+  stationCardDisplay: null,
+  pendingStageAfterCard: null,
   tos: { agreed: false, openedOnce: false },
   crossword: {},
   feedback: null,
@@ -35,6 +38,11 @@ type PuzzleProgress = { solved: boolean; feedback: Feedback | null };
 
 function getActivePuzzles() {
   return stages[state.currentStage];
+}
+
+function setStationCardDisplay(card: StationCard | null, nextStage: StageId | null) {
+  state.stationCardDisplay = card;
+  state.pendingStageAfterCard = card ? nextStage : null;
 }
 
 function applyStageTheme(stage: StageId) {
@@ -84,6 +92,17 @@ function handleAction(action: string, payload?: any) {
 
   if (!state.isLoggedIn || state.isCleared) return;
 
+  if (action === "station_card_continue") {
+    if (state.stationCardDisplay && state.pendingStageAfterCard) {
+      const nextStage = state.pendingStageAfterCard;
+      setStationCardDisplay(null, null);
+      state.currentStage = nextStage;
+      applyStageTheme(state.currentStage);
+    }
+    render(app, state, getActivePuzzles(), handleAction, state.currentStage);
+    return;
+  }
+
   if (action === "tos_opened") {
     state.tos.openedOnce = true;
     return;
@@ -119,10 +138,19 @@ function handleAction(action: string, payload?: any) {
         const lastPuzzleId = finalPuzzleId(state.currentStage);
         if (puzzle.id === lastPuzzleId) {
           if (state.currentStage === "ST1") {
-            state.currentStage = "ST2";
-            applyStageTheme(state.currentStage);
-            render(app, state, getActivePuzzles(), handleAction, state.currentStage);
-            return;
+            const card = getStationCardById("kanamachi");
+            if (card) {
+              setStationCardDisplay(card, "ST2");
+              puzzleState.feedback = {
+                kind: "success",
+                message: "正解！駅カードを確認してから次のステージへ進もう。",
+              };
+            } else {
+              state.currentStage = "ST2";
+              applyStageTheme(state.currentStage);
+              render(app, state, getActivePuzzles(), handleAction, state.currentStage);
+              return;
+            }
           }
           if (state.currentStage === "ST2") {
             state.currentStage = "ST4";

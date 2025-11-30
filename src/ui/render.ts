@@ -1,14 +1,5 @@
-import {
-    AppState,
-    ChoiceAccent,
-    CrosswordPuzzle,
-    Feedback,
-    InfoPage,
-    Puzzle,
-    SlotPuzzle,
-    StageId,
-    TextPuzzle,
-} from "../types.js";
+
+import { AppState, CrosswordPuzzle, Feedback, InfoPage, Puzzle, SlotPuzzle, StageId, StationCard, TextPuzzle } from "../types.js";
 import { ensureCrosswordProgress, getClueAt, isBlock } from "../logic/crossword.js";
 
 // Helper to escape HTML
@@ -25,29 +16,45 @@ function feedbackClass(kind: "error" | "success") {
     return `feedback feedback--${kind}`;
 }
 
-function renderChoiceWithAccent(label: string, accents?: ChoiceAccent[]) {
-    const accent = accents?.find((candidate) => candidate.label === label);
-    if (!accent) return escapeHtml(label);
+function renderStationCardOverlay(
+    app: HTMLElement,
+    card: StationCard,
+    onAction: (action: string, payload?: any) => void,
+    nextStage?: StageId
+) {
+    const overlay = document.createElement("div");
+    overlay.className = "station-card-layer";
 
-    const start = Math.max(0, accent.highlight.start);
-    const end = Math.min(label.length, start + accent.highlight.length);
+    const panel = document.createElement("div");
+    panel.className = "station-card";
 
-    if (end <= start) {
-        return escapeHtml(label);
-    }
+    const header = document.createElement("div");
+    header.className = "station-card__header";
+    header.innerHTML = `<p class="station-card__eyebrow">駅カード</p><h3>${escapeHtml(card.name)}</h3>`;
 
-    const before = label.slice(0, start);
-    const target = label.slice(start, end);
-    const after = label.slice(end);
+    const body = document.createElement("div");
+    body.className = "station-card__body";
+    body.innerHTML = `
+      <div class="station-card__line" style="--line-color: ${card.lineColor}">
+        <span class="station-card__line-id">${escapeHtml(card.lineId)}</span>
+        <span class="station-card__line-name">${escapeHtml(card.lineName)}</span>
+      </div>
+      <div class="station-card__value">${card.value}</div>
+    `;
 
-    const styleRules = [`color: ${accent.accentColor}`];
-    if (accent.accentShadow) {
-        styleRules.push(`text-shadow: 0 0 8px ${accent.accentShadow}`);
-    }
+    const footer = document.createElement("div");
+    footer.className = "station-card__footer";
+    const confirm = document.createElement("button");
+    confirm.textContent = nextStage ? `次のステージ（${nextStage}）へ進む` : "次へ進む";
+    confirm.addEventListener("click", () => onAction("station_card_continue"));
+    footer.appendChild(confirm);
 
-    return `${escapeHtml(before)}<span class="choice-accent" style="${styleRules.join("; ")}">${escapeHtml(
-        target
-    )}</span>${escapeHtml(after)}`;
+    panel.appendChild(header);
+    panel.appendChild(body);
+    panel.appendChild(footer);
+    overlay.appendChild(panel);
+    app.appendChild(overlay);
+
 }
 
 export function render(
@@ -130,6 +137,10 @@ export function render(
 
     container.appendChild(content);
     app.appendChild(container);
+
+    if (state.stationCardDisplay) {
+        renderStationCardOverlay(app, state.stationCardDisplay, onAction, state.pendingStageAfterCard ?? undefined);
+    }
 }
 
 function renderLogin(
