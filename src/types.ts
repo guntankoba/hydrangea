@@ -2,6 +2,15 @@ export type FeedbackKind = "error" | "success";
 
 export type StageId = "ST1" | "ST2" | "ST4";
 
+export type StationCard = {
+  id: string;
+  name: string;
+  lineId: string;
+  lineName: string;
+  lineColor: string;
+  value: number;
+};
+
 export type CrosswordDirection = "across" | "down";
 
 export type CrosswordClue = {
@@ -93,6 +102,8 @@ export type AppState = {
   isLoggedIn: boolean;
   isCleared: boolean;
   currentStage: StageId;
+  stationCardDisplay: StationCard | null;
+  pendingStageAfterCard: StageId | null;
   tos: { agreed: boolean; openedOnce: boolean };
   crossword: { [key: number]: CrosswordProgress };
   feedback: Feedback | null;

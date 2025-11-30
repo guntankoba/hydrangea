@@ -11,8 +11,37 @@ function escapeHtml(str) {
 function feedbackClass(kind) {
     return `feedback feedback--${kind}`;
 }
+function renderStationCardOverlay(app, card, onAction, nextStage) {
+    const overlay = document.createElement("div");
+    overlay.className = "station-card-layer";
+    const panel = document.createElement("div");
+    panel.className = "station-card";
+    const header = document.createElement("div");
+    header.className = "station-card__header";
+    header.innerHTML = `<p class="station-card__eyebrow">駅カード</p><h3>${escapeHtml(card.name)}</h3>`;
+    const body = document.createElement("div");
+    body.className = "station-card__body";
+    body.innerHTML = `
+      <div class="station-card__line" style="--line-color: ${card.lineColor}">
+        <span class="station-card__line-id">${escapeHtml(card.lineId)}</span>
+        <span class="station-card__line-name">${escapeHtml(card.lineName)}</span>
+      </div>
+      <div class="station-card__value">${card.value}</div>
+    `;
+    const footer = document.createElement("div");
+    footer.className = "station-card__footer";
+    const confirm = document.createElement("button");
+    confirm.textContent = nextStage ? `次のステージ（${nextStage}）へ進む` : "次へ進む";
+    confirm.addEventListener("click", () => onAction("station_card_continue"));
+    footer.appendChild(confirm);
+    panel.appendChild(header);
+    panel.appendChild(body);
+    panel.appendChild(footer);
+    overlay.appendChild(panel);
+    app.appendChild(overlay);
+}
 export function render(app, state, puzzles, onAction, stage) {
-    var _a;
+    var _a, _b;
     if (!state.isLoggedIn) {
         renderLogin(app, state, onAction);
         return;
@@ -77,6 +106,9 @@ export function render(app, state, puzzles, onAction, stage) {
     });
     container.appendChild(content);
     app.appendChild(container);
+    if (state.stationCardDisplay) {
+        renderStationCardOverlay(app, state.stationCardDisplay, onAction, (_b = state.pendingStageAfterCard) !== null && _b !== void 0 ? _b : undefined);
+    }
 }
 function renderLogin(app, state, onAction) {
     var _a;
