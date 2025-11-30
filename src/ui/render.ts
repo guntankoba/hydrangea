@@ -37,7 +37,7 @@ export function render(
         return;
     }
 
-    if (stage === "ST1") {
+    if (stage === "ST1" || stage === "ST4") {
         document.body.classList.add("stage-shinjuku");
         document.body.classList.remove("stage-akiba");
     } else if (stage === "ST2") {

@@ -1,6 +1,6 @@
 export type FeedbackKind = "error" | "success";
 
-export type StageId = "ST1" | "ST2";
+export type StageId = "ST1" | "ST2" | "ST4";
 
 export type CrosswordDirection = "across" | "down";
 
