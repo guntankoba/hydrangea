@@ -35,7 +35,15 @@ export type TextPuzzle = {
   imageUrl?: string;
   imageAlt?: string;
   choices?: string[];
+  choiceAccents?: ChoiceAccent[];
   accentColor?: string;
+  accentShadow?: string;
+};
+
+export type ChoiceAccent = {
+  label: string;
+  highlight: { start: number; length: number };
+  accentColor: string;
   accentShadow?: string;
 };
 

@@ -11,6 +11,24 @@ function escapeHtml(str) {
 function feedbackClass(kind) {
     return `feedback feedback--${kind}`;
 }
+function renderChoiceWithAccent(label, accents) {
+    const accent = accents === null || accents === void 0 ? void 0 : accents.find((candidate) => candidate.label === label);
+    if (!accent)
+        return escapeHtml(label);
+    const start = Math.max(0, accent.highlight.start);
+    const end = Math.min(label.length, start + accent.highlight.length);
+    if (end <= start) {
+        return escapeHtml(label);
+    }
+    const before = label.slice(0, start);
+    const target = label.slice(start, end);
+    const after = label.slice(end);
+    const styleRules = [`color: ${accent.accentColor}`];
+    if (accent.accentShadow) {
+        styleRules.push(`text-shadow: 0 0 8px ${accent.accentShadow}`);
+    }
+    return `${escapeHtml(before)}<span class="choice-accent" style="${styleRules.join("; ")}">${escapeHtml(target)}</span>${escapeHtml(after)}`;
+}
 export function render(app, state, puzzles, onAction, stage) {
     var _a;
     if (!state.isLoggedIn) {
@@ -223,7 +241,7 @@ function renderTextPuzzle(container, puzzle, puzzleState, onAction) {
         list.className = "choice-list";
         puzzle.choices.forEach((choice) => {
             const item = document.createElement("li");
-            item.textContent = choice;
+            item.innerHTML = renderChoiceWithAccent(choice, puzzle.choiceAccents);
             list.appendChild(item);
         });
         question.appendChild(list);
