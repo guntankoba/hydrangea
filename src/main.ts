@@ -59,13 +59,15 @@ applyStageTheme(state.currentStage);
 render(app, state, getActivePuzzles(), handleAction, state.currentStage);
 
 function normalizeAnswer(input: string): string {
-  return input.trim();
+  return input.trim().normalize("NFKC");
 }
 
 function isAnswerCorrect(input: string, puzzle: TextPuzzle | SlotPuzzle): boolean {
-  const normalized = normalizeAnswer(input);
-  const candidates = [puzzle.correctAnswer, ...(puzzle.acceptedAnswers || [])];
-  return candidates.some((answer) => normalized === answer);
+  const normalizedInput = normalizeAnswer(input);
+  const normalizedCandidates = [puzzle.correctAnswer, ...(puzzle.acceptedAnswers || [])].map(
+    (answer) => normalizeAnswer(answer)
+  );
+  return normalizedCandidates.some((answer) => normalizedInput === answer);
 }
 
 function ensurePuzzleState(id: number): PuzzleProgress {

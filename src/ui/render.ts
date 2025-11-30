@@ -1,3 +1,4 @@
+
 import { AppState, CrosswordPuzzle, Feedback, InfoPage, Puzzle, SlotPuzzle, StageId, StationCard, TextPuzzle } from "../types.js";
 import { ensureCrosswordProgress, getClueAt, isBlock } from "../logic/crossword.js";
 
@@ -53,6 +54,7 @@ function renderStationCardOverlay(
     panel.appendChild(footer);
     overlay.appendChild(panel);
     app.appendChild(overlay);
+
 }
 
 export function render(
@@ -321,7 +323,7 @@ function renderTextPuzzle(
         list.className = "choice-list";
         puzzle.choices.forEach((choice) => {
             const item = document.createElement("li");
-            item.textContent = choice;
+            item.innerHTML = renderChoiceWithAccent(choice, puzzle.choiceAccents);
             list.appendChild(item);
         });
         question.appendChild(list);

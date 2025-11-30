@@ -11,6 +11,7 @@ function escapeHtml(str) {
 function feedbackClass(kind) {
     return `feedback feedback--${kind}`;
 }
+
 function renderStationCardOverlay(app, card, onAction, nextStage) {
     const overlay = document.createElement("div");
     overlay.className = "station-card-layer";
@@ -39,6 +40,7 @@ function renderStationCardOverlay(app, card, onAction, nextStage) {
     panel.appendChild(footer);
     overlay.appendChild(panel);
     app.appendChild(overlay);
+
 }
 export function render(app, state, puzzles, onAction, stage) {
     var _a, _b;
@@ -255,7 +257,7 @@ function renderTextPuzzle(container, puzzle, puzzleState, onAction) {
         list.className = "choice-list";
         puzzle.choices.forEach((choice) => {
             const item = document.createElement("li");
-            item.textContent = choice;
+            item.innerHTML = renderChoiceWithAccent(choice, puzzle.choiceAccents);
             list.appendChild(item);
         });
         question.appendChild(list);
