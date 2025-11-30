@@ -27,7 +27,7 @@ export type TextPuzzle = {
   title: string;
   prompt: string;
   placeholderClue: string;
-  hint: string;
+  hint?: string;
   correctAnswer: string;
   acceptedAnswers?: string[];
   mapQuery?: string;
