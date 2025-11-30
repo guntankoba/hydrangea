@@ -1,5 +1,6 @@
 import { puzzles as stage2Puzzles } from "./data/puzzles.js";
 import { stage1Puzzles } from "./data/stage1.js";
+import { stage4Puzzles } from "./data/stage4.js";
 import { AppState, Feedback, Puzzle, SlotPuzzle, StageId, TextPuzzle } from "./types.js";
 import { render } from "./ui/render.js";
 
@@ -10,11 +11,13 @@ const app = document.getElementById("app") as HTMLElement;
 const stages: Record<StageId, Puzzle[]> = {
   ST1: stage1Puzzles,
   ST2: stage2Puzzles,
+  ST4: stage4Puzzles,
 };
 
 const stageThemes: Record<StageId, { accent: string; accentDark: string; accentShadow: string }> = {
   ST1: { accent: "#ffc0cb", accentDark: "#ffd6e6", accentShadow: "rgba(255, 192, 203, 0.45)" },
   ST2: { accent: "#6b9bd3", accentDark: "#94c5cc", accentShadow: "rgba(107, 155, 211, 0.35)" },
+  ST4: { accent: "#ffc0cb", accentDark: "#ffd6e6", accentShadow: "rgba(255, 192, 203, 0.45)" },
 };
 
 const state: AppState = {
@@ -120,6 +123,12 @@ function handleAction(action: string, payload?: any) {
             return;
           }
           if (state.currentStage === "ST2") {
+            state.currentStage = "ST4";
+            applyStageTheme(state.currentStage);
+            render(app, state, getActivePuzzles(), handleAction, state.currentStage);
+            return;
+          }
+          if (state.currentStage === "ST4") {
             state.isCleared = true;
           }
         }
