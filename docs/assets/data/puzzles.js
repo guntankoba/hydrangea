@@ -2,8 +2,8 @@ export const puzzles = [
     {
         id: 1,
         kind: "info",
-        title: "ST2｜秋葉原ステージの歩き方",
-        lead: "思い出の5場面から1文字ずつ集め、最後に時系列で並べ替えて秋葉原を導き出そう。",
+        title: "ST2｜思い出ステージの歩き方",
+        lead: "思い出の5場面から1文字ずつ集め、最後に時系列で並べ替えて答えを導き出そう。",
         content: [
             "このページで問1〜問5とFINALまでまとめて解けます。スクロールしながらカードを埋めていきましょう。",
         ],
@@ -74,7 +74,6 @@ export const puzzles = [
         title: "FINAL｜時系列で ならべて こたえを作れ",
         prompt: "",
         placeholderClue: "",
-        hint: "",
         correctAnswer: "あきはばら",
         acceptedAnswers: ["秋葉原"],
         content: [],
