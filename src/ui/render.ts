@@ -1,4 +1,14 @@
-import { AppState, CrosswordPuzzle, Feedback, InfoPage, Puzzle, SlotPuzzle, StageId, TextPuzzle } from "../types.js";
+import {
+    AppState,
+    ChoiceAccent,
+    CrosswordPuzzle,
+    Feedback,
+    InfoPage,
+    Puzzle,
+    SlotPuzzle,
+    StageId,
+    TextPuzzle,
+} from "../types.js";
 import { ensureCrosswordProgress, getClueAt, isBlock } from "../logic/crossword.js";
 
 // Helper to escape HTML
@@ -13,6 +23,31 @@ function escapeHtml(str: string): string {
 
 function feedbackClass(kind: "error" | "success") {
     return `feedback feedback--${kind}`;
+}
+
+function renderChoiceWithAccent(label: string, accents?: ChoiceAccent[]) {
+    const accent = accents?.find((candidate) => candidate.label === label);
+    if (!accent) return escapeHtml(label);
+
+    const start = Math.max(0, accent.highlight.start);
+    const end = Math.min(label.length, start + accent.highlight.length);
+
+    if (end <= start) {
+        return escapeHtml(label);
+    }
+
+    const before = label.slice(0, start);
+    const target = label.slice(start, end);
+    const after = label.slice(end);
+
+    const styleRules = [`color: ${accent.accentColor}`];
+    if (accent.accentShadow) {
+        styleRules.push(`text-shadow: 0 0 8px ${accent.accentShadow}`);
+    }
+
+    return `${escapeHtml(before)}<span class="choice-accent" style="${styleRules.join("; ")}">${escapeHtml(
+        target
+    )}</span>${escapeHtml(after)}`;
 }
 
 export function render(
@@ -277,7 +312,7 @@ function renderTextPuzzle(
         list.className = "choice-list";
         puzzle.choices.forEach((choice) => {
             const item = document.createElement("li");
-            item.textContent = choice;
+            item.innerHTML = renderChoiceWithAccent(choice, puzzle.choiceAccents);
             list.appendChild(item);
         });
         question.appendChild(list);
