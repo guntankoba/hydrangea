@@ -17,6 +17,14 @@ const stages: Record<StageId, Puzzle[]> = {
   ST4: stage4Puzzles,
 };
 
+const stage4StationCardRewards: Record<number, string> = {
+  402: "shimokitazawa",
+  403: "shimotakaido",
+  404: "katase-enoshima",
+  405: "toshimaen",
+  406: "kuramae",
+};
+
 const stageOrder: StageId[] = ["ST1", "ST2", "ST3", "ST4"];
 
 const stageThemes: Record<StageId, { accent: string; accentDark: string; accentShadow: string }> = {
@@ -172,6 +180,20 @@ function handleAction(action: string, payload?: any) {
       if (isAnswerCorrect(answerValue, puzzle)) {
         puzzleState.solved = true;
         puzzleState.feedback = { kind: "success", message: "正解です" };
+
+        if (state.currentStage === "ST4") {
+          const rewardId = stage4StationCardRewards[puzzle.id];
+          if (rewardId) {
+            const card = getStationCardById(rewardId);
+            if (card) {
+              puzzleState.awardedCard = card;
+              puzzleState.feedback = {
+                kind: "success",
+                message: "駅カードを獲得したよ",
+              };
+            }
+          }
+        }
 
         const lastPuzzleId = finalPuzzleId(state.currentStage);
         if (puzzle.id === lastPuzzleId) {
