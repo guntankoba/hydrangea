@@ -129,14 +129,19 @@ function renderPuzzleNavigation(container, puzzles, state) {
     nav.appendChild(list);
     container.appendChild(nav);
 }
-function renderStationCardOverlay(app, card, onAction, nextStage) {
+function renderStationCardOverlay(app, card, onAction, nextStage, pendingClearAfterCard) {
     const overlay = document.createElement("div");
     overlay.className = "station-card-layer";
     const panel = createStationCardElement(card);
     const footer = document.createElement("div");
     footer.className = "station-card__footer";
     const confirm = document.createElement("button");
-    confirm.textContent = nextStage ? `次のステージ（${nextStage}）へ進む` : "次へ進む";
+    const confirmLabel = pendingClearAfterCard
+        ? "クリア画面へ進む"
+        : nextStage
+            ? `次のステージ（${nextStage}）へ進む`
+            : "次へ進む";
+    confirm.textContent = confirmLabel;
     confirm.addEventListener("click", () => onAction("station_card_continue"));
     footer.appendChild(confirm);
     panel.appendChild(footer);
@@ -230,7 +235,7 @@ export function render(app, state, puzzles, onAction, stage, stageOrder) {
     container.appendChild(content);
     app.appendChild(container);
     if (state.stationCardDisplay) {
-        renderStationCardOverlay(app, state.stationCardDisplay, onAction, (_b = state.pendingStageAfterCard) !== null && _b !== void 0 ? _b : undefined);
+        renderStationCardOverlay(app, state.stationCardDisplay, onAction, (_b = state.pendingStageAfterCard) !== null && _b !== void 0 ? _b : undefined, state.pendingClearAfterCard);
     }
 }
 function renderLogin(app, state, onAction) {

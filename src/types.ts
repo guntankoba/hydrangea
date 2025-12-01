@@ -119,6 +119,7 @@ export type AppState = {
   clearedStages: StageId[];
   stationCardDisplay: StationCard | null;
   pendingStageAfterCard: StageId | null;
+  pendingClearAfterCard: boolean;
   tos: { agreed: boolean; openedOnce: boolean };
   crossword: { [key: number]: CrosswordProgress };
   feedback: Feedback | null;
