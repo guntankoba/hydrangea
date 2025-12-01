@@ -432,12 +432,13 @@ function renderTos(
 }
 
 function renderClear(app: HTMLElement, state: AppState) {
-    app.innerHTML = `
+  app.innerHTML = `
     <div class="app-shell">
       <header><h1>クリア</h1></header>
       <div class="content">
         <p>お疲れさまでした！</p>
         <p>すべての謎を解き明かしました。</p>
+        <p>目白駅から白61に乗って、椿山荘で思い出を完成させてください。</p>
       </div>
     </div>
   `;

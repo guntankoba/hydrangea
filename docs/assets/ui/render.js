@@ -330,6 +330,7 @@ function renderClear(app, state) {
       <div class="content">
         <p>お疲れさまでした！</p>
         <p>すべての謎を解き明かしました。</p>
+        <p>目白駅から白61に乗って、椿山荘で思い出を完成させてください。</p>
       </div>
     </div>
   `;
