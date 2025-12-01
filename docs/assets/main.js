@@ -78,7 +78,7 @@ function isAnswerCorrect(input, puzzle) {
 }
 function ensurePuzzleState(id) {
     if (!state.puzzleState[id]) {
-        state.puzzleState[id] = { solved: false, feedback: null };
+        state.puzzleState[id] = { solved: false, feedback: null, awardedCard: null };
     }
     return state.puzzleState[id];
 }
@@ -153,6 +153,7 @@ function handleAction(action, payload) {
                     if (state.currentStage === "ST1") {
                         const card = getStationCardById("kanamachi");
                         if (card) {
+                            puzzleState.awardedCard = card;
                             setStationCardDisplay(card, "ST2");
                             puzzleState.feedback = {
                                 kind: "success",
@@ -169,6 +170,7 @@ function handleAction(action, payload) {
                     else if (state.currentStage === "ST2") {
                         const card = getStationCardById("akihabara");
                         if (card) {
+                            puzzleState.awardedCard = card;
                             setStationCardDisplay(card, "ST3");
                             puzzleState.feedback = {
                                 kind: "success",
@@ -185,6 +187,7 @@ function handleAction(action, payload) {
                     else if (state.currentStage === "ST3") {
                         const card = getStationCardById("shinjuku");
                         if (card) {
+                            puzzleState.awardedCard = card;
                             setStationCardDisplay(card, "ST4");
                             puzzleState.feedback = {
                                 kind: "success",

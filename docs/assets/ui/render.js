@@ -77,6 +77,25 @@ function renderStageNavigation(header, currentStage, clearedStages, stageOrder, 
     nav.appendChild(list);
     header.appendChild(nav);
 }
+function createStationCardElement(card) {
+    const panel = document.createElement("div");
+    panel.className = "station-card";
+    const header = document.createElement("div");
+    header.className = "station-card__header";
+    header.innerHTML = `<p class="station-card__eyebrow">駅カード</p><h3>${escapeHtml(card.name)}</h3>`;
+    const body = document.createElement("div");
+    body.className = "station-card__body";
+    body.innerHTML = `
+      <div class="station-card__line" style="--line-color: ${card.lineColor}">
+        <span class="station-card__line-id">${escapeHtml(card.lineId)}</span>
+        <span class="station-card__line-name">${escapeHtml(card.lineName)}</span>
+      </div>
+      <div class="station-card__value">${card.value}</div>
+    `;
+    panel.appendChild(header);
+    panel.appendChild(body);
+    return panel;
+}
 function renderPuzzleNavigation(container, puzzles, state) {
     if (!puzzles.length)
         return;
@@ -113,31 +132,27 @@ function renderPuzzleNavigation(container, puzzles, state) {
 function renderStationCardOverlay(app, card, onAction, nextStage) {
     const overlay = document.createElement("div");
     overlay.className = "station-card-layer";
-    const panel = document.createElement("div");
-    panel.className = "station-card";
-    const header = document.createElement("div");
-    header.className = "station-card__header";
-    header.innerHTML = `<p class="station-card__eyebrow">駅カード</p><h3>${escapeHtml(card.name)}</h3>`;
-    const body = document.createElement("div");
-    body.className = "station-card__body";
-    body.innerHTML = `
-      <div class="station-card__line" style="--line-color: ${card.lineColor}">
-        <span class="station-card__line-id">${escapeHtml(card.lineId)}</span>
-        <span class="station-card__line-name">${escapeHtml(card.lineName)}</span>
-      </div>
-      <div class="station-card__value">${card.value}</div>
-    `;
+    const panel = createStationCardElement(card);
     const footer = document.createElement("div");
     footer.className = "station-card__footer";
     const confirm = document.createElement("button");
     confirm.textContent = nextStage ? `次のステージ（${nextStage}）へ進む` : "次へ進む";
     confirm.addEventListener("click", () => onAction("station_card_continue"));
     footer.appendChild(confirm);
-    panel.appendChild(header);
-    panel.appendChild(body);
     panel.appendChild(footer);
     overlay.appendChild(panel);
     app.appendChild(overlay);
+}
+function renderStationCardInline(container, card) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "station-card-inline";
+    const label = document.createElement("p");
+    label.className = "station-card-inline__label";
+    label.textContent = "獲得した駅カード";
+    const panel = createStationCardElement(card);
+    wrapper.appendChild(label);
+    wrapper.appendChild(panel);
+    container.appendChild(wrapper);
 }
 export function render(app, state, puzzles, onAction, stage, stageOrder) {
     var _a, _b;
@@ -197,7 +212,7 @@ export function render(app, state, puzzles, onAction, stage, stageOrder) {
         const puzzleLabel = puzzle.title.startsWith("問") ? puzzle.title : `問${index + 1}｜${puzzle.title}`;
         title.textContent = puzzleLabel;
         section.appendChild(title);
-        const puzzleState = (_a = state.puzzleState[puzzle.id]) !== null && _a !== void 0 ? _a : { solved: false, feedback: null };
+        const puzzleState = (_a = state.puzzleState[puzzle.id]) !== null && _a !== void 0 ? _a : { solved: false, feedback: null, awardedCard: null };
         if (puzzle.kind === "text") {
             renderTextPuzzle(section, puzzle, puzzleState, onAction);
         }
@@ -206,6 +221,9 @@ export function render(app, state, puzzles, onAction, stage, stageOrder) {
         }
         else if (puzzle.kind === "slot") {
             renderSlotPuzzle(section, puzzle, puzzleState, onAction);
+        }
+        if (puzzleState.awardedCard) {
+            renderStationCardInline(section, puzzleState.awardedCard);
         }
         content.appendChild(section);
     });
