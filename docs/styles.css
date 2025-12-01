@@ -240,6 +240,13 @@ label {
   gap: var(--space-4);
 }
 
+.answer-form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
 .form-stack label,
 .answer-stack label {
   margin-bottom: 0;
