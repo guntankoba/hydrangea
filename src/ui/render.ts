@@ -179,7 +179,8 @@ function renderStationCardOverlay(
     app: HTMLElement,
     card: StationCard,
     onAction: (action: string, payload?: any) => void,
-    nextStage?: StageId
+    nextStage?: StageId,
+    pendingClearAfterCard?: boolean
 ) {
     const overlay = document.createElement("div");
     overlay.className = "station-card-layer";
@@ -188,7 +189,12 @@ function renderStationCardOverlay(
     const footer = document.createElement("div");
     footer.className = "station-card__footer";
     const confirm = document.createElement("button");
-    confirm.textContent = nextStage ? `次のステージ（${nextStage}）へ進む` : "次へ進む";
+    const confirmLabel = pendingClearAfterCard
+        ? "クリア画面へ進む"
+        : nextStage
+            ? `次のステージ（${nextStage}）へ進む`
+            : "次へ進む";
+    confirm.textContent = confirmLabel;
     confirm.addEventListener("click", () => onAction("station_card_continue"));
     footer.appendChild(confirm);
 
@@ -308,7 +314,13 @@ export function render(
     app.appendChild(container);
 
     if (state.stationCardDisplay) {
-        renderStationCardOverlay(app, state.stationCardDisplay, onAction, state.pendingStageAfterCard ?? undefined);
+        renderStationCardOverlay(
+            app,
+            state.stationCardDisplay,
+            onAction,
+            state.pendingStageAfterCard ?? undefined,
+            state.pendingClearAfterCard
+        );
     }
 }
 

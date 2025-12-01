@@ -41,6 +41,7 @@ const state: AppState = {
   clearedStages: [],
   stationCardDisplay: null,
   pendingStageAfterCard: null,
+  pendingClearAfterCard: false,
   tos: { agreed: false, openedOnce: false },
   crossword: {},
   feedback: null,
@@ -75,9 +76,10 @@ function canAccessStage(stage: StageId) {
   return targetIndex <= maxClearedStageIndex() + 1;
 }
 
-function setStationCardDisplay(card: StationCard | null, nextStage: StageId | null) {
+function setStationCardDisplay(card: StationCard | null, nextStage: StageId | null, pendingClearAfterCard = false) {
   state.stationCardDisplay = card;
   state.pendingStageAfterCard = card ? nextStage : null;
+  state.pendingClearAfterCard = card ? pendingClearAfterCard : false;
 }
 
 function applyStageTheme(stage: StageId) {
@@ -124,11 +126,18 @@ function handleAction(action: string, payload?: any) {
   if (!state.isLoggedIn || state.isCleared) return;
 
   if (action === "station_card_continue") {
-    if (state.stationCardDisplay && state.pendingStageAfterCard) {
-      const nextStage = state.pendingStageAfterCard;
-      setStationCardDisplay(null, null);
-      state.currentStage = nextStage;
-      applyStageTheme(state.currentStage);
+    if (state.stationCardDisplay) {
+      if (state.pendingStageAfterCard) {
+        const nextStage = state.pendingStageAfterCard;
+        setStationCardDisplay(null, null);
+        state.currentStage = nextStage;
+        applyStageTheme(state.currentStage);
+      } else if (state.pendingClearAfterCard) {
+        setStationCardDisplay(null, null);
+        state.isCleared = true;
+      } else {
+        setStationCardDisplay(null, null);
+      }
     }
     render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
     return;
@@ -244,7 +253,17 @@ function handleAction(action: string, payload?: any) {
               return;
             }
           } else if (state.currentStage === "ST4") {
-            state.isCleared = true;
+            const card = getStationCardById("mejiro");
+            if (card) {
+              puzzleState.awardedCard = card;
+              setStationCardDisplay(card, null, true);
+              puzzleState.feedback = {
+                kind: "success",
+                message: "駅カードを確認してクリア画面へ進もう",
+              };
+            } else {
+              state.isCleared = true;
+            }
           }
         }
       } else {

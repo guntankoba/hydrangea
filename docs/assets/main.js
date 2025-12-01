@@ -12,6 +12,13 @@ const stages = {
     ST3: stage3Puzzles,
     ST4: stage4Puzzles,
 };
+const stage4StationCardRewards = {
+    402: "shimokitazawa",
+    403: "shimotakaido",
+    404: "katase-enoshima",
+    405: "toshimaen",
+    406: "kuramae",
+};
 const stageOrder = ["ST1", "ST2", "ST3", "ST4"];
 const stageThemes = {
     ST1: { accent: "#ffc0cb", accentDark: "#ffd6e6", accentShadow: "rgba(255, 192, 203, 0.45)" },
@@ -26,6 +33,7 @@ const state = {
     clearedStages: [],
     stationCardDisplay: null,
     pendingStageAfterCard: null,
+    pendingClearAfterCard: false,
     tos: { agreed: false, openedOnce: false },
     crossword: {},
     feedback: null,
@@ -55,9 +63,10 @@ function canAccessStage(stage) {
         return false;
     return targetIndex <= maxClearedStageIndex() + 1;
 }
-function setStationCardDisplay(card, nextStage) {
+function setStationCardDisplay(card, nextStage, pendingClearAfterCard = false) {
     state.stationCardDisplay = card;
     state.pendingStageAfterCard = card ? nextStage : null;
+    state.pendingClearAfterCard = card ? pendingClearAfterCard : false;
 }
 function applyStageTheme(stage) {
     const theme = stageThemes[stage];
@@ -97,11 +106,20 @@ function handleAction(action, payload) {
     if (!state.isLoggedIn || state.isCleared)
         return;
     if (action === "station_card_continue") {
-        if (state.stationCardDisplay && state.pendingStageAfterCard) {
-            const nextStage = state.pendingStageAfterCard;
-            setStationCardDisplay(null, null);
-            state.currentStage = nextStage;
-            applyStageTheme(state.currentStage);
+        if (state.stationCardDisplay) {
+            if (state.pendingStageAfterCard) {
+                const nextStage = state.pendingStageAfterCard;
+                setStationCardDisplay(null, null);
+                state.currentStage = nextStage;
+                applyStageTheme(state.currentStage);
+            }
+            else if (state.pendingClearAfterCard) {
+                setStationCardDisplay(null, null);
+                state.isCleared = true;
+            }
+            else {
+                setStationCardDisplay(null, null);
+            }
         }
         render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
         return;
@@ -147,6 +165,19 @@ function handleAction(action, payload) {
             if (isAnswerCorrect(answerValue, puzzle)) {
                 puzzleState.solved = true;
                 puzzleState.feedback = { kind: "success", message: "正解です" };
+                if (state.currentStage === "ST4") {
+                    const rewardId = stage4StationCardRewards[puzzle.id];
+                    if (rewardId) {
+                        const card = getStationCardById(rewardId);
+                        if (card) {
+                            puzzleState.awardedCard = card;
+                            puzzleState.feedback = {
+                                kind: "success",
+                                message: "駅カードを獲得したよ",
+                            };
+                        }
+                    }
+                }
                 const lastPuzzleId = finalPuzzleId(state.currentStage);
                 if (puzzle.id === lastPuzzleId) {
                     markStageCleared(state.currentStage);
@@ -202,7 +233,18 @@ function handleAction(action, payload) {
                         }
                     }
                     else if (state.currentStage === "ST4") {
-                        state.isCleared = true;
+                        const card = getStationCardById("mejiro");
+                        if (card) {
+                            puzzleState.awardedCard = card;
+                            setStationCardDisplay(card, null, true);
+                            puzzleState.feedback = {
+                                kind: "success",
+                                message: "駅カードを確認してクリア画面へ進もう",
+                            };
+                        }
+                        else {
+                            state.isCleared = true;
+                        }
                     }
                 }
             }
