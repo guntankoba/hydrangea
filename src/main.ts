@@ -198,7 +198,7 @@ function handleAction(action: string, payload?: any) {
               puzzleState.awardedCard = card;
               puzzleState.feedback = {
                 kind: "success",
-                message: "駅カードを獲得したよ",
+                message: "Stationカードを獲得したよ",
               };
             }
           }
@@ -214,7 +214,7 @@ function handleAction(action: string, payload?: any) {
               setStationCardDisplay(card, "ST2");
               puzzleState.feedback = {
                 kind: "success",
-                message: "駅カードを確認してから次のステージへ進もう",
+                message: "Stationカードを確認してから次のステージへ進もう",
               };
             } else {
               state.currentStage = "ST2";
@@ -229,7 +229,7 @@ function handleAction(action: string, payload?: any) {
               setStationCardDisplay(card, "ST3");
               puzzleState.feedback = {
                 kind: "success",
-                message: "駅カードを確認してから次のステージへ進もう",
+                message: "Stationカードを確認してから次のステージへ進もう",
               };
             } else {
               state.currentStage = "ST3";
@@ -244,7 +244,7 @@ function handleAction(action: string, payload?: any) {
               setStationCardDisplay(card, "ST4");
               puzzleState.feedback = {
                 kind: "success",
-                message: "駅カードを確認してから次のステージへ進もう",
+                message: "Stationカードを確認してから次のステージへ進もう",
               };
             } else {
               state.currentStage = "ST4";
@@ -259,7 +259,7 @@ function handleAction(action: string, payload?: any) {
               setStationCardDisplay(card, null, true);
               puzzleState.feedback = {
                 kind: "success",
-                message: "駅カードを確認してクリア画面へ進もう",
+                message: "Stationカードを確認してクリア画面へ進もう",
               };
             } else {
               state.isCleared = true;

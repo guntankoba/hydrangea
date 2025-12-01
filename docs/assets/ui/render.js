@@ -82,7 +82,7 @@ function createStationCardElement(card) {
     panel.className = "station-card";
     const header = document.createElement("div");
     header.className = "station-card__header";
-    header.innerHTML = `<p class="station-card__eyebrow">駅カード</p><h3>${escapeHtml(card.name)}</h3>`;
+    header.innerHTML = `<p class="station-card__eyebrow">Stationカード</p><h3>${escapeHtml(card.name)}</h3>`;
     const body = document.createElement("div");
     body.className = "station-card__body";
     body.innerHTML = `
@@ -153,7 +153,7 @@ function renderStationCardInline(container, card) {
     wrapper.className = "station-card-inline";
     const label = document.createElement("p");
     label.className = "station-card-inline__label";
-    label.textContent = "獲得した駅カード";
+    label.textContent = "獲得したStationカード";
     const panel = createStationCardElement(card);
     wrapper.appendChild(label);
     wrapper.appendChild(panel);
