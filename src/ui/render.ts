@@ -337,11 +337,15 @@ function renderLogin(
     <div class="app-shell">
       <h1>Hydrangea Walk</h1>
       <p>パスワードを入力して入室してください</p>
-      <div class="form-group">
-        <label for="password">パスワード</label>
-        <input type="password" id="password" />
-      </div>
-      <button id="login-btn">入室する</button>
+      <form class="login-form">
+        <div class="form-group">
+          <label for="password">パスワード</label>
+          <input type="password" id="password" />
+        </div>
+        <div class="login-form__actions">
+          <button id="login-btn" type="submit">入室する</button>
+        </div>
+      </form>
       ${state.feedback
             ? `<p class="${feedbackClass(state.feedback.kind)}">${escapeHtml(
                 state.feedback.message
@@ -351,7 +355,9 @@ function renderLogin(
     </div>
   `;
 
-    app.querySelector("#login-btn")?.addEventListener("click", () => {
+    const form = app.querySelector(".login-form") as HTMLFormElement | null;
+    form?.addEventListener("submit", (event) => {
+        event.preventDefault();
         const input = app.querySelector("#password") as HTMLInputElement;
         onAction("login", input.value.trim());
     });

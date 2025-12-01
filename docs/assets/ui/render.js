@@ -242,22 +242,27 @@ export function render(app, state, puzzles, onAction, stage, stageOrder) {
     }
 }
 function renderLogin(app, state, onAction) {
-    var _a;
     app.innerHTML = `
     <div class="app-shell">
       <h1>Hydrangea Walk</h1>
       <p>パスワードを入力して入室してください</p>
-      <div class="form-group">
-        <label for="password">パスワード</label>
-        <input type="password" id="password" />
-      </div>
-      <button id="login-btn">入室する</button>
+      <form class="login-form">
+        <div class="form-group">
+          <label for="password">パスワード</label>
+          <input type="password" id="password" />
+        </div>
+        <div class="login-form__actions">
+          <button id="login-btn" type="submit">入室する</button>
+        </div>
+      </form>
       ${state.feedback
         ? `<p class="${feedbackClass(state.feedback.kind)}">${escapeHtml(state.feedback.message)}</p>`
         : ""}
     </div>
   `;
-    (_a = app.querySelector("#login-btn")) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => {
+    const form = app.querySelector(".login-form");
+    form === null || form === void 0 ? void 0 : form.addEventListener("submit", (event) => {
+        event.preventDefault();
         const input = app.querySelector("#password");
         onAction("login", input.value.trim());
     });
