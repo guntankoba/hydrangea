@@ -282,6 +282,18 @@ input:focus {
   transform: translateY(-2px);
 }
 
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  margin-top: var(--space-4);
+}
+
+.login-form__actions {
+  display: flex;
+  justify-content: center;
+}
+
 button {
   display: inline-flex;
   align-items: center;
