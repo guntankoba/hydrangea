@@ -15,6 +15,7 @@ const stages: Record<StageId, Puzzle[]> = {
   ST2: stage2Puzzles,
   ST3: stage3Puzzles,
   ST4: stage4Puzzles,
+  ST5: [],
 };
 
 const stage4StationCardRewards: Record<number, string> = {
@@ -25,13 +26,14 @@ const stage4StationCardRewards: Record<number, string> = {
   406: "kuramae",
 };
 
-const stageOrder: StageId[] = ["ST1", "ST2", "ST3", "ST4"];
+const stageOrder: StageId[] = ["ST1", "ST2", "ST3", "ST4", "ST5"];
 
 const stageThemes: Record<StageId, { accent: string; accentDark: string; accentShadow: string }> = {
   ST1: { accent: "#ffc0cb", accentDark: "#ffd6e6", accentShadow: "rgba(255, 192, 203, 0.45)" },
   ST2: { accent: "#6b9bd3", accentDark: "#94c5cc", accentShadow: "rgba(107, 155, 211, 0.35)" },
   ST3: { accent: "#4da3ff", accentDark: "#6fb3ff", accentShadow: "rgba(77, 163, 255, 0.35)" },
   ST4: { accent: "#80c241", accentDark: "#6fb234", accentShadow: "rgba(128, 194, 65, 0.35)" },
+  ST5: { accent: "#c79ad9", accentDark: "#d8b3e6", accentShadow: "rgba(199, 154, 217, 0.35)" },
 };
 
 const state: AppState = {
@@ -256,14 +258,19 @@ function handleAction(action: string, payload?: any) {
             const card = getStationCardById("mejiro");
             if (card) {
               puzzleState.awardedCard = card;
-              setStationCardDisplay(card, null, true);
+              setStationCardDisplay(card, "ST5");
               puzzleState.feedback = {
                 kind: "success",
-                message: "Stationカードを確認してクリア画面へ進もう",
+                message: "Stationカードを確認してから次のステージへ進もう",
               };
             } else {
-              state.isCleared = true;
+              state.currentStage = "ST5";
+              applyStageTheme(state.currentStage);
+              render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
+              return;
             }
+          } else if (state.currentStage === "ST5") {
+            state.isCleared = true;
           }
         }
       } else {
