@@ -11,7 +11,24 @@ function escapeHtml(str) {
 function feedbackClass(kind) {
     return `feedback feedback--${kind}`;
 }
-
+function renderChoiceWithAccent(choice, accents) {
+    const accent = accents === null || accents === void 0 ? void 0 : accents.find((a) => a.label === choice);
+    if (!accent)
+        return escapeHtml(choice);
+    const start = accent.highlight.start;
+    const end = start + accent.highlight.length;
+    if (start < 0 || start >= choice.length || end <= start) {
+        return escapeHtml(choice);
+    }
+    const before = escapeHtml(choice.slice(0, start));
+    const target = escapeHtml(choice.slice(start, end));
+    const after = escapeHtml(choice.slice(end));
+    const styles = [`color: ${accent.accentColor};`];
+    if (accent.accentShadow) {
+        styles.push(`text-shadow: 0 0 12px ${accent.accentShadow};`);
+    }
+    return `${before}<span class="choice-accent" style="${styles.join(" ")}">${target}</span>${after}`;
+}
 function renderStationCardOverlay(app, card, onAction, nextStage) {
     const overlay = document.createElement("div");
     overlay.className = "station-card-layer";
@@ -40,7 +57,6 @@ function renderStationCardOverlay(app, card, onAction, nextStage) {
     panel.appendChild(footer);
     overlay.appendChild(panel);
     app.appendChild(overlay);
-
 }
 export function render(app, state, puzzles, onAction, stage) {
     var _a, _b;

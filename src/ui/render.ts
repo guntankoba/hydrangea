@@ -1,5 +1,16 @@
 
-import { AppState, CrosswordPuzzle, Feedback, InfoPage, Puzzle, SlotPuzzle, StageId, StationCard, TextPuzzle } from "../types.js";
+import {
+    AppState,
+    ChoiceAccent,
+    CrosswordPuzzle,
+    Feedback,
+    InfoPage,
+    Puzzle,
+    SlotPuzzle,
+    StageId,
+    StationCard,
+    TextPuzzle,
+} from "../types.js";
 import { ensureCrosswordProgress, getClueAt, isBlock } from "../logic/crossword.js";
 
 // Helper to escape HTML
@@ -14,6 +25,29 @@ function escapeHtml(str: string): string {
 
 function feedbackClass(kind: "error" | "success") {
     return `feedback feedback--${kind}`;
+}
+
+function renderChoiceWithAccent(choice: string, accents?: ChoiceAccent[]) {
+    const accent = accents?.find((a) => a.label === choice);
+    if (!accent) return escapeHtml(choice);
+
+    const start = accent.highlight.start;
+    const end = start + accent.highlight.length;
+
+    if (start < 0 || start >= choice.length || end <= start) {
+        return escapeHtml(choice);
+    }
+
+    const before = escapeHtml(choice.slice(0, start));
+    const target = escapeHtml(choice.slice(start, end));
+    const after = escapeHtml(choice.slice(end));
+
+    const styles = [`color: ${accent.accentColor};`];
+    if (accent.accentShadow) {
+        styles.push(`text-shadow: 0 0 12px ${accent.accentShadow};`);
+    }
+
+    return `${before}<span class="choice-accent" style="${styles.join(" ")}">${target}</span>${after}`;
 }
 
 function renderStationCardOverlay(
