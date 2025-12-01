@@ -1,5 +1,6 @@
 import { puzzles as stage2Puzzles } from "./data/puzzles.js";
 import { stage1Puzzles } from "./data/stage1.js";
+import { stage3Puzzles } from "./data/stage3.js";
 import { stage4Puzzles } from "./data/stage4.js";
 import { getStationCardById } from "./data/stations.js";
 import { AppState, Feedback, Puzzle, SlotPuzzle, StageId, StationCard, TextPuzzle } from "./types.js";
@@ -12,14 +13,16 @@ const app = document.getElementById("app") as HTMLElement;
 const stages: Record<StageId, Puzzle[]> = {
   ST1: stage1Puzzles,
   ST2: stage2Puzzles,
+  ST3: stage3Puzzles,
   ST4: stage4Puzzles,
 };
 
-const stageOrder: StageId[] = ["ST1", "ST2", "ST4"];
+const stageOrder: StageId[] = ["ST1", "ST2", "ST3", "ST4"];
 
 const stageThemes: Record<StageId, { accent: string; accentDark: string; accentShadow: string }> = {
   ST1: { accent: "#ffc0cb", accentDark: "#ffd6e6", accentShadow: "rgba(255, 192, 203, 0.45)" },
   ST2: { accent: "#6b9bd3", accentDark: "#94c5cc", accentShadow: "rgba(107, 155, 211, 0.35)" },
+  ST3: { accent: "#4da3ff", accentDark: "#6fb3ff", accentShadow: "rgba(77, 163, 255, 0.35)" },
   ST4: { accent: "#80c241", accentDark: "#6fb234", accentShadow: "rgba(128, 194, 65, 0.35)" },
 };
 
@@ -189,10 +192,33 @@ function handleAction(action: string, payload?: any) {
               return;
             }
           } else if (state.currentStage === "ST2") {
-            state.currentStage = "ST4";
-            applyStageTheme(state.currentStage);
-            render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
-            return;
+            const card = getStationCardById("akihabara");
+            if (card) {
+              setStationCardDisplay(card, "ST3");
+              puzzleState.feedback = {
+                kind: "success",
+                message: "駅カードを確認してから次のステージへ進もう",
+              };
+            } else {
+              state.currentStage = "ST3";
+              applyStageTheme(state.currentStage);
+              render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
+              return;
+            }
+          } else if (state.currentStage === "ST3") {
+            const card = getStationCardById("shinjuku");
+            if (card) {
+              setStationCardDisplay(card, "ST4");
+              puzzleState.feedback = {
+                kind: "success",
+                message: "駅カードを確認してから次のステージへ進もう",
+              };
+            } else {
+              state.currentStage = "ST4";
+              applyStageTheme(state.currentStage);
+              render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
+              return;
+            }
           } else if (state.currentStage === "ST4") {
             state.isCleared = true;
           }

@@ -8,8 +8,8 @@ export const stage1ParkAccents = [
     {
         label: "にいじゅくみらい公園",
         highlight: { start: 0, length: 5 },
-        accentColor: "#ffc0cb",
-        accentShadow: "rgba(255, 192, 203, 0.45)",
+        accentColor: "#4da3ff",
+        accentShadow: "rgba(77, 163, 255, 0.35)",
     },
     {
         label: "小石川後楽園",

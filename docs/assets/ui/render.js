@@ -2,6 +2,7 @@ import { ensureCrosswordProgress, getClueAt, isBlock } from "../logic/crossword.
 const stageLabels = {
     ST1: "ステージ1",
     ST2: "ステージ2",
+    ST3: "ステージ3",
     ST4: "ステージ4",
 };
 // Helper to escape HTML
@@ -152,7 +153,7 @@ export function render(app, state, puzzles, onAction, stage, stageOrder) {
         renderClear(app, state);
         return;
     }
-    if (stage === "ST1" || stage === "ST4") {
+    if (stage === "ST1" || stage === "ST3" || stage === "ST4") {
         document.body.classList.add("stage-shinjuku");
         document.body.classList.remove("stage-akiba");
     }
