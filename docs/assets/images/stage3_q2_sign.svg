@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="200" viewBox="0 0 320 200" role="img">
+  <rect width="320" height="200" fill="#e8f5e9" rx="12" />
+  <rect x="18" y="26" width="284" height="56" fill="#1b5e20" rx="10" opacity="0.9" />
+  <rect x="18" y="114" width="284" height="62" fill="#ffffff" stroke="#1b5e20" stroke-width="4" rx="10" />
+  <circle cx="84" cy="148" r="26" fill="#c8e6c9" stroke="#1b5e20" stroke-width="4" />
+  <path d="M70 150c8-10 24-10 30 0" fill="none" stroke="#1b5e20" stroke-width="4" stroke-linecap="round" />
+  <path d="M74 134c6-6 16-6 22 0" fill="#1b5e20" />
+  <circle cx="74" cy="146" r="4" fill="#1b5e20" />
+  <circle cx="98" cy="146" r="4" fill="#1b5e20" />
+  <rect x="200" y="130" width="64" height="38" fill="#2e7d32" rx="6" />
+  <polygon points="212,136 252,136 232,118" fill="#f5f5f5" stroke="#1b5e20" stroke-width="3" />
+  <text x="30" y="62" fill="#ffffff" font-size="20" font-family="sans-serif" font-weight="700">緑の狸の看板</text>
+  <text x="30" y="104" fill="#1f2937" font-size="18" font-family="sans-serif" font-weight="600">カードショップのサンプル</text>
+</svg>

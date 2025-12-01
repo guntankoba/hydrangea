@@ -525,10 +525,11 @@ function renderTextPuzzle(
     const form = document.createElement("div");
     form.className = "answer-form";
     const inputId = `answer-${puzzle.id}`;
+    const finalAnswerClass = puzzle.id === 306 ? "final-answer-input" : "";
     form.innerHTML = `
     <div class="form-group">
       <label for="${inputId}">回答</label>
-      <input type="text" id="${inputId}" autocomplete="off" ${puzzleState.solved ? "disabled" : ""} placeholder="${escapeHtml(puzzle.placeholderClue || '')}" />
+      <input type="text" id="${inputId}" autocomplete="off" ${finalAnswerClass ? `class=\\\"${finalAnswerClass}\\\"` : ""} ${puzzleState.solved ? "disabled" : ""} placeholder="${escapeHtml(puzzle.placeholderClue || '')}" />
     </div>
     <button id="submit-btn-${puzzle.id}" ${puzzleState.solved ? "disabled" : ""}>回答を送信</button>
   `;
