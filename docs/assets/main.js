@@ -2,6 +2,7 @@ import { puzzles as stage2Puzzles } from "./data/puzzles.js";
 import { stage1Puzzles } from "./data/stage1.js";
 import { stage3Puzzles } from "./data/stage3.js";
 import { stage4Puzzles } from "./data/stage4.js";
+import { stage5Puzzles } from "./data/stage5.js";
 import { getStationCardById } from "./data/stations.js";
 import { render } from "./ui/render.js";
 const PASSWORD = "kobachi";
@@ -11,7 +12,7 @@ const stages = {
     ST2: stage2Puzzles,
     ST3: stage3Puzzles,
     ST4: stage4Puzzles,
-    ST5: [],
+    ST5: stage5Puzzles,
 };
 const stage4StationCardRewards = {
     402: "shimokitazawa",
@@ -79,12 +80,19 @@ function applyStageTheme(stage) {
     root.setProperty("--accent-dark", theme.accentDark);
     root.setProperty("--accent-shadow", theme.accentShadow);
 }
-function normalizeAnswer(input) {
-    return input.trim().normalize("NFKC");
+function normalizeAnswer(input, mode = "text") {
+    const normalized = input.trim().normalize("NFKC");
+    if (mode === "numeric") {
+        const digitsOnly = normalized.replace(/[^0-9]/g, "");
+        return digitsOnly ? String(Number(digitsOnly)) : "";
+    }
+    return normalized;
 }
 function isAnswerCorrect(input, puzzle) {
-    const normalizedInput = normalizeAnswer(input);
-    const normalizedCandidates = [puzzle.correctAnswer, ...(puzzle.acceptedAnswers || [])].map((answer) => normalizeAnswer(answer));
+    var _a;
+    const normalizationMode = (_a = puzzle.answerNormalization) !== null && _a !== void 0 ? _a : "text";
+    const normalizedInput = normalizeAnswer(input, normalizationMode);
+    const normalizedCandidates = [puzzle.correctAnswer, ...(puzzle.acceptedAnswers || [])].map((answer) => normalizeAnswer(answer, normalizationMode));
     return normalizedCandidates.some((answer) => normalizedInput === answer);
 }
 function ensurePuzzleState(id) {

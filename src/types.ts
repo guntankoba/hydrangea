@@ -39,6 +39,7 @@ export type TextPuzzle = {
   hint?: string;
   correctAnswer: string;
   acceptedAnswers?: string[];
+  answerNormalization?: "text" | "numeric";
   mapQuery?: string;
   content?: string[];
   imageUrl?: string;
@@ -86,6 +87,7 @@ export type SlotPuzzle = {
   hint?: string;
   placeholderClue?: string;
   mapQuery?: string;
+  answerNormalization?: "text" | "numeric";
 };
 
 export type Puzzle = CrosswordPuzzle | TextPuzzle | InfoPage | SlotPuzzle;
