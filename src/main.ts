@@ -3,7 +3,7 @@ import { stage1Puzzles } from "./data/stage1.js";
 import { stage3Puzzles } from "./data/stage3.js";
 import { stage4Puzzles } from "./data/stage4.js";
 import { getStationCardById } from "./data/stations.js";
-import { AppState, Feedback, Puzzle, SlotPuzzle, StageId, StationCard, TextPuzzle } from "./types.js";
+import { AppState, Feedback, Puzzle, PuzzleProgress, SlotPuzzle, StageId, StationCard, TextPuzzle } from "./types.js";
 import { render } from "./ui/render.js";
 
 const PASSWORD = "kobachi";
@@ -40,7 +40,6 @@ const state: AppState = {
 };
 
 const finalPuzzleId = (stage: StageId) => stages[stage][stages[stage].length - 1]?.id;
-type PuzzleProgress = { solved: boolean; feedback: Feedback | null };
 
 function getActivePuzzles() {
   return stages[state.currentStage];
@@ -96,7 +95,7 @@ function isAnswerCorrect(input: string, puzzle: TextPuzzle | SlotPuzzle): boolea
 
 function ensurePuzzleState(id: number): PuzzleProgress {
   if (!state.puzzleState[id]) {
-    state.puzzleState[id] = { solved: false, feedback: null };
+    state.puzzleState[id] = { solved: false, feedback: null, awardedCard: null };
   }
   return state.puzzleState[id];
 }
@@ -180,6 +179,7 @@ function handleAction(action: string, payload?: any) {
           if (state.currentStage === "ST1") {
             const card = getStationCardById("kanamachi");
             if (card) {
+              puzzleState.awardedCard = card;
               setStationCardDisplay(card, "ST2");
               puzzleState.feedback = {
                 kind: "success",
@@ -194,6 +194,7 @@ function handleAction(action: string, payload?: any) {
           } else if (state.currentStage === "ST2") {
             const card = getStationCardById("akihabara");
             if (card) {
+              puzzleState.awardedCard = card;
               setStationCardDisplay(card, "ST3");
               puzzleState.feedback = {
                 kind: "success",
@@ -208,6 +209,7 @@ function handleAction(action: string, payload?: any) {
           } else if (state.currentStage === "ST3") {
             const card = getStationCardById("shinjuku");
             if (card) {
+              puzzleState.awardedCard = card;
               setStationCardDisplay(card, "ST4");
               puzzleState.feedback = {
                 kind: "success",

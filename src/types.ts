@@ -106,6 +106,12 @@ export type CrosswordProgress = {
   direction: CrosswordDirection;
 };
 
+export type PuzzleProgress = {
+  solved: boolean;
+  feedback: Feedback | null;
+  awardedCard?: StationCard | null;
+};
+
 export type AppState = {
   isLoggedIn: boolean;
   isCleared: boolean;
@@ -117,9 +123,6 @@ export type AppState = {
   crossword: { [key: number]: CrosswordProgress };
   feedback: Feedback | null;
   puzzleState: {
-    [id: number]: {
-      solved: boolean;
-      feedback: Feedback | null;
-    };
+    [id: number]: PuzzleProgress;
   };
 };

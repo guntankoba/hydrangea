@@ -6,6 +6,7 @@ import {
     Feedback,
     InfoPage,
     Puzzle,
+    PuzzleProgress,
     SlotPuzzle,
     StageId,
     StationCard,
@@ -112,6 +113,29 @@ function renderStageNavigation(
     header.appendChild(nav);
 }
 
+function createStationCardElement(card: StationCard) {
+    const panel = document.createElement("div");
+    panel.className = "station-card";
+
+    const header = document.createElement("div");
+    header.className = "station-card__header";
+    header.innerHTML = `<p class="station-card__eyebrow">駅カード</p><h3>${escapeHtml(card.name)}</h3>`;
+
+    const body = document.createElement("div");
+    body.className = "station-card__body";
+    body.innerHTML = `
+      <div class="station-card__line" style="--line-color: ${card.lineColor}">
+        <span class="station-card__line-id">${escapeHtml(card.lineId)}</span>
+        <span class="station-card__line-name">${escapeHtml(card.lineName)}</span>
+      </div>
+      <div class="station-card__value">${card.value}</div>
+    `;
+
+    panel.appendChild(header);
+    panel.appendChild(body);
+    return panel;
+}
+
 function renderPuzzleNavigation(container: HTMLElement, puzzles: Puzzle[], state: AppState) {
     if (!puzzles.length) return;
 
@@ -160,23 +184,7 @@ function renderStationCardOverlay(
     const overlay = document.createElement("div");
     overlay.className = "station-card-layer";
 
-    const panel = document.createElement("div");
-    panel.className = "station-card";
-
-    const header = document.createElement("div");
-    header.className = "station-card__header";
-    header.innerHTML = `<p class="station-card__eyebrow">駅カード</p><h3>${escapeHtml(card.name)}</h3>`;
-
-    const body = document.createElement("div");
-    body.className = "station-card__body";
-    body.innerHTML = `
-      <div class="station-card__line" style="--line-color: ${card.lineColor}">
-        <span class="station-card__line-id">${escapeHtml(card.lineId)}</span>
-        <span class="station-card__line-name">${escapeHtml(card.lineName)}</span>
-      </div>
-      <div class="station-card__value">${card.value}</div>
-    `;
-
+    const panel = createStationCardElement(card);
     const footer = document.createElement("div");
     footer.className = "station-card__footer";
     const confirm = document.createElement("button");
@@ -184,12 +192,26 @@ function renderStationCardOverlay(
     confirm.addEventListener("click", () => onAction("station_card_continue"));
     footer.appendChild(confirm);
 
-    panel.appendChild(header);
-    panel.appendChild(body);
     panel.appendChild(footer);
     overlay.appendChild(panel);
     app.appendChild(overlay);
 
+}
+
+function renderStationCardInline(container: HTMLElement, card: StationCard) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "station-card-inline";
+
+    const label = document.createElement("p");
+    label.className = "station-card-inline__label";
+    label.textContent = "獲得した駅カード";
+
+    const panel = createStationCardElement(card);
+
+    wrapper.appendChild(label);
+    wrapper.appendChild(panel);
+
+    container.appendChild(wrapper);
 }
 
 export function render(
@@ -265,7 +287,7 @@ export function render(
         title.textContent = puzzleLabel;
         section.appendChild(title);
 
-        const puzzleState: { solved: boolean; feedback: Feedback | null } = state.puzzleState[puzzle.id] ?? { solved: false, feedback: null };
+        const puzzleState: PuzzleProgress = state.puzzleState[puzzle.id] ?? { solved: false, feedback: null, awardedCard: null };
 
         if (puzzle.kind === "text") {
             renderTextPuzzle(section, puzzle as TextPuzzle, puzzleState, onAction);
@@ -273,6 +295,10 @@ export function render(
             renderCrosswordPuzzle(section, state, puzzle as CrosswordPuzzle, onAction, puzzleState.solved);
         } else if (puzzle.kind === "slot") {
             renderSlotPuzzle(section, puzzle as SlotPuzzle, puzzleState, onAction);
+        }
+
+        if (puzzleState.awardedCard) {
+            renderStationCardInline(section, puzzleState.awardedCard);
         }
 
         content.appendChild(section);
@@ -435,7 +461,7 @@ function renderInfoPage(
 function renderTextPuzzle(
     container: HTMLElement,
     puzzle: TextPuzzle,
-    puzzleState: { solved: boolean; feedback: Feedback | null },
+    puzzleState: PuzzleProgress,
     onAction: (action: string, payload?: any) => void
 ) {
     if (puzzle.accentColor) {
@@ -519,7 +545,7 @@ function renderTextPuzzle(
 function renderSlotPuzzle(
     container: HTMLElement,
     puzzle: SlotPuzzle,
-    puzzleState: { solved: boolean; feedback: Feedback | null },
+    puzzleState: PuzzleProgress,
     onAction: (action: string, payload?: any) => void
 ) {
     const question = document.createElement("div");
