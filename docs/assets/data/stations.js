@@ -4,7 +4,7 @@ const stationCards = {
         name: "金町",
         lineId: "JL",
         lineName: "常磐緩行線",
-        lineColor: "#00A0DE",
+        lineColor: "#A8A39D",
         value: 21,
     },
     akihabara: {
