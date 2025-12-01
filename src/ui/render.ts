@@ -19,6 +19,7 @@ const stageLabels: Record<StageId, string> = {
     ST2: "ステージ2",
     ST3: "ステージ3",
     ST4: "ステージ4",
+    ST5: "ステージ5",
 };
 
 // Helper to escape HTML
