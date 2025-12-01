@@ -88,9 +88,11 @@ function createStationCardElement(card) {
     body.innerHTML = `
       <div class="station-card__line" style="--line-color: ${card.lineColor}">
         <span class="station-card__line-id">${escapeHtml(card.lineId)}</span>
-        <span class="station-card__line-name">${escapeHtml(card.lineName)}</span>
       </div>
-      <div class="station-card__value">${card.value}</div>
+      <div class="station-card__value">
+        <span class="station-card__value-label">Station No.</span>
+        <span class="station-card__value-number">${card.value}</span>
+      </div>
     `;
     panel.appendChild(header);
     panel.appendChild(body);

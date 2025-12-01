@@ -762,41 +762,60 @@ button:disabled {
 }
 
 .station-card__body {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
+  gap: 1.25rem;
   padding: 1rem 1.25rem;
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .station-card__line {
   display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.65rem 1rem;
-  border-radius: 999px;
+  gap: 0.65rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
   background: color-mix(in srgb, var(--line-color, #00a0de) 85%, #ffffff 15%);
   color: #0b1120;
   font-weight: 700;
-  text-transform: uppercase;
   letter-spacing: 0.05em;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
 }
 
 .station-card__line-id {
-  font-size: 0.95rem;
-}
-
-.station-card__line-name {
-  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 46px;
+  padding: 0.35rem 0.75rem;
+  border-radius: 10px;
+  background: rgba(11, 17, 32, 0.18);
+  font-size: 1rem;
 }
 
 .station-card__value {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+  padding-right: 0.35rem;
+}
+
+.station-card__value-label {
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(229, 231, 235, 0.8);
+}
+
+.station-card__value-number {
   font-size: 2.75rem;
   font-weight: 800;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   color: #e5e7eb;
   text-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
 }
