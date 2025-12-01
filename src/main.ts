@@ -15,6 +15,8 @@ const stages: Record<StageId, Puzzle[]> = {
   ST4: stage4Puzzles,
 };
 
+const stageOrder: StageId[] = ["ST1", "ST2", "ST4"];
+
 const stageThemes: Record<StageId, { accent: string; accentDark: string; accentShadow: string }> = {
   ST1: { accent: "#ffc0cb", accentDark: "#ffd6e6", accentShadow: "rgba(255, 192, 203, 0.45)" },
   ST2: { accent: "#6b9bd3", accentDark: "#94c5cc", accentShadow: "rgba(107, 155, 211, 0.35)" },
@@ -25,6 +27,7 @@ const state: AppState = {
   isLoggedIn: false,
   isCleared: false,
   currentStage: "ST1",
+  clearedStages: [],
   stationCardDisplay: null,
   pendingStageAfterCard: null,
   tos: { agreed: false, openedOnce: false },
@@ -38,6 +41,28 @@ type PuzzleProgress = { solved: boolean; feedback: Feedback | null };
 
 function getActivePuzzles() {
   return stages[state.currentStage];
+}
+
+function getStageIndex(stage: StageId) {
+  const index = stageOrder.indexOf(stage);
+  return index === -1 ? Number.MAX_SAFE_INTEGER : index;
+}
+
+function maxClearedStageIndex() {
+  if (!state.clearedStages.length) return -1;
+  return Math.max(...state.clearedStages.map(getStageIndex));
+}
+
+function markStageCleared(stage: StageId) {
+  if (!state.clearedStages.includes(stage)) {
+    state.clearedStages.push(stage);
+  }
+}
+
+function canAccessStage(stage: StageId) {
+  const targetIndex = getStageIndex(stage);
+  if (targetIndex === Number.MAX_SAFE_INTEGER) return false;
+  return targetIndex <= maxClearedStageIndex() + 1;
 }
 
 function setStationCardDisplay(card: StationCard | null, nextStage: StageId | null) {
@@ -54,18 +79,14 @@ function applyStageTheme(stage: StageId) {
   root.setProperty("--accent-shadow", theme.accentShadow);
 }
 
-// Initial Render
-applyStageTheme(state.currentStage);
-render(app, state, getActivePuzzles(), handleAction, state.currentStage);
-
 function normalizeAnswer(input: string): string {
   return input.trim().normalize("NFKC");
 }
 
 function isAnswerCorrect(input: string, puzzle: TextPuzzle | SlotPuzzle): boolean {
   const normalizedInput = normalizeAnswer(input);
-  const normalizedCandidates = [puzzle.correctAnswer, ...(puzzle.acceptedAnswers || [])].map(
-    (answer) => normalizeAnswer(answer)
+  const normalizedCandidates = [puzzle.correctAnswer, ...(puzzle.acceptedAnswers || [])].map((answer) =>
+    normalizeAnswer(answer)
   );
   return normalizedCandidates.some((answer) => normalizedInput === answer);
 }
@@ -86,7 +107,7 @@ function handleAction(action: string, payload?: any) {
       state.feedback = { kind: "error", message: "パスワードが違います" };
     }
 
-    render(app, state, getActivePuzzles(), handleAction, state.currentStage);
+    render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
     return;
   }
 
@@ -99,7 +120,22 @@ function handleAction(action: string, payload?: any) {
       state.currentStage = nextStage;
       applyStageTheme(state.currentStage);
     }
-    render(app, state, getActivePuzzles(), handleAction, state.currentStage);
+    render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
+    return;
+  }
+
+  if (action === "navigate_stage") {
+    const targetStage = payload?.stageId as StageId | undefined;
+    if (!targetStage || !canAccessStage(targetStage)) {
+      state.feedback = { kind: "error", message: "まだ進めないステージです" };
+      render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
+      return;
+    }
+    state.currentStage = targetStage;
+    setStationCardDisplay(null, null);
+    state.feedback = null;
+    applyStageTheme(state.currentStage);
+    render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
     return;
   }
 
@@ -112,7 +148,7 @@ function handleAction(action: string, payload?: any) {
     if (action === "tos_accept") {
       state.tos.agreed = true;
       state.feedback = null;
-      render(app, state, getActivePuzzles(), handleAction, state.currentStage);
+      render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
     }
     return;
   }
@@ -125,40 +161,39 @@ function handleAction(action: string, payload?: any) {
     const answerValue = typeof payload?.value === "string" ? payload.value : "";
 
     if (puzzleState.solved) {
-      puzzleState.feedback = { kind: "success", message: "クリア済みです。" };
-      render(app, state, getActivePuzzles(), handleAction, state.currentStage);
+      puzzleState.feedback = { kind: "success", message: "クリア済みです" };
+      render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
       return;
     }
 
     if (puzzle.kind === "text" || puzzle.kind === "slot") {
       if (isAnswerCorrect(answerValue, puzzle)) {
         puzzleState.solved = true;
-        puzzleState.feedback = { kind: "success", message: "正解！次のカードに進もう。" };
+        puzzleState.feedback = { kind: "success", message: "正解です" };
 
         const lastPuzzleId = finalPuzzleId(state.currentStage);
         if (puzzle.id === lastPuzzleId) {
+          markStageCleared(state.currentStage);
           if (state.currentStage === "ST1") {
             const card = getStationCardById("kanamachi");
             if (card) {
               setStationCardDisplay(card, "ST2");
               puzzleState.feedback = {
                 kind: "success",
-                message: "正解！駅カードを確認してから次のステージへ進もう。",
+                message: "駅カードを確認してから次のステージへ進もう",
               };
             } else {
               state.currentStage = "ST2";
               applyStageTheme(state.currentStage);
-              render(app, state, getActivePuzzles(), handleAction, state.currentStage);
+              render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
               return;
             }
-          }
-          if (state.currentStage === "ST2") {
+          } else if (state.currentStage === "ST2") {
             state.currentStage = "ST4";
             applyStageTheme(state.currentStage);
-            render(app, state, getActivePuzzles(), handleAction, state.currentStage);
+            render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
             return;
-          }
-          if (state.currentStage === "ST4") {
+          } else if (state.currentStage === "ST4") {
             state.isCleared = true;
           }
         }
@@ -168,6 +203,9 @@ function handleAction(action: string, payload?: any) {
     }
   }
 
-  render(app, state, getActivePuzzles(), handleAction, state.currentStage);
+  render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
 }
 
+// Initial Render
+applyStageTheme(state.currentStage);
+render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
