@@ -110,6 +110,7 @@ export type AppState = {
   isLoggedIn: boolean;
   isCleared: boolean;
   currentStage: StageId;
+  clearedStages: StageId[];
   stationCardDisplay: StationCard | null;
   pendingStageAfterCard: StageId | null;
   tos: { agreed: boolean; openedOnce: boolean };

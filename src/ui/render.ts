@@ -13,6 +13,12 @@ import {
 } from "../types.js";
 import { ensureCrosswordProgress, getClueAt, isBlock } from "../logic/crossword.js";
 
+const stageLabels: Record<StageId, string> = {
+    ST1: "ステージ1",
+    ST2: "ステージ2",
+    ST4: "ステージ4",
+};
+
 // Helper to escape HTML
 function escapeHtml(str: string): string {
     return str
@@ -48,6 +54,100 @@ function renderChoiceWithAccent(choice: string, accents?: ChoiceAccent[]) {
     }
 
     return `${before}<span class="choice-accent" style="${styles.join(" ")}">${target}</span>${after}`;
+}
+
+function renderStageNavigation(
+    header: HTMLElement,
+    currentStage: StageId,
+    clearedStages: StageId[],
+    stageOrder: StageId[],
+    onAction: (action: string, payload?: any) => void
+) {
+    if (!stageOrder.length) return;
+
+    const maxClearedIndex = clearedStages.length
+        ? Math.max(...clearedStages.map((stage) => stageOrder.indexOf(stage)))
+        : -1;
+
+    const nav = document.createElement("div");
+    nav.className = "stage-nav";
+
+    const label = document.createElement("span");
+    label.className = "stage-nav__label";
+    label.textContent = "ステージ移動";
+    nav.appendChild(label);
+
+    const list = document.createElement("div");
+    list.className = "stage-nav__list";
+
+    stageOrder.forEach((stageId) => {
+        const index = stageOrder.indexOf(stageId);
+        const isCurrent = currentStage === stageId;
+        const isCleared = clearedStages.includes(stageId);
+        const isUnlocked = index <= maxClearedIndex + 1 && index !== -1;
+
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = stageLabels[stageId] ?? stageId;
+        button.className = "stage-nav__item";
+
+        if (isCurrent) {
+            button.classList.add("is-current");
+        } else if (isCleared) {
+            button.classList.add("is-cleared");
+        }
+
+        if (!isUnlocked) {
+            button.disabled = true;
+            button.classList.add("is-locked");
+        } else {
+            button.addEventListener("click", () => onAction("navigate_stage", { stageId }));
+        }
+
+        list.appendChild(button);
+    });
+
+    nav.appendChild(list);
+    header.appendChild(nav);
+}
+
+function renderPuzzleNavigation(container: HTMLElement, puzzles: Puzzle[], state: AppState) {
+    if (!puzzles.length) return;
+
+    const nav = document.createElement("div");
+    nav.className = "puzzle-nav";
+
+    const label = document.createElement("span");
+    label.className = "puzzle-nav__label";
+    label.textContent = "ステージ内移動";
+    nav.appendChild(label);
+
+    const list = document.createElement("div");
+    list.className = "puzzle-nav__list";
+
+    puzzles.forEach((puzzle, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        const displayIndex = index + 1;
+        const puzzleLabel = puzzle.kind === "info" ? "イントロ" : `Q${displayIndex}`;
+        button.textContent = puzzleLabel;
+        button.className = "puzzle-nav__item";
+
+        const solved = state.puzzleState[puzzle.id]?.solved;
+        if (solved) {
+            button.classList.add("is-solved");
+        }
+
+        const targetId = `puzzle-${puzzle.id}`;
+        button.addEventListener("click", () => {
+            document.getElementById(targetId)?.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+
+        list.appendChild(button);
+    });
+
+    nav.appendChild(list);
+    container.appendChild(nav);
 }
 
 function renderStationCardOverlay(
@@ -96,7 +196,8 @@ export function render(
     state: AppState,
     puzzles: Puzzle[],
     onAction: (action: string, payload?: any) => void,
-    stage?: StageId
+    stage?: StageId,
+    stageOrder?: StageId[]
 ) {
     if (!state.isLoggedIn) {
         renderLogin(app, state, onAction);
@@ -134,6 +235,9 @@ export function render(
     const header = document.createElement("header");
     const stageTitle = intro?.title ?? "Hydrangea Walk";
     header.innerHTML = `<h1>${escapeHtml(stageTitle)}</h1>`;
+    if (stageOrder && stageOrder.length) {
+        renderStageNavigation(header, state.currentStage, state.clearedStages, stageOrder, onAction);
+    }
     container.appendChild(header);
 
     const content = document.createElement("div");
@@ -144,6 +248,10 @@ export function render(
         introCard.className = "puzzle-card info-card";
         renderInfoPage(introCard, intro);
         content.appendChild(introCard);
+    }
+
+    if (challenges.length) {
+        renderPuzzleNavigation(content, challenges, state);
     }
 
     challenges.forEach((puzzle, index) => {
