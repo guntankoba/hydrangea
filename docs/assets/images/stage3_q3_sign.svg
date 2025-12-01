@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="200" viewBox="0 0 320 200" role="img">
+  <rect width="320" height="200" fill="#e3f2fd" rx="12" />
+  <rect x="18" y="22" width="284" height="60" fill="#1565c0" rx="10" opacity="0.9" />
+  <rect x="18" y="114" width="284" height="64" fill="#ffffff" stroke="#1565c0" stroke-width="4" rx="10" />
+  <circle cx="92" cy="146" r="22" fill="#bbdefb" stroke="#0d47a1" stroke-width="4" />
+  <polygon points="84,144 100,144 92,130" fill="#0d47a1" />
+  <rect x="200" y="132" width="50" height="26" fill="#ffecb3" stroke="#ef6c00" stroke-width="3" rx="6" />
+  <polygon points="232,120 248,144 216,144" fill="#ef6c00" />
+  <text x="30" y="62" fill="#ffffff" font-size="20" font-family="sans-serif" font-weight="700">青い看板のサンプル</text>
+  <text x="30" y="106" fill="#1f2937" font-size="18" font-family="sans-serif" font-weight="600">猫と鶏が並ぶイメージ</text>
+</svg>
