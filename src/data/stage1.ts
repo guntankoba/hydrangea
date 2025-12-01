@@ -70,7 +70,7 @@ export const stage1Puzzles: Puzzle[] = [
     placeholderClue: "ひらがな・漢字どちらでもOK",
     correctAnswer: "かなまち",
     acceptedAnswers: ["金町"],
-    imageUrl: "/images/st1_example_park_kanamachi.png",
+    imageUrl: "images/st1_example_park_kanamachi.png",
     imageAlt: "",
     choices: [
       "上野恩賜公園",
