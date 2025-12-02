@@ -550,6 +550,35 @@ function renderInfoPage(
     }
 }
 
+function renderTransformPairs(container: HTMLElement, pairs: { from: string; to: string }[]) {
+    if (!pairs.length) return;
+
+    const grid = document.createElement("div");
+    grid.className = "final-transform-grid";
+
+    pairs.forEach((pair) => {
+        const fromCell = document.createElement("div");
+        fromCell.className = "final-transform-grid__cell final-transform-grid__cell--from";
+        fromCell.innerHTML = `
+          <span class="final-transform-grid__label">変換前</span>
+          <span class="final-transform-grid__token">${escapeHtml(pair.from)}</span>
+          <span class="final-transform-grid__arrow">→</span>
+        `;
+
+        const toCell = document.createElement("div");
+        toCell.className = "final-transform-grid__cell final-transform-grid__cell--to";
+        toCell.innerHTML = `
+          <span class="final-transform-grid__label">変換後</span>
+          <span class="final-transform-grid__token">${escapeHtml(pair.to)}</span>
+        `;
+
+        grid.appendChild(fromCell);
+        grid.appendChild(toCell);
+    });
+
+    container.appendChild(grid);
+}
+
 function renderTextPuzzle(
     container: HTMLElement,
     puzzle: TextPuzzle,
@@ -590,6 +619,10 @@ function renderTextPuzzle(
         question.appendChild(list);
     }
     container.appendChild(question);
+
+    if (puzzle.transformPairs?.length) {
+        renderTransformPairs(container, puzzle.transformPairs);
+    }
 
     const form = document.createElement("div");
     form.className = "answer-form";
