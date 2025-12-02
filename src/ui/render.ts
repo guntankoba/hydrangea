@@ -242,6 +242,16 @@ export function render(
         return;
     }
 
+    if (state.postGame.step === "bus_guide") {
+        renderBusGuide(app, state, onAction);
+        return;
+    }
+
+    if (state.postGame.step === "arrival_check") {
+        renderArrivalCheck(app, state, onAction);
+        return;
+    }
+
     if (state.isCleared) {
         renderClear(app, state);
         return;
@@ -438,17 +448,76 @@ function renderTos(
 }
 
 function renderClear(app: HTMLElement, state: AppState) {
-  app.innerHTML = `
+    app.innerHTML = `
     <div class="app-shell">
-      <header><h1>クリア</h1></header>
+      <header><h1>今日の謎解きは、ここでおしまいです。</h1></header>
       <div class="content">
-        <p>お疲れさまでした！</p>
-        <p>すべての謎を解き明かしました。</p>
-        <p>目白駅から白61に乗って、椿山荘で思い出を完成させてください。</p>
+        <p>ここまで歩んでくれて、ありがとうございました。少しだけ休憩して、次の時間をゆっくり楽しんでください。</p>
+        <p>この場所では、夜になると霧の海のような「雲海」が広がると言われています。</p>
+        <p>時間になったら、案内人といっしょに外に出てみてください。</p>
+        <p>これで今日の謎解きはすべて終了です。このアプリはここでおしまいです。</p>
+        <button id="close-app" class="close-app">アプリを閉じる</button>
       </div>
     </div>
   `;
 
+    const closeButton = app.querySelector("#close-app") as HTMLButtonElement | null;
+    closeButton?.addEventListener("click", () => {
+        window.close();
+    });
+}
+
+function renderBusGuide(app: HTMLElement, state: AppState, onAction: (action: string, payload?: any) => void) {
+    app.innerHTML = `
+    <div class="app-shell">
+      <header><h1>これからの道しるべ</h1></header>
+      <div class="content">
+        <p>さきほど導いた番号「61」は、これから進むための番号です。</p>
+        <p>いまいる駅から、白いバスで 61 の番号がついたものに乗ってください。</p>
+        <p>降りる場所は、あなたのすぐそばにいる“案内人”の合図にしたがってください。</p>
+        <button id="open-arrival">到着したら つづきを開く</button>
+      </div>
+    </div>
+  `;
+
+    const proceedButton = app.querySelector("#open-arrival") as HTMLButtonElement | null;
+    proceedButton?.addEventListener("click", () => {
+        onAction("postgame_to_arrival");
+    });
+}
+
+function renderArrivalCheck(app: HTMLElement, state: AppState, onAction: (action: string, payload?: any) => void) {
+    app.innerHTML = `
+    <div class="app-shell">
+      <header><h1>到着確認</h1></header>
+      <div class="content">
+        <p>到着した場所の名前を入力してください。</p>
+        <form class="arrival-form">
+          <div class="form-group">
+            <label for="arrival-answer">到着先の名前</label>
+            <input type="text" id="arrival-answer" autocomplete="off" placeholder="ひらがな・漢字で入力" />
+          </div>
+          <div class="login-form__actions">
+            <button type="submit">送信する</button>
+          </div>
+        </form>
+        ${state.postGame.feedback
+            ? `<p class="${feedbackClass(state.postGame.feedback.kind)}">${escapeHtml(state.postGame.feedback.message)}</p>`
+            : ""
+        }
+      </div>
+    </div>
+  `;
+
+    const form = app.querySelector(".arrival-form") as HTMLFormElement | null;
+    form?.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const answerInput = app.querySelector("#arrival-answer") as HTMLInputElement | null;
+        onAction("arrival_submit", { value: answerInput?.value || "" });
+    });
+
+    const answerInput = app.querySelector("#arrival-answer") as HTMLInputElement | null;
+    answerInput?.focus();
 }
 
 function renderInfoPage(
