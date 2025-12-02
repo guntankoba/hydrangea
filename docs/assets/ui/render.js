@@ -253,7 +253,7 @@ function renderLogin(app, state, onAction) {
     app.innerHTML = `
     <div class="app-shell">
       <h1>Hydrangea Walk</h1>
-      <p>パスワードを入力して入室してください</p>
+      <p>担当者から受領したパスワードを入力してください。</p>
       <form class="login-form">
         <div class="form-group">
           <label for="password">パスワード</label>

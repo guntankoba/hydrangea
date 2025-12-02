@@ -5,7 +5,7 @@ import { stage4Puzzles } from "./data/stage4.js";
 import { stage5Puzzles } from "./data/stage5.js";
 import { getStationCardById } from "./data/stations.js";
 import { render } from "./ui/render.js";
-const PASSWORD = "kobachi";
+const PASSWORD = "KPrpz4ms";
 const app = document.getElementById("app");
 const stages = {
     ST1: stage1Puzzles,
