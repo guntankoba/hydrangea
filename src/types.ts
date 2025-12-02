@@ -48,6 +48,7 @@ export type TextPuzzle = {
   choiceAccents?: ChoiceAccent[];
   accentColor?: string;
   accentShadow?: string;
+  transformPairs?: { from: string; to: string }[];
 };
 
 export type ChoiceAccent = {
