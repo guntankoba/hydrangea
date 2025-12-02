@@ -97,6 +97,8 @@ export type Feedback = {
   message: string;
 };
 
+export type PostGameStep = "bus_guide" | "arrival_check" | null;
+
 export type GridPosition = {
   row: number;
   col: number;
@@ -122,6 +124,7 @@ export type AppState = {
   stationCardDisplay: StationCard | null;
   pendingStageAfterCard: StageId | null;
   pendingClearAfterCard: boolean;
+  postGame: { step: PostGameStep; feedback: Feedback | null };
   tos: { agreed: boolean; openedOnce: boolean };
   crossword: { [key: number]: CrosswordProgress };
   feedback: Feedback | null;

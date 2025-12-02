@@ -37,6 +37,7 @@ const state = {
     stationCardDisplay: null,
     pendingStageAfterCard: null,
     pendingClearAfterCard: false,
+    postGame: { step: null, feedback: null },
     tos: { agreed: false, openedOnce: false },
     crossword: {},
     feedback: null,
@@ -160,6 +161,27 @@ function handleAction(action, payload) {
         }
         return;
     }
+    if (action === "postgame_to_arrival") {
+        state.postGame.step = "arrival_check";
+        state.postGame.feedback = null;
+        render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
+        return;
+    }
+    if (action === "arrival_submit") {
+        const answerValue = typeof (payload === null || payload === void 0 ? void 0 : payload.value) === "string" ? payload.value : "";
+        const accepted = ["椿山荘", "ちんざんそう", "ホテル椿山荘"].map((answer) => normalizeAnswer(answer, "text"));
+        const normalizedInput = normalizeAnswer(answerValue, "text");
+        if (accepted.includes(normalizedInput)) {
+            state.postGame.step = null;
+            state.postGame.feedback = null;
+            state.isCleared = true;
+        }
+        else {
+            state.postGame.feedback = { kind: "error", message: "到着した場所の名前が違うようです" };
+        }
+        render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
+        return;
+    }
     if (action === "answer") {
         const puzzle = getActivePuzzles().find((p) => p.id === (payload === null || payload === void 0 ? void 0 : payload.puzzleId));
         if (!puzzle)
@@ -260,7 +282,9 @@ function handleAction(action, payload) {
                         }
                     }
                     else if (state.currentStage === "ST5") {
-                        state.isCleared = true;
+                        state.postGame.step = "bus_guide";
+                        state.postGame.feedback = null;
+                        puzzleState.feedback = { kind: "success", message: "導いた番号が次に進むための道しるべだ" };
                     }
                 }
             }
