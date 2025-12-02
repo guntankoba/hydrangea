@@ -7,7 +7,7 @@ import { getStationCardById } from "./data/stations.js";
 import { AppState, Feedback, Puzzle, PuzzleProgress, SlotPuzzle, StageId, StationCard, TextPuzzle } from "./types.js";
 import { render } from "./ui/render.js";
 
-const PASSWORD = "kobachi";
+const PASSWORD = "KPrpz4ms";
 
 const app = document.getElementById("app") as HTMLElement;
 
