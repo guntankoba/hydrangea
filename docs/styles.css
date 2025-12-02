@@ -201,6 +201,8 @@ p {
   padding: 1rem 1.25rem 1.25rem;
   background: rgba(0, 0, 0, 0.15);
   line-height: 1.6;
+  max-height: 70vh;
+  overflow-y: auto;
 }
 
 .tos-consent {
