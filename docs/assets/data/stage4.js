@@ -72,14 +72,15 @@ export const stage4Puzzles = [
     {
         id: 407,
         kind: "text",
-        title: "FINAL｜数式を 14 にせよ",
-        prompt: "集めたStationカードを \"□１ × □２ − □３ − □４ ＋ □５\" に並べて計算した答えを入力。",
-        placeholderClue: "カードA × カードB − カードC − カードD ＋ カードE",
-        correctAnswer: "14",
-        acceptedAnswers: ["１４"],
+        title: "FINAL｜次の目的地の駅を答えよ",
+        prompt: "空欄の数式で得た Station No. を山手線の駅ナンバリングに当てはめ、次の目的地の駅名を入力せよ。",
+        placeholderClue: "数式の結果から導ける次の目的地を入力",
+        correctAnswer: "目白",
+        acceptedAnswers: ["目白", "めじろ", "Mejiro"],
+        answerInputClass: "final-answer-input final-answer-input--yamanote",
         content: [
             "正解判定ロジック: slot1*slot2 - slot3 - slot4 + slot5。",
-            "想定正解の並びのみが 14 になる前提。",
+            "数式の結果 14 → 駅ナンバリング JY14 を経由し、駅名を入力する。",
         ],
     },
 ];

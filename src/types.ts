@@ -39,6 +39,7 @@ export type TextPuzzle = {
   hint?: string;
   correctAnswer: string;
   acceptedAnswers?: string[];
+  answerInputClass?: string;
   answerNormalization?: "text" | "numeric";
   mapQuery?: string;
   content?: string[];
