@@ -425,8 +425,32 @@ function renderInfoPage(container, puzzle) {
         container.appendChild(actions);
     }
 }
+function renderTransformPairs(container, pairs) {
+    if (!pairs.length)
+        return;
+    const grid = document.createElement("div");
+    grid.className = "final-transform-grid";
+    pairs.forEach((pair) => {
+        const fromCell = document.createElement("div");
+        fromCell.className = "final-transform-grid__cell final-transform-grid__cell--from";
+        fromCell.innerHTML = `
+          <span class="final-transform-grid__label">変換前</span>
+          <span class="final-transform-grid__token">${escapeHtml(pair.from)}</span>
+          <span class="final-transform-grid__arrow">→</span>
+        `;
+        const toCell = document.createElement("div");
+        toCell.className = "final-transform-grid__cell final-transform-grid__cell--to";
+        toCell.innerHTML = `
+          <span class="final-transform-grid__label">変換後</span>
+          <span class="final-transform-grid__token">${escapeHtml(pair.to)}</span>
+        `;
+        grid.appendChild(fromCell);
+        grid.appendChild(toCell);
+    });
+    container.appendChild(grid);
+}
 function renderTextPuzzle(container, puzzle, puzzleState, onAction) {
-    var _a, _b, _c;
+    var _a, _b, _c, _d;
     if (puzzle.accentColor) {
         container.style.setProperty("--accent", puzzle.accentColor);
     }
@@ -459,6 +483,9 @@ function renderTextPuzzle(container, puzzle, puzzleState, onAction) {
         question.appendChild(list);
     }
     container.appendChild(question);
+    if ((_b = puzzle.transformPairs) === null || _b === void 0 ? void 0 : _b.length) {
+        renderTransformPairs(container, puzzle.transformPairs);
+    }
     const form = document.createElement("div");
     form.className = "answer-form";
     const inputId = `answer-${puzzle.id}`;
@@ -489,8 +516,8 @@ function renderTextPuzzle(container, puzzle, puzzleState, onAction) {
         const input = form.querySelector(`#${inputId}`);
         onAction("answer", { puzzleId: puzzle.id, value: input.value.trim() });
     };
-    (_b = form.querySelector(`#submit-btn-${puzzle.id}`)) === null || _b === void 0 ? void 0 : _b.addEventListener("click", submit);
-    (_c = form.querySelector(`#${inputId}`)) === null || _c === void 0 ? void 0 : _c.addEventListener("keydown", (event) => {
+    (_c = form.querySelector(`#submit-btn-${puzzle.id}`)) === null || _c === void 0 ? void 0 : _c.addEventListener("click", submit);
+    (_d = form.querySelector(`#${inputId}`)) === null || _d === void 0 ? void 0 : _d.addEventListener("keydown", (event) => {
         if (event.key === "Enter" && !event.isComposing) {
             event.preventDefault();
             submit();
