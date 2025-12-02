@@ -4,7 +4,7 @@ export const stage4Puzzles: Puzzle[] = [
   {
     id: 401,
     kind: "info",
-    title: "ST4｜駅番号パズル",
+    title: "ST4｜駅の調査",
     lead: "山手線以外のStationカードを集めて数式を 14 にし、次の鍵を手に入れよう。",
     content: [
       "フェーズ1で5枚のStationカードを漢字入力で集め、フェーズ2で空欄の数式を 14 に仕上げる。",
