@@ -5,8 +5,12 @@ export const stage3Puzzles = [
         id: 301,
         kind: "info",
         title: "ST3｜変換規則パズル",
-        lead: "看板の店名から ①〜④ を集め、提示された青いひらがなへ当てる変換規則を完成させよう。",
-        content: [],
+        lead: "今から指定された範囲の街を歩き、問いに答えよう。",
+        content: [
+            "対象範囲は下記の地図の範囲です。",
+            "https://www.google.com/maps/d/u/0/edit?mid=1BEpJfy5qhI5YJjXIJMTrt3YmsTS90YA&usp=sharing",
+            "すべて外で見つけることができるもになってるはずです。",
+        ],
     },
     {
         id: 302,
@@ -51,15 +55,18 @@ export const stage3Puzzles = [
         id: 305,
         kind: "text",
         title: "FINAL｜変換規則を完成させよ",
-        prompt: "① → ②、③ → ④ の規則を 青いアクセントで示されたひらがなに適用し、新たな駅名を入力せよ。",
-        placeholderClue: "変換後の駅名を入力",
+        prompt: "① → ②、③ → ④ の規則を適用し、変換後の駅名を入力せよ。",
+        placeholderClue: "駅名を入力",
         correctAnswer: "しんじゅく",
         acceptedAnswers: ["新宿"],
         content: [
-            "Q1〜Q3 で判明した ① → ②、③ → ④ の変換規則を使ってください。",
-            "空欄をすべて埋めた上で、以前のステージで青色に示されたひらがなへ規則を当てはめた駅名を入力しましょう。",
+            "Q1〜Q3 で判明した ① → ②、③ → ④ の変換規則を使う。",
         ],
         accentColor,
         accentShadow,
+        transformPairs: [
+            { from: "に", to: "し" },
+            { from: "い", to: "ん" },
+        ],
     },
 ];

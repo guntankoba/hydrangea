@@ -68,8 +68,8 @@ export const stage3Puzzles: Puzzle[] = [
     accentColor,
     accentShadow,
     transformPairs: [
-      { from: "①", to: "②" },
-      { from: "③", to: "④" },
+      { from: "に", to: "し" },
+      { from: "い", to: "ん" },
     ],
   },
 ];
