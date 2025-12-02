@@ -462,7 +462,7 @@ function renderTextPuzzle(container, puzzle, puzzleState, onAction) {
     const form = document.createElement("div");
     form.className = "answer-form";
     const inputId = `answer-${puzzle.id}`;
-    const finalAnswerClass = puzzle.id === 306 ? "final-answer-input" : "";
+    const finalAnswerClass = puzzle.answerInputClass || (puzzle.id === 306 ? "final-answer-input" : "");
     form.innerHTML = `
     <div class="form-group">
       <label for="${inputId}">回答</label>
