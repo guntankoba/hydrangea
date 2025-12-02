@@ -8,8 +8,12 @@ export const stage3Puzzles: Puzzle[] = [
     id: 301,
     kind: "info",
     title: "ST3｜変換規則パズル",
-    lead: "看板の店名から ①〜④ を集め、提示された青いひらがなへ当てる変換規則を完成させよう。",
-    content: [],
+    lead: "今から指定された範囲の街を歩き、問いに答えよう。",
+    content: [
+      "対象範囲は下記の地図の範囲です。",
+      "https://www.google.com/maps/d/u/0/edit?mid=1BEpJfy5qhI5YJjXIJMTrt3YmsTS90YA&usp=sharing",
+      "すべて外で見つけることができるもになってるはずです。",
+    ],
   },
   {
     id: 302,
