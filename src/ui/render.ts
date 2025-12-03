@@ -34,6 +34,35 @@ function escapeHtml(str: string): string {
 
 export function resetScrollPosition(behavior: ScrollBehavior = "auto") {
     window.scrollTo({ top: 0, behavior });
+
+function createContentParagraph(text: string): HTMLParagraphElement {
+    const paragraph = document.createElement("p");
+    const trimmed = text.trim();
+
+    if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+        try {
+            const url = new URL(trimmed);
+            const anchor = document.createElement("a");
+            anchor.href = url.toString();
+            anchor.textContent = url.toString();
+            anchor.target = "_blank";
+            anchor.rel = "noopener noreferrer";
+            paragraph.appendChild(anchor);
+            return paragraph;
+        } catch (error) {
+            // Fallback to textContent when URL parsing fails
+        }
+    }
+
+    paragraph.textContent = text;
+    return paragraph;
+}
+
+function appendContentParagraphs(container: HTMLElement, contents: string[]) {
+    contents.forEach((entry) => {
+        const paragraph = createContentParagraph(entry);
+        container.appendChild(paragraph);
+    });
 }
 
 function feedbackClass(kind: "error" | "success") {
@@ -616,7 +645,7 @@ function renderInfoPage(
     container.appendChild(lead);
 
     const body = document.createElement("div");
-    body.innerHTML = puzzle.content.map((p) => `<p>${escapeHtml(p)}</p>`).join("");
+    appendContentParagraphs(body, puzzle.content);
     container.appendChild(body);
 
     if (puzzle.actions) {
@@ -681,9 +710,11 @@ function renderTextPuzzle(
 
     const question = document.createElement("div");
     question.className = "question";
-    question.innerHTML = `<p>${escapeHtml(puzzle.prompt)}</p>`;
+    const prompt = document.createElement("p");
+    prompt.textContent = puzzle.prompt;
+    question.appendChild(prompt);
     if (puzzle.content) {
-        question.innerHTML += puzzle.content.map((p) => `<p>${escapeHtml(p)}</p>`).join("");
+        appendContentParagraphs(question, puzzle.content);
     }
     if (puzzle.imageUrl) {
         const image = document.createElement("div");
