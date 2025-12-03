@@ -32,6 +32,9 @@ function escapeHtml(str: string): string {
         .replace(/'/g, "&#039;");
 }
 
+export function resetScrollPosition(behavior: ScrollBehavior = "auto") {
+    window.scrollTo({ top: 0, behavior });
+
 function createContentParagraph(text: string): HTMLParagraphElement {
     const paragraph = document.createElement("p");
     const trimmed = text.trim();
@@ -302,6 +305,7 @@ export function render(
     const challenges = puzzles.filter((p) => p.kind !== "info");
 
     app.innerHTML = "";
+    resetScrollPosition();
     const container = document.createElement("div");
     container.className = "app-shell";
 
