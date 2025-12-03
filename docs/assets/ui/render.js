@@ -483,13 +483,20 @@ function renderArrivalCheck(app, state, onAction) {
     answerInput === null || answerInput === void 0 ? void 0 : answerInput.focus();
 }
 function renderInfoPage(container, puzzle) {
-    const lead = document.createElement("p");
-    lead.className = "lead";
-    lead.textContent = puzzle.lead;
-    container.appendChild(lead);
-    const body = document.createElement("div");
-    body.innerHTML = puzzle.content.map((p) => `<p>${escapeHtml(p)}</p>`).join("");
-    container.appendChild(body);
+    var _a, _b, _c;
+    const leadText = (_a = puzzle.lead) === null || _a === void 0 ? void 0 : _a.trim();
+    if (leadText) {
+        const lead = document.createElement("p");
+        lead.className = "lead";
+        lead.textContent = leadText;
+        container.appendChild(lead);
+    }
+    const contentItems = (_c = (_b = puzzle.content) === null || _b === void 0 ? void 0 : _b.map((p) => p.trim()).filter(Boolean)) !== null && _c !== void 0 ? _c : [];
+    if (contentItems.length) {
+        const body = document.createElement("div");
+        body.innerHTML = contentItems.map((p) => `<p>${escapeHtml(p)}</p>`).join("");
+        container.appendChild(body);
+    }
     if (puzzle.actions) {
         const actions = document.createElement("div");
         actions.className = "actions";

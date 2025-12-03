@@ -56,9 +56,7 @@ export const stage3Puzzles: Puzzle[] = [
     placeholderClue: "駅名を入力",
     correctAnswer: "しんじゅく",
     acceptedAnswers: ["新宿"],
-    content: [
-      "Q1〜Q3 で判明した ① → ②、③ → ④ の変換規則を使う。",
-    ],
+    content: [],
     accentColor,
     accentShadow,
     transformPairs: [

@@ -605,14 +605,20 @@ function renderInfoPage(
     container: HTMLElement,
     puzzle: InfoPage
 ) {
-    const lead = document.createElement("p");
-    lead.className = "lead";
-    lead.textContent = puzzle.lead;
-    container.appendChild(lead);
+    const leadText = puzzle.lead?.trim();
+    if (leadText) {
+        const lead = document.createElement("p");
+        lead.className = "lead";
+        lead.textContent = leadText;
+        container.appendChild(lead);
+    }
 
-    const body = document.createElement("div");
-    body.innerHTML = puzzle.content.map((p) => `<p>${escapeHtml(p)}</p>`).join("");
-    container.appendChild(body);
+    const contentItems = puzzle.content?.map((p) => p.trim()).filter(Boolean) ?? [];
+    if (contentItems.length) {
+        const body = document.createElement("div");
+        body.innerHTML = contentItems.map((p) => `<p>${escapeHtml(p)}</p>`).join("");
+        container.appendChild(body);
+    }
 
     if (puzzle.actions) {
         const actions = document.createElement("div");
