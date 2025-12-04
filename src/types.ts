@@ -50,6 +50,8 @@ export type TextPuzzle = {
   accentColor?: string;
   accentShadow?: string;
   transformPairs?: { from: string; to: string }[];
+  revealAnswerOnSolve?: boolean;
+  solvedAnswerLabel?: string;
 };
 
 export type ChoiceAccent = {

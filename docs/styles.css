@@ -495,6 +495,31 @@ button:disabled {
   color: #bef264;
 }
 
+.solved-answer {
+  margin-top: var(--space-3);
+  padding: var(--space-4);
+  border-radius: 0.9rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  text-align: center;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+}
+
+.solved-answer__label {
+  display: block;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+}
+
+.solved-answer__value {
+  display: block;
+  margin-top: var(--space-2);
+  font-size: clamp(1.15rem, 4vw, 1.5rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
 .puzzle-image {
   margin: var(--space-4) 0;
   border-radius: 12px;

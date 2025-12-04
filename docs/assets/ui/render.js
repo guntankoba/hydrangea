@@ -703,6 +703,21 @@ function renderTextPuzzle(container, puzzle, puzzleState, onAction) {
         feedback.textContent = puzzleState.feedback.message;
         container.appendChild(feedback);
     }
+    if (puzzleState.solved && puzzle.revealAnswerOnSolve) {
+        const solvedAnswer = document.createElement("div");
+        solvedAnswer.className = "solved-answer";
+        if (puzzle.solvedAnswerLabel) {
+            const label = document.createElement("span");
+            label.className = "solved-answer__label";
+            label.textContent = puzzle.solvedAnswerLabel;
+            solvedAnswer.appendChild(label);
+        }
+        const value = document.createElement("span");
+        value.className = "solved-answer__value";
+        value.textContent = puzzle.correctAnswer;
+        solvedAnswer.appendChild(value);
+        container.appendChild(solvedAnswer);
+    }
     if (puzzle.mapQuery) {
         const mapBtn = document.createElement("button");
         mapBtn.textContent = "地図を見る";
