@@ -52,7 +52,7 @@ export const stage1Puzzles = [
     {
         id: 101,
         kind: "info",
-        title: "ST1｜導入",
+        title: "ST1",
         lead: "公園の写真から最寄り駅を導き出し、準備ができたら次のステージへ進もう。",
         content: [
             "写真に写っている公園がどこか、候補リストを手がかりに推理してみてください。",

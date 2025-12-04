@@ -4,7 +4,7 @@ export const puzzles: Puzzle[] = [
   {
     id: 1,
     kind: "info",
-    title: "ST2｜思い出ステージの歩き方",
+    title: "ST2",
     lead: "思い出の5場面から1文字ずつ集め、最後に時系列で並べ替えて答えを導き出そう。",
     content: [
       "このページで問1〜問5とFINALまでまとめて解けます。スクロールしながらカードを埋めていきましょう。",

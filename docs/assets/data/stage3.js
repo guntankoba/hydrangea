@@ -4,7 +4,7 @@ export const stage3Puzzles = [
     {
         id: 301,
         kind: "info",
-        title: "ST3｜変換規則パズル",
+        title: "ST3",
         lead: "今から指定された範囲の街を歩き、問いに答えよう。",
         content: [
             "対象範囲は下記の地図の範囲です。",
