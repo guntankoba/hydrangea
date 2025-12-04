@@ -54,14 +54,9 @@ export const stage3Puzzles = [
         correctAnswer: "しんじゅく",
         acceptedAnswers: ["新宿"],
         answerInputClass: "final-answer-input",
-        content: [
-            "Q1〜Q3 で判明した ① → ②、③ → ④ の変換規則を使う。",
-        ],
+        imageUrl: "images/st3.jpg",
+        imageAlt: "変換規則を示すボード",
         accentColor,
         accentShadow,
-        transformPairs: [
-            { from: "に", to: "し" },
-            { from: "い", to: "ん" },
-        ],
     },
 ];
