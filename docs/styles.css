@@ -219,7 +219,7 @@ p {
 }
 
 .tos-start {
-  align-self: flex-start;
+  align-self: center;
 }
 
 .puzzle-card footer {
@@ -245,8 +245,17 @@ label {
 .answer-form {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--space-4);
+}
+
+.answer-form .form-group {
+  width: min(480px, 100%);
+}
+
+.answer-form > button {
+  width: auto;
+  align-self: center;
 }
 
 .form-stack label,
@@ -273,17 +282,23 @@ input[type="text"] {
 }
 
 .final-answer-input {
-  background: #4da3ff;
-  color: #ffffff;
+  background: #c1dfff;
+  color: #0b1120;
+  border-color: #4da3ff;
+  box-shadow: 0 8px 18px rgba(77, 163, 255, 0.35);
+  font-weight: 600;
+  letter-spacing: 0.05em;
 }
 
 .final-answer-input::placeholder {
-  color: #e8f3ff;
+  color: rgba(11, 17, 32, 0.65);
 }
 
 .final-answer-input--yamanote {
   background: #9acd32;
   color: #0b1120;
+  border-color: #0b1120;
+  box-shadow: 0 8px 18px rgba(154, 205, 50, 0.35);
 }
 
 .final-answer-input--yamanote::placeholder {

@@ -4,7 +4,7 @@ export const stage5Puzzles: Puzzle[] = [
   {
     id: 501,
     kind: "info",
-    title: "ST5｜最終アクセス",
+    title: "ステージ5",
     lead: "これまで辿ってきた道筋を思い出し、最後の番号を導こう。",
     content: [
       "今日歩いた道で出会った数字を集め、次に進むための番号に仕上げよう。",

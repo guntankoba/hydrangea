@@ -7,13 +7,15 @@ export const stage3Puzzles: Puzzle[] = [
   {
     id: 301,
     kind: "info",
-    title: "ST3｜変換規則パズル",
+    title: "ステージ3",
     lead: "今から指定された範囲の街を歩き、問いに答えよう。",
     content: [
       "対象範囲は下記の地図の範囲です。",
       "https://www.google.com/maps/d/u/0/edit?mid=1BEpJfy5qhI5YJjXIJMTrt3YmsTS90YA&usp=sharing",
-      "すべて外で見つけることができるもになってるはずです。",
+      "すべて外で見つけることができるものになっているはずです。",
     ],
+    imageUrl: "images/st3_akihabara_map.png",
+    imageAlt: "秋葉原エリアの指定範囲マップ",
   },
   {
     id: 302,
@@ -52,19 +54,14 @@ export const stage3Puzzles: Puzzle[] = [
     id: 305,
     kind: "text",
     title: "FINAL｜変換規則を完成させよ",
-    prompt: "① → ②、③ → ④ の規則を適用し、変換後の駅名を入力せよ。",
-    placeholderClue: "駅名を入力",
+    prompt: "",
+    placeholderClue: "次の目的地を入力",
     correctAnswer: "しんじゅく",
     acceptedAnswers: ["新宿"],
     answerInputClass: "final-answer-input",
-    content: [
-      "Q1〜Q3 で判明した ① → ②、③ → ④ の変換規則を使う。",
-    ],
+    imageUrl: "images/st3.jpg",
+    imageAlt: "変換規則を示すボード",
     accentColor,
     accentShadow,
-    transformPairs: [
-      { from: "に", to: "し" },
-      { from: "い", to: "ん" },
-    ],
   },
 ];
