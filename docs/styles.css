@@ -219,7 +219,7 @@ p {
 }
 
 .tos-start {
-  align-self: flex-start;
+  align-self: center;
 }
 
 .puzzle-card footer {
@@ -245,8 +245,17 @@ label {
 .answer-form {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--space-4);
+}
+
+.answer-form .form-group {
+  width: min(480px, 100%);
+}
+
+.answer-form > button {
+  width: auto;
+  align-self: center;
 }
 
 .form-stack label,
