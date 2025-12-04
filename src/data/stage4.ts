@@ -4,7 +4,7 @@ export const stage4Puzzles: Puzzle[] = [
   {
     id: 401,
     kind: "info",
-    title: "ST4",
+    title: "ステージ4",
     lead: "きっと見覚えのある食べ物の画像が出てきます。",
     content: ["これを食べた場所の最寄り駅を答えてください。"],
   },

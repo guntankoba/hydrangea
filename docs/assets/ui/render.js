@@ -526,7 +526,7 @@ function renderInfoPage(container, puzzle) {
         figure.className = "puzzle-image";
         const img = document.createElement("img");
         img.src = puzzle.imageUrl;
-        img.alt = (puzzle.imageAlt) || "";
+        img.alt = puzzle.imageAlt || "";
         figure.appendChild(img);
         container.appendChild(figure);
     }
