@@ -160,6 +160,107 @@ p {
   background: rgba(255, 255, 255, 0.12);
 }
 
+.info-highlight {
+  margin: 0 0 var(--space-5);
+  padding: var(--space-3) var(--space-4);
+  border-radius: 1rem;
+  background: linear-gradient(135deg, rgba(79, 209, 197, 0.35), rgba(77, 163, 255, 0.25));
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow: 0 12px 28px rgba(22, 30, 52, 0.35);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+.game-intro-shell {
+  max-width: 720px;
+}
+
+.game-intro__header {
+  text-align: center;
+}
+
+.game-intro__eyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  font-size: 0.8rem;
+  opacity: 0.85;
+}
+
+.game-intro__lead {
+  margin-bottom: var(--space-6);
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.game-intro__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.game-intro__hero {
+  background: radial-gradient(circle at top right, rgba(77, 163, 255, 0.4), transparent 65%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 1.25rem;
+  padding: var(--space-6);
+  box-shadow: 0 25px 45px rgba(9, 14, 30, 0.45);
+}
+
+.game-intro__hero p {
+  margin-bottom: var(--space-4);
+  font-size: 1rem;
+}
+
+.game-intro__hero ul {
+  margin: 0;
+  padding-left: 1rem;
+  display: grid;
+  gap: var(--space-2);
+  list-style: none;
+}
+
+.game-intro__hero li {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.game-intro__hero li::before {
+  content: "◆";
+  margin-right: 0.4rem;
+  color: var(--accent);
+}
+
+.game-intro__badge {
+  display: inline-flex;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  margin-bottom: var(--space-4);
+}
+
+.game-intro__body p {
+  margin-bottom: var(--space-4);
+  font-size: 1rem;
+}
+
+.game-intro__actions {
+  display: flex;
+  justify-content: center;
+}
+
+.game-intro__start {
+  width: min(16rem, 100%);
+  font-size: 1rem;
+  box-shadow: 0 18px 30px rgba(77, 163, 255, 0.35);
+}
+
 .tos-shell {
   max-width: 720px;
 }
@@ -392,6 +493,31 @@ button:disabled {
 
 .feedback--success {
   color: #bef264;
+}
+
+.solved-answer {
+  margin-top: var(--space-3);
+  padding: var(--space-4);
+  border-radius: 0.9rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  text-align: center;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+}
+
+.solved-answer__label {
+  display: block;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+}
+
+.solved-answer__value {
+  display: block;
+  margin-top: var(--space-2);
+  font-size: clamp(1.15rem, 4vw, 1.5rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
 }
 
 .puzzle-image {

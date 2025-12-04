@@ -46,6 +46,7 @@ const state: AppState = {
   pendingStageAfterCard: null,
   pendingClearAfterCard: false,
   postGame: { step: null, feedback: null },
+  gameIntro: { acknowledged: false },
   tos: { agreed: false, openedOnce: false },
   crossword: {},
   feedback: null,
@@ -185,6 +186,16 @@ function handleAction(action: string, payload?: any) {
     if (action === "tos_accept") {
       state.tos.agreed = true;
       state.feedback = null;
+      render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
+    }
+    return;
+  }
+
+  if (!state.gameIntro.acknowledged) {
+    if (action === "game_intro_start") {
+      state.gameIntro.acknowledged = true;
+      state.feedback = null;
+      applyStageTheme(state.currentStage);
       render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
     }
     return;

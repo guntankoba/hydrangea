@@ -311,6 +311,11 @@ export function render(
         return;
     }
 
+    if (!state.gameIntro.acknowledged) {
+        renderGameIntro(app, state, onAction);
+        return;
+    }
+
     if (state.postGame.step === "bus_guide") {
         renderBusGuide(app, state, onAction);
         return;
@@ -598,6 +603,46 @@ function renderTos(
     updateButtonState();
 }
 
+function renderGameIntro(
+    app: HTMLElement,
+    state: AppState,
+    onAction: (action: string, payload?: any) => void
+) {
+    app.innerHTML = `
+    <div class="app-shell game-intro-shell">
+      <header class="game-intro__header">
+        <p class="game-intro__eyebrow">Hydrangea Walk</p>
+        <h1>ゲームの説明</h1>
+        <p class="game-intro__lead">街を歩きながら解き明かす、洗練された謎の旅が静かに始まります。</p>
+      </header>
+      <div class="game-intro__content">
+        <div class="game-intro__hero">
+          <div class="game-intro__badge">STAGE READY</div>
+          <p>街歩き × 思い出 × 謎解き。順路に沿って現地で観察し、得られた答えをこのアプリに入力しながら物語を進めます。</p>
+          <ul>
+            <li>指示に従って場所を移動</li>
+            <li>手がかりを観察し回答を入力</li>
+            <li>Stationカードで次の行き先を確認</li>
+          </ul>
+        </div>
+        <div class="game-intro__body">
+          <p>このゲームは街を移動しながら進んでいく謎解きゲームです。</p>
+          <p>スマホのこのアプリを使って答えがわかったら入力して進めてください。ステージが進むごとに次に進む場所が指示されます。移動が完了したら次の問題を解き始めてください。</p>
+          <p>準備ができたら下の「開始する」のボタンをタップして先に進んでください。</p>
+        </div>
+        <div class="game-intro__actions">
+          <button id="game-intro-start" class="game-intro__start">開始する</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+    const startButton = app.querySelector("#game-intro-start") as HTMLButtonElement | null;
+    startButton?.addEventListener("click", () => {
+        onAction("game_intro_start");
+    });
+}
+
 function renderClear(app: HTMLElement, state: AppState) {
     app.innerHTML = `
     <div class="app-shell">
@@ -624,7 +669,7 @@ function renderBusGuide(app: HTMLElement, state: AppState, onAction: (action: st
       <header><h1>これからの道しるべ</h1></header>
       <div class="content">
         <p>さきほど導いた番号「61」は、これから進むための番号です。</p>
-        <p>いまいる駅から、白いバスで 61 の番号がついたものに乗ってください。</p>
+        <p>いまいる駅から、白くて 61 のバスに乗ってください。</p>
         <p>降りる場所は、あなたのすぐそばにいる“案内人”の合図にしたがってください。</p>
         <button id="open-arrival">到着したら つづきを開く</button>
       </div>
@@ -675,6 +720,13 @@ function renderInfoPage(
     container: HTMLElement,
     puzzle: InfoPage
 ) {
+    if (puzzle.highlight) {
+        const highlight = document.createElement("div");
+        highlight.className = "info-highlight";
+        highlight.textContent = puzzle.highlight;
+        container.appendChild(highlight);
+    }
+
     const lead = document.createElement("p");
     lead.className = "lead";
     lead.textContent = puzzle.lead;
@@ -805,6 +857,25 @@ function renderTextPuzzle(
         feedback.className = feedbackClass(puzzleState.feedback.kind);
         feedback.textContent = puzzleState.feedback.message;
         container.appendChild(feedback);
+    }
+
+    if (puzzleState.solved && puzzle.revealAnswerOnSolve) {
+        const solvedAnswer = document.createElement("div");
+        solvedAnswer.className = "solved-answer";
+
+        if (puzzle.solvedAnswerLabel) {
+            const label = document.createElement("span");
+            label.className = "solved-answer__label";
+            label.textContent = puzzle.solvedAnswerLabel;
+            solvedAnswer.appendChild(label);
+        }
+
+        const value = document.createElement("span");
+        value.className = "solved-answer__value";
+        value.textContent = puzzle.correctAnswer;
+        solvedAnswer.appendChild(value);
+
+        container.appendChild(solvedAnswer);
     }
 
     if (puzzle.mapQuery) {

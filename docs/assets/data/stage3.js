@@ -24,6 +24,8 @@ export const stage3Puzzles = [
         content: [],
         accentColor,
         accentShadow,
+        revealAnswerOnSolve: true,
+        solvedAnswerLabel: "正解の店名",
     },
     {
         id: 303,
@@ -35,6 +37,8 @@ export const stage3Puzzles = [
         content: [],
         accentColor,
         accentShadow,
+        revealAnswerOnSolve: true,
+        solvedAnswerLabel: "正解の店名",
     },
     {
         id: 304,
@@ -46,6 +50,8 @@ export const stage3Puzzles = [
         content: [],
         accentColor,
         accentShadow,
+        revealAnswerOnSolve: true,
+        solvedAnswerLabel: "正解の店名",
     },
     {
         id: 305,
