@@ -1,0 +1,15 @@
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build info
+*.tsbuildinfo
+
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Dependencies
+node_modules/
+
