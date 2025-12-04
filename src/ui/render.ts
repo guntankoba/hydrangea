@@ -34,6 +34,7 @@ function escapeHtml(str: string): string {
 
 export function resetScrollPosition(behavior: ScrollBehavior = "auto") {
     window.scrollTo({ top: 0, behavior });
+}
 
 function createContentParagraph(text: string): HTMLParagraphElement {
     const paragraph = document.createElement("p");
