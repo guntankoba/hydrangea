@@ -68,6 +68,7 @@ export type InfoPageAction = {
 export type InfoPage = {
   id: number;
   kind: "info";
+  highlight?: string;
   title: string;
   lead: string;
   content: string[];
@@ -129,6 +130,7 @@ export type AppState = {
   pendingStageAfterCard: StageId | null;
   pendingClearAfterCard: boolean;
   postGame: { step: PostGameStep; feedback: Feedback | null };
+  gameIntro: { acknowledged: boolean };
   tos: { agreed: boolean; openedOnce: boolean };
   crossword: { [key: number]: CrosswordProgress };
   feedback: Feedback | null;
