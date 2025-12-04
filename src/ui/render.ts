@@ -32,6 +32,35 @@ function escapeHtml(str: string): string {
         .replace(/'/g, "&#039;");
 }
 
+function normalizeHexColor(color: string): string | null {
+    const trimmed = color.trim();
+    if (!trimmed.startsWith("#")) return null;
+    const hex = trimmed.slice(1);
+    if (hex.length === 3) {
+        return hex
+            .split("")
+            .map((ch) => ch + ch)
+            .join("");
+    }
+    if (hex.length === 6) {
+        return hex;
+    }
+    return null;
+}
+
+function mixColorWithWhite(color: string, weight = 0.35): string | null {
+    const normalized = normalizeHexColor(color);
+    if (!normalized) return null;
+
+    const r = parseInt(normalized.slice(0, 2), 16);
+    const g = parseInt(normalized.slice(2, 4), 16);
+    const b = parseInt(normalized.slice(4, 6), 16);
+    const clampWeight = Math.min(Math.max(weight, 0), 1);
+
+    const mix = (channel: number) => Math.round(channel * clampWeight + 255 * (1 - clampWeight));
+    return `rgb(${mix(r)}, ${mix(g)}, ${mix(b)})`;
+}
+
 export function resetScrollPosition(behavior: ScrollBehavior = "auto") {
     window.scrollTo({ top: 0, behavior });
 }
@@ -85,10 +114,21 @@ function renderChoiceWithAccent(choice: string, accents?: ChoiceAccent[]) {
     const target = escapeHtml(choice.slice(start, end));
     const after = escapeHtml(choice.slice(end));
 
-    const styles = [`color: ${accent.accentColor};`];
-    if (accent.accentShadow) {
-        styles.push(`text-shadow: 0 0 12px ${accent.accentShadow};`);
-    }
+    const highlightBackground =
+        mixColorWithWhite(accent.accentColor, 0.35) || accent.accentShadow || accent.accentColor;
+    const boxShadowColor = accent.accentShadow || "rgba(11, 17, 32, 0.35)";
+
+    const styles = [
+        "display: inline-block;",
+        "padding: 0.05rem 0.35rem;",
+        "border-radius: 0.4rem;",
+        `background-color: ${highlightBackground};`,
+        `border: 1px solid ${accent.accentColor};`,
+        `box-shadow: 0 4px 12px ${boxShadowColor};`,
+        "font-weight: 600;",
+        "letter-spacing: 0.02em;",
+        "color: #0b1120;",
+    ];
 
     return `${before}<span class="choice-accent" style="${styles.join(" ")}">${target}</span>${after}`;
 }
@@ -108,11 +148,6 @@ function renderStageNavigation(
 
     const nav = document.createElement("div");
     nav.className = "stage-nav";
-
-    const label = document.createElement("span");
-    label.className = "stage-nav__label";
-    label.textContent = "ステージ移動";
-    nav.appendChild(label);
 
     const list = document.createElement("div");
     list.className = "stage-nav__list";
@@ -759,7 +794,7 @@ function renderTextPuzzle(
     form.innerHTML = `
     <div class="form-group">
       <label for="${inputId}">回答</label>
-      <input type="text" id="${inputId}" autocomplete="off" ${finalAnswerClass ? `class=\\\"${finalAnswerClass}\\\"` : ""} ${puzzleState.solved ? "disabled" : ""} placeholder="${escapeHtml(puzzle.placeholderClue || '')}" />
+      <input type="text" id="${inputId}" autocomplete="off" ${finalAnswerClass ? `class="${finalAnswerClass}"` : ""} ${puzzleState.solved ? "disabled" : ""} placeholder="${escapeHtml(puzzle.placeholderClue || '')}" />
     </div>
     <button id="submit-btn-${puzzle.id}" ${puzzleState.solved ? "disabled" : ""}>回答を送信</button>
   `;

@@ -71,9 +71,9 @@ export const stage4Puzzles: Puzzle[] = [
   {
     id: 407,
     kind: "text",
-    title: "FINAL｜次の目的地の駅を答えよ",
+    title: "問6｜FINAL｜次の目的地を答えよ",
     prompt: "",
-    placeholderClue: "数式の結果から導ける次の目的地を入力",
+    placeholderClue: "次の目的地を入力",
     correctAnswer: "目白",
     acceptedAnswers: ["目白", "めじろ", "Mejiro"],
     answerInputClass: "final-answer-input final-answer-input--yamanote",
