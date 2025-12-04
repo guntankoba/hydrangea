@@ -4,7 +4,7 @@ import { stage3Puzzles } from "./data/stage3.js";
 import { stage4Puzzles } from "./data/stage4.js";
 import { stage5Puzzles } from "./data/stage5.js";
 import { getStationCardById } from "./data/stations.js";
-import { render } from "./ui/render.js";
+import { render, resetScrollPosition } from "./ui/render.js";
 const PASSWORD = "KPrpz4ms";
 const app = document.getElementById("app");
 const stages = {
@@ -117,12 +117,14 @@ function handleAction(action, payload) {
     if (!state.isLoggedIn || state.isCleared)
         return;
     if (action === "station_card_continue") {
+        let stageChanged = false;
         if (state.stationCardDisplay) {
             if (state.pendingStageAfterCard) {
                 const nextStage = state.pendingStageAfterCard;
                 setStationCardDisplay(null, null);
                 state.currentStage = nextStage;
                 applyStageTheme(state.currentStage);
+                stageChanged = true;
             }
             else if (state.pendingClearAfterCard) {
                 setStationCardDisplay(null, null);
@@ -131,6 +133,9 @@ function handleAction(action, payload) {
             else {
                 setStationCardDisplay(null, null);
             }
+        }
+        if (stageChanged) {
+            resetScrollPosition();
         }
         render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
         return;
@@ -146,6 +151,7 @@ function handleAction(action, payload) {
         setStationCardDisplay(null, null);
         state.feedback = null;
         applyStageTheme(state.currentStage);
+        resetScrollPosition();
         render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
         return;
     }
@@ -226,6 +232,7 @@ function handleAction(action, payload) {
                         else {
                             state.currentStage = "ST2";
                             applyStageTheme(state.currentStage);
+                            resetScrollPosition();
                             render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
                             return;
                         }
@@ -243,6 +250,7 @@ function handleAction(action, payload) {
                         else {
                             state.currentStage = "ST3";
                             applyStageTheme(state.currentStage);
+                            resetScrollPosition();
                             render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
                             return;
                         }
@@ -260,6 +268,7 @@ function handleAction(action, payload) {
                         else {
                             state.currentStage = "ST4";
                             applyStageTheme(state.currentStage);
+                            resetScrollPosition();
                             render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
                             return;
                         }
@@ -277,6 +286,7 @@ function handleAction(action, payload) {
                         else {
                             state.currentStage = "ST5";
                             applyStageTheme(state.currentStage);
+                            resetScrollPosition();
                             render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
                             return;
                         }

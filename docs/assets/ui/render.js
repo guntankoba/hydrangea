@@ -15,6 +15,9 @@ function escapeHtml(str) {
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
 }
+export function resetScrollPosition(behavior = "auto") {
+    window.scrollTo({ top: 0, behavior });
+}
 function createContentParagraph(text) {
     const paragraph = document.createElement("p");
     const trimmed = text.trim();
@@ -226,6 +229,7 @@ export function render(app, state, puzzles, onAction, stage, stageOrder) {
     const intro = puzzles.find((p) => p.kind === "info");
     const challenges = puzzles.filter((p) => p.kind !== "info");
     app.innerHTML = "";
+    resetScrollPosition();
     const container = document.createElement("div");
     container.className = "app-shell";
     const header = document.createElement("header");
