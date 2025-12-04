@@ -649,6 +649,16 @@ function renderInfoPage(
     appendContentParagraphs(body, puzzle.content);
     container.appendChild(body);
 
+    if (puzzle.imageUrl) {
+        const figure = document.createElement("div");
+        figure.className = "puzzle-image";
+        const img = document.createElement("img");
+        img.src = puzzle.imageUrl;
+        img.alt = puzzle.imageAlt || "";
+        figure.appendChild(img);
+        container.appendChild(figure);
+    }
+
     if (puzzle.actions) {
         const actions = document.createElement("div");
         actions.className = "actions";

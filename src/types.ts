@@ -71,6 +71,8 @@ export type InfoPage = {
   title: string;
   lead: string;
   content: string[];
+  imageUrl?: string;
+  imageAlt?: string;
   actions?: InfoPageAction[];
 };
 

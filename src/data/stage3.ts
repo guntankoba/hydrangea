@@ -12,8 +12,10 @@ export const stage3Puzzles: Puzzle[] = [
     content: [
       "対象範囲は下記の地図の範囲です。",
       "https://www.google.com/maps/d/u/0/edit?mid=1BEpJfy5qhI5YJjXIJMTrt3YmsTS90YA&usp=sharing",
-      "すべて外で見つけることができるもになってるはずです。",
+      "すべて外で見つけることができるものになっているはずです。",
     ],
+    imageUrl: "images/st3_akihabara_map.png",
+    imageAlt: "秋葉原エリアの指定範囲マップ",
   },
   {
     id: 302,
