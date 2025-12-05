@@ -8,11 +8,18 @@ export const stage3Puzzles = [
         lead: "今から指定された範囲の街を歩き、問いに答えよう。",
         content: [
             "対象範囲は下記の地図の範囲です。",
-            "https://www.google.com/maps/d/u/0/edit?mid=1BEpJfy5qhI5YJjXIJMTrt3YmsTS90YA&usp=sharing",
+            "下のリンクボタンから秋葉原エリアの指定範囲を開いて確認してください。",
             "すべて外で見つけることができるものになっているはずです。",
         ],
         imageUrl: "images/st3_akihabara_map.png",
         imageAlt: "秋葉原エリアの指定範囲マップ",
+        actions: [
+            {
+                kind: "link",
+                label: "指定範囲マップ（Google マップ）を開く",
+                url: "https://www.google.com/maps/d/u/0/edit?mid=1BEpJfy5qhI5YJjXIJMTrt3YmsTS90YA&usp=sharing",
+            },
+        ],
     },
     {
         id: 302,
