@@ -183,6 +183,20 @@ function renderStageNavigation(
     header.appendChild(nav);
 }
 
+function createDevResetButton(onAction: (action: string, payload?: any) => void): HTMLButtonElement {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "dev-reset-button";
+    button.textContent = "保存データを削除（開発者向け）";
+    button.addEventListener("click", () => {
+        const confirmed = window.confirm("保存済みのログイン情報と進行状況をすべて削除します。よろしいですか？");
+        if (confirmed) {
+            onAction("reset_persistence");
+        }
+    });
+    return button;
+}
+
 function createStationCardElement(card: StationCard) {
     const panel = document.createElement("div");
     panel.className = "station-card";
@@ -641,6 +655,14 @@ function renderTos(
         onAction("tos_accept");
     });
 
+    const tosShell = app.querySelector(".tos-shell") as HTMLElement | null;
+    if (tosShell) {
+        const devControl = document.createElement("div");
+        devControl.className = "dev-reset-control";
+        devControl.appendChild(createDevResetButton(onAction));
+        tosShell.appendChild(devControl);
+    }
+
     accordionTrigger?.focus();
     updateButtonState();
 }
@@ -683,6 +705,7 @@ function renderGameIntro(
     startButton?.addEventListener("click", () => {
         onAction("game_intro_start");
     });
+
 }
 
 function renderClear(app: HTMLElement, state: AppState) {
@@ -703,6 +726,7 @@ function renderClear(app: HTMLElement, state: AppState) {
     closeButton?.addEventListener("click", () => {
         window.close();
     });
+
 }
 
 function renderBusGuide(app: HTMLElement, state: AppState, onAction: (action: string, payload?: any) => void) {
@@ -722,6 +746,7 @@ function renderBusGuide(app: HTMLElement, state: AppState, onAction: (action: st
     proceedButton?.addEventListener("click", () => {
         onAction("postgame_to_arrival");
     });
+
 }
 
 function renderArrivalCheck(app: HTMLElement, state: AppState, onAction: (action: string, payload?: any) => void) {
@@ -756,6 +781,7 @@ function renderArrivalCheck(app: HTMLElement, state: AppState, onAction: (action
 
     const answerInput = app.querySelector("#arrival-answer") as HTMLInputElement | null;
     answerInput?.focus();
+
 }
 
 function renderInfoPage(

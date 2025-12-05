@@ -140,6 +140,19 @@ function renderStageNavigation(header, currentStage, clearedStages, stageOrder, 
     nav.appendChild(list);
     header.appendChild(nav);
 }
+function createDevResetButton(onAction) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "dev-reset-button";
+    button.textContent = "保存データを削除（開発者向け）";
+    button.addEventListener("click", () => {
+        const confirmed = window.confirm("保存済みのログイン情報と進行状況をすべて削除します。よろしいですか？");
+        if (confirmed) {
+            onAction("reset_persistence");
+        }
+    });
+    return button;
+}
 function createStationCardElement(card) {
     const panel = document.createElement("div");
     panel.className = "station-card";
@@ -515,6 +528,13 @@ function renderTos(app, state, onAction) {
     startButton === null || startButton === void 0 ? void 0 : startButton.addEventListener("click", () => {
         onAction("tos_accept");
     });
+    const tosShell = app.querySelector(".tos-shell");
+    if (tosShell) {
+        const devControl = document.createElement("div");
+        devControl.className = "dev-reset-control";
+        devControl.appendChild(createDevResetButton(onAction));
+        tosShell.appendChild(devControl);
+    }
     accordionTrigger === null || accordionTrigger === void 0 ? void 0 : accordionTrigger.focus();
     updateButtonState();
 }

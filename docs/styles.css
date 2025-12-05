@@ -264,6 +264,8 @@ p {
 
 .tos-shell {
   max-width: 720px;
+  position: relative;
+  padding-bottom: 3rem;
 }
 
 .tos-content {
@@ -318,6 +320,28 @@ p {
   width: 20px;
   height: 20px;
   accent-color: var(--accent);
+}
+
+.dev-reset-control {
+  position: absolute;
+  bottom: 0.75rem;
+  right: 0.75rem;
+}
+
+.dev-reset-button {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px dashed rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  font-size: 0.6rem;
+  padding: 0.15rem 0.6rem;
+  color: inherit;
+  opacity: 0.6;
+}
+
+.dev-reset-button:hover,
+.dev-reset-button:focus-visible {
+  opacity: 0.9;
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .tos-start {
