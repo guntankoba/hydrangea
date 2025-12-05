@@ -183,6 +183,20 @@ function renderStageNavigation(
     header.appendChild(nav);
 }
 
+function createDevResetButton(onAction: (action: string, payload?: any) => void): HTMLButtonElement {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "dev-reset-button";
+    button.textContent = "保存データを削除（開発者向け）";
+    button.addEventListener("click", () => {
+        const confirmed = window.confirm("保存済みのログイン情報と進行状況をすべて削除します。よろしいですか？");
+        if (confirmed) {
+            onAction("reset_persistence");
+        }
+    });
+    return button;
+}
+
 function createStationCardElement(card: StationCard) {
     const panel = document.createElement("div");
     panel.className = "station-card";
@@ -253,24 +267,65 @@ function renderStationCardOverlay(
     card: StationCard,
     onAction: (action: string, payload?: any) => void,
     nextStage?: StageId,
-    pendingClearAfterCard?: boolean
+    pendingClearAfterCard?: boolean,
+    currentStage?: StageId
 ) {
     const overlay = document.createElement("div");
     overlay.className = "station-card-layer";
 
-    const panel = createStationCardElement(card);
+    const panel = document.createElement("div");
+    panel.className = "station-card-overlay";
+
+    const messageBlock = document.createElement("div");
+    messageBlock.className = "station-card-message";
+
+    const nextStageLabel = nextStage ? stageLabels[nextStage] ?? nextStage : null;
+    const currentStageLabel = currentStage ? stageLabels[currentStage] ?? currentStage : null;
+
+    const messageEyebrow = document.createElement("p");
+    messageEyebrow.className = "station-card-message__eyebrow";
+    messageEyebrow.textContent = currentStageLabel ?? "ステージ";
+
+    const messageTitle = document.createElement("h3");
+    messageTitle.className = "station-card-message__title";
+    messageTitle.textContent = "正解";
+
+    const messageBody = document.createElement("p");
+    messageBody.className = "station-card-message__body";
+    messageBody.textContent = "Stationカードに記された駅名を確認し、移動できる準備が整ったら次へお進みください。";
+
+    const messageAction = document.createElement("p");
+    messageAction.className = "station-card-message__action";
+
+    if (pendingClearAfterCard) {
+        messageAction.textContent = "この旅はここで一区切りです。ご自身のタイミングで「クリア画面へ進む」を押してください。";
+    } else if (nextStageLabel) {
+        messageAction.textContent = `「${nextStageLabel}」での挑戦は、このStationカードの駅に到着し、準備が整ってから開始してください。`;
+    } else {
+        messageAction.textContent = "案内の指示に従い、次に進んでも問題がなければ下のボタンを押してください。";
+    }
+
+    messageBlock.appendChild(messageEyebrow);
+    messageBlock.appendChild(messageTitle);
+    messageBlock.appendChild(messageBody);
+    messageBlock.appendChild(messageAction);
+
+    const cardPanel = createStationCardElement(card);
     const footer = document.createElement("div");
     footer.className = "station-card__footer";
     const confirm = document.createElement("button");
+    const confirmLabelStage = nextStageLabel ?? nextStage;
     const confirmLabel = pendingClearAfterCard
         ? "クリア画面へ進む"
-        : nextStage
-            ? `次のステージ（${nextStage}）へ進む`
+        : confirmLabelStage
+            ? `${confirmLabelStage}へ進む`
             : "次へ進む";
     confirm.textContent = confirmLabel;
     confirm.addEventListener("click", () => onAction("station_card_continue"));
     footer.appendChild(confirm);
 
+    panel.appendChild(messageBlock);
+    panel.appendChild(cardPanel);
     panel.appendChild(footer);
     overlay.appendChild(panel);
     app.appendChild(overlay);
@@ -301,15 +356,21 @@ export function render(
     stage?: StageId,
     stageOrder?: StageId[]
 ) {
+    const body = typeof document !== "undefined" ? document.body : null;
+
     if (!state.isLoggedIn) {
+        body?.classList.add("login-screen");
         renderLogin(app, state, onAction);
         return;
     }
 
     if (!state.tos.agreed) {
+        body?.classList.add("login-screen");
         renderTos(app, state, onAction);
         return;
     }
+
+    body?.classList.remove("login-screen");
 
     if (!state.gameIntro.acknowledged) {
         renderGameIntro(app, state, onAction);
@@ -408,7 +469,8 @@ export function render(
             state.stationCardDisplay,
             onAction,
             state.pendingStageAfterCard ?? undefined,
-            state.pendingClearAfterCard
+            state.pendingClearAfterCard,
+            stage
         );
     }
 }
@@ -599,6 +661,14 @@ function renderTos(
         onAction("tos_accept");
     });
 
+    const tosShell = app.querySelector(".tos-shell") as HTMLElement | null;
+    if (tosShell) {
+        const devControl = document.createElement("div");
+        devControl.className = "dev-reset-control";
+        devControl.appendChild(createDevResetButton(onAction));
+        tosShell.appendChild(devControl);
+    }
+
     accordionTrigger?.focus();
     updateButtonState();
 }
@@ -641,6 +711,7 @@ function renderGameIntro(
     startButton?.addEventListener("click", () => {
         onAction("game_intro_start");
     });
+
 }
 
 function renderClear(app: HTMLElement, state: AppState) {
@@ -661,6 +732,7 @@ function renderClear(app: HTMLElement, state: AppState) {
     closeButton?.addEventListener("click", () => {
         window.close();
     });
+
 }
 
 function renderBusGuide(app: HTMLElement, state: AppState, onAction: (action: string, payload?: any) => void) {
@@ -680,6 +752,7 @@ function renderBusGuide(app: HTMLElement, state: AppState, onAction: (action: st
     proceedButton?.addEventListener("click", () => {
         onAction("postgame_to_arrival");
     });
+
 }
 
 function renderArrivalCheck(app: HTMLElement, state: AppState, onAction: (action: string, payload?: any) => void) {
@@ -714,6 +787,7 @@ function renderArrivalCheck(app: HTMLElement, state: AppState, onAction: (action
 
     const answerInput = app.querySelector("#arrival-answer") as HTMLInputElement | null;
     answerInput?.focus();
+
 }
 
 function renderInfoPage(

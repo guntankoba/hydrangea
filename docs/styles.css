@@ -41,6 +41,10 @@ body {
   overflow-x: hidden;
 }
 
+body.login-screen {
+  align-items: center;
+}
+
 .app-shell {
   background: var(--card);
   backdrop-filter: blur(18px);
@@ -264,6 +268,8 @@ p {
 
 .tos-shell {
   max-width: 720px;
+  position: relative;
+  padding-bottom: 3rem;
 }
 
 .tos-content {
@@ -318,6 +324,28 @@ p {
   width: 20px;
   height: 20px;
   accent-color: var(--accent);
+}
+
+.dev-reset-control {
+  position: absolute;
+  bottom: 0.75rem;
+  right: 0.75rem;
+}
+
+.dev-reset-button {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px dashed rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  font-size: 0.6rem;
+  padding: 0.15rem 0.6rem;
+  color: inherit;
+  opacity: 0.6;
+}
+
+.dev-reset-button:hover,
+.dev-reset-button:focus-visible {
+  opacity: 0.9;
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .tos-start {
@@ -974,21 +1002,96 @@ button:disabled {
 .station-card-layer {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background:
+    radial-gradient(circle at 20% 20%, color-mix(in srgb, var(--accent, #4da3ff) 35%, transparent) 0%, transparent 55%),
+    rgba(2, 8, 20, 0.82);
+  backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
+  padding: clamp(1rem, 2vw, 2rem);
   z-index: 50;
+}
+
+.station-card-overlay {
+  width: 100%;
+  max-width: 640px;
+  background: linear-gradient(135deg, rgba(8, 14, 30, 0.96), rgba(18, 26, 50, 0.92));
+  border-radius: 26px;
+  padding: clamp(1.25rem, 2vw, 2rem);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.45),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  position: relative;
+}
+
+.station-card-overlay::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: 24px;
+  padding: 1px;
+  background: linear-gradient(120deg, color-mix(in srgb, var(--accent, #4da3ff) 75%, #ffffff 10%), rgba(255, 255, 255, 0.12));
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.station-card-message {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+  border-radius: 20px;
+  padding: 1.1rem 1.25rem 1.35rem;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 10px 30px rgba(0, 0, 0, 0.25);
+  border-left: 4px solid color-mix(in srgb, var(--accent, #4da3ff) 80%, #ffffff 20%);
+  line-height: 1.6;
+}
+
+.station-card-message__eyebrow {
+  margin: 0;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.85);
+  text-transform: uppercase;
+}
+
+.station-card-message__title {
+  margin: 0.15rem 0 0.85rem;
+  font-size: clamp(2rem, 3vw, 2.6rem);
+  letter-spacing: 0.12em;
+  font-weight: 900;
+  text-shadow:
+    0 10px 22px rgba(0, 0, 0, 0.65),
+    0 0 25px rgba(255, 255, 255, 0.1);
+  text-transform: uppercase;
+}
+
+.station-card-message__body,
+.station-card-message__action {
+  margin: 0;
+  font-size: 1rem;
+  color: rgba(244, 244, 248, 0.92);
+}
+
+.station-card-message__body {
+  margin-bottom: 0.4rem;
 }
 
 .station-card {
   width: 100%;
-  max-width: 520px;
-  background: linear-gradient(145deg, rgba(15, 23, 42, 0.85), rgba(30, 41, 59, 0.9));
+  background: linear-gradient(135deg, rgba(14, 22, 44, 0.98), rgba(21, 33, 62, 0.92));
+  border-radius: 22px;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 20px;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 18px 35px rgba(0, 0, 0, 0.4);
   padding: 1.5rem;
 }
 
@@ -1077,5 +1180,28 @@ button:disabled {
 .station-card__footer {
   display: flex;
   justify-content: flex-end;
-  margin-top: 1.25rem;
+  margin-top: 0.5rem;
+}
+
+.station-card__footer button {
+  min-width: 200px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent, #4da3ff) 85%, #ffffff 10%), color-mix(in srgb, var(--accent, #4da3ff) 50%, #111a30 50%));
+  color: #0b1120;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border: none;
+  padding: 0.85rem 1.5rem;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.station-card__footer button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 35px rgba(0, 0, 0, 0.45);
+}
+
+.station-card__footer button:active {
+  transform: translateY(0);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
 }

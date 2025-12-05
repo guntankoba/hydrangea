@@ -4,10 +4,22 @@ import { stage3Puzzles } from "./data/stage3.js";
 import { stage4Puzzles } from "./data/stage4.js";
 import { stage5Puzzles } from "./data/stage5.js";
 import { getStationCardById } from "./data/stations.js";
-import { AppState, Feedback, Puzzle, PuzzleProgress, SlotPuzzle, StageId, StationCard, TextPuzzle } from "./types.js";
+import {
+  AppState,
+  Feedback,
+  Puzzle,
+  PuzzleProgress,
+  SlotPuzzle,
+  StageId,
+  StationCard,
+  TextPuzzle,
+  PostGameStep,
+} from "./types.js";
 import { render, resetScrollPosition } from "./ui/render.js";
 
 const PASSWORD = "KPrpz4ms";
+const LOGIN_STORAGE_KEY = "hydrangea_login_token";
+const PROGRESS_STORAGE_KEY = "hydrangea_progress_v1";
 
 const app = document.getElementById("app") as HTMLElement;
 
@@ -37,21 +49,183 @@ const stageThemes: Record<StageId, { accent: string; accentDark: string; accentS
   ST5: { accent: "#c79ad9", accentDark: "#d8b3e6", accentShadow: "rgba(199, 154, 217, 0.35)" },
 };
 
-const state: AppState = {
-  isLoggedIn: false,
-  isCleared: false,
-  currentStage: "ST1",
-  clearedStages: [],
-  stationCardDisplay: null,
-  pendingStageAfterCard: null,
-  pendingClearAfterCard: false,
-  postGame: { step: null, feedback: null },
-  gameIntro: { acknowledged: false },
-  tos: { agreed: false, openedOnce: false },
-  crossword: {},
-  feedback: null,
-  puzzleState: {},
+function getPersistentStorage(): Storage | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return window.localStorage;
+  } catch {
+    return null;
+  }
+}
+
+function hasPersistedLogin(): boolean {
+  const storage = getPersistentStorage();
+  if (!storage) return false;
+
+  const storedValue = storage.getItem(LOGIN_STORAGE_KEY);
+  if (!storedValue) return false;
+
+  if (storedValue !== PASSWORD) {
+    storage.removeItem(LOGIN_STORAGE_KEY);
+    return false;
+  }
+
+  return true;
+}
+
+function persistLoginGrant() {
+  const storage = getPersistentStorage();
+  if (!storage) return;
+
+  try {
+    storage.setItem(LOGIN_STORAGE_KEY, PASSWORD);
+  } catch {
+    // localStorage が利用できない場合は何もしない
+  }
+}
+
+function clearPersistedData() {
+  const storage = getPersistentStorage();
+  if (!storage) return;
+  try {
+    storage.removeItem(LOGIN_STORAGE_KEY);
+    storage.removeItem(PROGRESS_STORAGE_KEY);
+  } catch {
+    // ignore
+  }
+}
+
+type SerializedPuzzleProgress = {
+  solved: boolean;
+  awardedCardId?: string | null;
 };
+
+type PersistedProgress = {
+  currentStage: StageId;
+  clearedStages: StageId[];
+  puzzleState: Record<number, SerializedPuzzleProgress>;
+  isCleared: boolean;
+  postGameStep: PostGameStep;
+};
+
+function serializePuzzleState(puzzleState: AppState["puzzleState"]): Record<number, SerializedPuzzleProgress> {
+  const serialized: Record<number, SerializedPuzzleProgress> = {};
+  Object.entries(puzzleState).forEach(([key, progress]) => {
+    if (!progress?.solved) return;
+    serialized[Number(key)] = {
+      solved: true,
+      awardedCardId: progress.awardedCard?.id ?? null,
+    };
+  });
+  return serialized;
+}
+
+function rehydratePuzzleState(serialized?: Record<number, SerializedPuzzleProgress>): AppState["puzzleState"] {
+  if (!serialized) return {};
+  const restored: AppState["puzzleState"] = {};
+  Object.entries(serialized).forEach(([key, value]) => {
+    if (!value?.solved) return;
+    const awardedCard = value.awardedCardId ? getStationCardById(value.awardedCardId) ?? null : null;
+    restored[Number(key)] = {
+      solved: true,
+      feedback: { kind: "success", message: "クリア済みです" },
+      awardedCard,
+    };
+  });
+  return restored;
+}
+
+function loadPersistedProgress(): PersistedProgress | null {
+  const storage = getPersistentStorage();
+  if (!storage) return null;
+  try {
+    const raw = storage.getItem(PROGRESS_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as PersistedProgress;
+    if (!parsed || typeof parsed !== "object") return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function persistProgress() {
+  const storage = getPersistentStorage();
+  if (!storage) return;
+
+  const serializedPuzzleState = serializePuzzleState(state.puzzleState);
+  const hasProgress =
+    state.isLoggedIn ||
+    state.isCleared ||
+    state.clearedStages.length > 0 ||
+    state.currentStage !== "ST1" ||
+    state.postGame.step !== null ||
+    Object.keys(serializedPuzzleState).length > 0 ||
+    state.stationCardDisplay !== null ||
+    state.pendingStageAfterCard !== null ||
+    state.pendingClearAfterCard;
+
+  if (!hasProgress) {
+    try {
+      storage.removeItem(PROGRESS_STORAGE_KEY);
+    } catch {
+      // ignore
+    }
+    return;
+  }
+
+  const serialized: PersistedProgress = {
+    currentStage: state.currentStage,
+    clearedStages: state.clearedStages,
+    puzzleState: serializedPuzzleState,
+    isCleared: state.isCleared,
+    postGameStep: state.postGame.step,
+  };
+
+  try {
+    storage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(serialized));
+  } catch {
+    // localStorage が利用できない場合は何もしない
+  }
+}
+
+function applyPersistedProgress(progress: PersistedProgress | null) {
+  if (!progress) return;
+
+  if (progress.currentStage && stageOrder.includes(progress.currentStage)) {
+    state.currentStage = progress.currentStage;
+  }
+
+  if (Array.isArray(progress.clearedStages)) {
+    state.clearedStages = progress.clearedStages.filter((stage): stage is StageId => stageOrder.includes(stage as StageId));
+  }
+
+  state.isCleared = Boolean(progress.isCleared);
+  state.postGame.step = progress.postGameStep ?? null;
+  state.puzzleState = rehydratePuzzleState(progress.puzzleState);
+}
+
+function createInitialState(): AppState {
+  return {
+    isLoggedIn: hasPersistedLogin(),
+    isCleared: false,
+    currentStage: "ST1",
+    clearedStages: [],
+    stationCardDisplay: null,
+    pendingStageAfterCard: null,
+    pendingClearAfterCard: false,
+    postGame: { step: null, feedback: null },
+    gameIntro: { acknowledged: false },
+    tos: { agreed: false, openedOnce: false },
+    crossword: {},
+    feedback: null,
+    puzzleState: {},
+  };
+}
+
+const state: AppState = createInitialState();
+
+applyPersistedProgress(loadPersistedProgress());
 
 const finalPuzzleId = (stage: StageId) => stages[stage][stages[stage].length - 1]?.id;
 
@@ -96,6 +270,11 @@ function applyStageTheme(stage: StageId) {
   root.setProperty("--accent-shadow", theme.accentShadow);
 }
 
+function rerender() {
+  persistProgress();
+  render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
+}
+
 type NormalizationMode = "text" | "numeric";
 
 function normalizeAnswer(input: string, mode: NormalizationMode = "text"): string {
@@ -124,15 +303,25 @@ function ensurePuzzleState(id: number): PuzzleProgress {
 }
 
 function handleAction(action: string, payload?: any) {
+  if (action === "reset_persistence") {
+    clearPersistedData();
+    const freshState = createInitialState();
+    Object.assign(state, freshState);
+    applyStageTheme(state.currentStage);
+    rerender();
+    return;
+  }
+
   if (action === "login") {
     if (payload === PASSWORD) {
       state.isLoggedIn = true;
       state.feedback = null;
+      persistLoginGrant();
     } else {
       state.feedback = { kind: "error", message: "パスワードが違います" };
     }
 
-    render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
+    rerender();
     return;
   }
 
@@ -157,7 +346,7 @@ function handleAction(action: string, payload?: any) {
     if (stageChanged) {
       resetScrollPosition();
     }
-    render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
+    rerender();
     return;
   }
 
@@ -165,7 +354,7 @@ function handleAction(action: string, payload?: any) {
     const targetStage = payload?.stageId as StageId | undefined;
     if (!targetStage || !canAccessStage(targetStage)) {
       state.feedback = { kind: "error", message: "まだ進めないステージです" };
-      render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
+      rerender();
       return;
     }
     state.currentStage = targetStage;
@@ -173,7 +362,7 @@ function handleAction(action: string, payload?: any) {
     state.feedback = null;
     applyStageTheme(state.currentStage);
     resetScrollPosition();
-    render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
+    rerender();
     return;
   }
 
@@ -186,7 +375,7 @@ function handleAction(action: string, payload?: any) {
     if (action === "tos_accept") {
       state.tos.agreed = true;
       state.feedback = null;
-      render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
+      rerender();
     }
     return;
   }
@@ -196,7 +385,7 @@ function handleAction(action: string, payload?: any) {
       state.gameIntro.acknowledged = true;
       state.feedback = null;
       applyStageTheme(state.currentStage);
-      render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
+      rerender();
     }
     return;
   }
@@ -204,7 +393,7 @@ function handleAction(action: string, payload?: any) {
   if (action === "postgame_to_arrival") {
     state.postGame.step = "arrival_check";
     state.postGame.feedback = null;
-    render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
+    rerender();
     return;
   }
 
@@ -221,7 +410,7 @@ function handleAction(action: string, payload?: any) {
       state.postGame.feedback = { kind: "error", message: "到着した場所の名前が違うようです" };
     }
 
-    render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
+    rerender();
     return;
   }
 
@@ -234,7 +423,7 @@ function handleAction(action: string, payload?: any) {
 
     if (puzzleState.solved) {
       puzzleState.feedback = { kind: "success", message: "クリア済みです" };
-      render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
+      rerender();
       return;
     }
 
@@ -273,7 +462,7 @@ function handleAction(action: string, payload?: any) {
               state.currentStage = "ST2";
               applyStageTheme(state.currentStage);
               resetScrollPosition();
-              render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
+              rerender();
               return;
             }
           } else if (state.currentStage === "ST2") {
@@ -289,7 +478,7 @@ function handleAction(action: string, payload?: any) {
               state.currentStage = "ST3";
               applyStageTheme(state.currentStage);
               resetScrollPosition();
-              render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
+              rerender();
               return;
             }
           } else if (state.currentStage === "ST3") {
@@ -305,7 +494,7 @@ function handleAction(action: string, payload?: any) {
               state.currentStage = "ST4";
               applyStageTheme(state.currentStage);
               resetScrollPosition();
-              render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
+              rerender();
               return;
             }
           } else if (state.currentStage === "ST4") {
@@ -321,7 +510,7 @@ function handleAction(action: string, payload?: any) {
               state.currentStage = "ST5";
               applyStageTheme(state.currentStage);
               resetScrollPosition();
-              render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
+              rerender();
               return;
             }
           } else if (state.currentStage === "ST5") {
@@ -336,9 +525,9 @@ function handleAction(action: string, payload?: any) {
     }
   }
 
-  render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
+  rerender();
 }
 
 // Initial Render
 applyStageTheme(state.currentStage);
-render(app, state, getActivePuzzles(), handleAction, state.currentStage, stageOrder);
+rerender();
