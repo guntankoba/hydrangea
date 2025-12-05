@@ -194,21 +194,55 @@ function renderPuzzleNavigation(container, puzzles, state) {
     nav.appendChild(list);
     container.appendChild(nav);
 }
-function renderStationCardOverlay(app, card, onAction, nextStage, pendingClearAfterCard) {
+function renderStationCardOverlay(app, card, onAction, nextStage, pendingClearAfterCard, currentStage) {
+    var _a, _b;
     const overlay = document.createElement("div");
     overlay.className = "station-card-layer";
-    const panel = createStationCardElement(card);
+    const panel = document.createElement("div");
+    panel.className = "station-card-overlay";
+    const messageBlock = document.createElement("div");
+    messageBlock.className = "station-card-message";
+    const nextStageLabel = nextStage ? (_a = stageLabels[nextStage]) !== null && _a !== void 0 ? _a : nextStage : null;
+    const currentStageLabel = currentStage ? (_b = stageLabels[currentStage]) !== null && _b !== void 0 ? _b : currentStage : null;
+    const messageEyebrow = document.createElement("p");
+    messageEyebrow.className = "station-card-message__eyebrow";
+    messageEyebrow.textContent = currentStageLabel !== null && currentStageLabel !== void 0 ? currentStageLabel : "ステージ";
+    const messageTitle = document.createElement("h3");
+    messageTitle.className = "station-card-message__title";
+    messageTitle.textContent = "正解";
+    const messageBody = document.createElement("p");
+    messageBody.className = "station-card-message__body";
+    messageBody.textContent = "Stationカードに記された駅名を確認し、移動できる準備が整ったら次へお進みください。";
+    const messageAction = document.createElement("p");
+    messageAction.className = "station-card-message__action";
+    if (pendingClearAfterCard) {
+        messageAction.textContent = "この旅はここで一区切りです。ご自身のタイミングで「クリア画面へ進む」を押してください。";
+    }
+    else if (nextStageLabel) {
+        messageAction.textContent = `「${nextStageLabel}」での挑戦は、このStationカードの駅に到着し、準備が整ってから開始してください。`;
+    }
+    else {
+        messageAction.textContent = "案内の指示に従い、次に進んでも問題がなければ下のボタンを押してください。";
+    }
+    messageBlock.appendChild(messageEyebrow);
+    messageBlock.appendChild(messageTitle);
+    messageBlock.appendChild(messageBody);
+    messageBlock.appendChild(messageAction);
+    const cardPanel = createStationCardElement(card);
     const footer = document.createElement("div");
     footer.className = "station-card__footer";
     const confirm = document.createElement("button");
+    const confirmLabelStage = nextStageLabel !== null && nextStageLabel !== void 0 ? nextStageLabel : nextStage;
     const confirmLabel = pendingClearAfterCard
         ? "クリア画面へ進む"
-        : nextStage
-            ? `次のステージ（${nextStage}）へ進む`
+        : confirmLabelStage
+            ? `${confirmLabelStage}へ進む`
             : "次へ進む";
     confirm.textContent = confirmLabel;
     confirm.addEventListener("click", () => onAction("station_card_continue"));
     footer.appendChild(confirm);
+    panel.appendChild(messageBlock);
+    panel.appendChild(cardPanel);
     panel.appendChild(footer);
     overlay.appendChild(panel);
     app.appendChild(overlay);
@@ -313,7 +347,7 @@ export function render(app, state, puzzles, onAction, stage, stageOrder) {
     container.appendChild(content);
     app.appendChild(container);
     if (state.stationCardDisplay) {
-        renderStationCardOverlay(app, state.stationCardDisplay, onAction, (_b = state.pendingStageAfterCard) !== null && _b !== void 0 ? _b : undefined, state.pendingClearAfterCard);
+        renderStationCardOverlay(app, state.stationCardDisplay, onAction, (_b = state.pendingStageAfterCard) !== null && _b !== void 0 ? _b : undefined, state.pendingClearAfterCard, stage);
     }
 }
 function renderLogin(app, state, onAction) {
