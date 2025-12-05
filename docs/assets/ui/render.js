@@ -273,14 +273,18 @@ function renderStationCardInline(container, card) {
 }
 export function render(app, state, puzzles, onAction, stage, stageOrder) {
     var _a, _b;
+    const body = typeof document !== "undefined" ? document.body : null;
     if (!state.isLoggedIn) {
+        body === null || body === void 0 ? void 0 : body.classList.add("login-screen");
         renderLogin(app, state, onAction);
         return;
     }
     if (!state.tos.agreed) {
+        body === null || body === void 0 ? void 0 : body.classList.add("login-screen");
         renderTos(app, state, onAction);
         return;
     }
+    body === null || body === void 0 ? void 0 : body.classList.remove("login-screen");
     if (!state.gameIntro.acknowledged) {
         renderGameIntro(app, state, onAction);
         return;

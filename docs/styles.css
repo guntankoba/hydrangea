@@ -41,6 +41,10 @@ body {
   overflow-x: hidden;
 }
 
+body.login-screen {
+  align-items: center;
+}
+
 .app-shell {
   background: var(--card);
   backdrop-filter: blur(18px);

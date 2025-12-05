@@ -356,15 +356,21 @@ export function render(
     stage?: StageId,
     stageOrder?: StageId[]
 ) {
+    const body = typeof document !== "undefined" ? document.body : null;
+
     if (!state.isLoggedIn) {
+        body?.classList.add("login-screen");
         renderLogin(app, state, onAction);
         return;
     }
 
     if (!state.tos.agreed) {
+        body?.classList.add("login-screen");
         renderTos(app, state, onAction);
         return;
     }
+
+    body?.classList.remove("login-screen");
 
     if (!state.gameIntro.acknowledged) {
         renderGameIntro(app, state, onAction);
